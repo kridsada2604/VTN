@@ -8,6 +8,7 @@ import {
   ReceiptText,
   Settings,
   ShoppingCart,
+  ClipboardList,
   Users,
 } from "lucide-react";
 import { SignOutButton } from "./sign-out-button";
@@ -19,6 +20,7 @@ const nav = [
   ["/users", "ผู้ใช้งาน", Users],
   ["/inventory", "สินค้าและสต๊อก", Boxes],
   ["/sales", "การขาย", ShoppingCart],
+  ["/purchase", "จัดซื้อ", ClipboardList],
   ["/accounting", "บัญชี", ReceiptText],
   ["/settings", "ตั้งค่า", Settings],
 ] as const;

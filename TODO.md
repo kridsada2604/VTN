@@ -41,3 +41,11 @@
 - [ ] เชื่อม Receive Payment posting อัตโนมัติ
 - [ ] เพิ่ม Journal Entry manual form
 - [ ] เพิ่มงบการเงินจาก account type
+
+## Sprint 10 — Purchase
+- [x] Supplier
+- [x] PO
+- [ ] Receive
+- [ ] Payment
+- [ ] เชื่อม PO Receive เข้ากับ Stock Movement
+- [ ] เชื่อม Supplier Payment เข้ากับ Accounting

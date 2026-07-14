@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.10.0 — Sprint 10
+- เพิ่ม Purchase module
+- เพิ่ม Purchase Order list/create/detail
+- เพิ่ม Purchase Order PDF/print view
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Purchase Order
+- เพิ่ม SQL Migration `supabase/phase-1.8.sql`
+- เพิ่มตาราง `purchase_orders`, `purchase_order_items`, `purchase_order_events`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ Purchase Order
+- เพิ่ม database function `create_purchase_order`
+
 ## v0.9.0 — Sprint 9
 - เพิ่ม Accounting foundation สำหรับระบบบัญชีคู่
 - เพิ่ม Chart of Accounts เริ่มต้นต่อบริษัท
