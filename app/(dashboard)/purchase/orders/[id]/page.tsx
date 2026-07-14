@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <div>
       <PageHeader eyebrow="PURCHASE ORDER" title={order.document_no} description={`${supplier?.name ?? ""} • ${order.order_date}`} />
-      <div className="action-row my-6 print:hidden"><Link className="btn-secondary" href="/purchase/orders">← กลับรายการ</Link><PrintButton /></div>
+      <div className="action-row my-6 print:hidden"><Link className="btn-secondary" href="/purchase/orders">← กลับรายการ</Link><Link className="btn-primary" href={`/purchase/orders/${id}/receive`}>รับสินค้า</Link><PrintButton /></div>
       <section className="card p-5 print:border-0 print:shadow-none">
         <div className="mb-7 flex items-start justify-between gap-4">
           <div><p className="text-2xl font-black"><span className="text-orange-600">VTN</span> Business</p><p className="text-sm text-gray-500">ใบสั่งซื้อ / Purchase Order</p></div>

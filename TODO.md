@@ -45,7 +45,7 @@
 ## Sprint 10 — Purchase
 - [x] Supplier
 - [x] PO
-- [ ] Receive
+- [x] Receive
 - [ ] Payment
-- [ ] เชื่อม PO Receive เข้ากับ Stock Movement
+- [x] เชื่อม PO Receive เข้ากับ Stock Movement
 - [ ] เชื่อม Supplier Payment เข้ากับ Accounting

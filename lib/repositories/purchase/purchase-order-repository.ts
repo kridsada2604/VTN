@@ -1,6 +1,6 @@
 import type { createClient } from "@/lib/supabase/server";
 import type { PurchaseOrderComputedItem, PurchaseOrderTotals } from "@/lib/services/purchase/purchase-order-calculator";
-import type { CreatePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
+import type { CreatePurchaseOrderInput, ReceivePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -25,12 +25,14 @@ export type PurchaseOrderDetail = PurchaseOrderListRow & {
 
 export type PurchaseOrderItemRow = {
   id: string;
+  product_id?: string | null;
   description: string;
   quantity: number | string;
   unit_cost: number | string;
   line_discount: number | string;
   line_tax: number | string;
   line_total: number | string;
+  quantity_received?: number | string;
 };
 
 export class PurchaseOrderRepository {
@@ -70,7 +72,7 @@ export class PurchaseOrderRepository {
         .eq("company_id", companyId)
         .eq("id", purchaseOrderId)
         .maybeSingle(),
-      this.supabase.from("purchase_order_items").select("id,description,quantity,unit_cost,line_discount,line_tax,line_total").eq("purchase_order_id", purchaseOrderId).order("sort_order"),
+      this.supabase.from("purchase_order_items").select("id,product_id,description,quantity,unit_cost,line_discount,line_tax,line_total,quantity_received").eq("purchase_order_id", purchaseOrderId).order("sort_order"),
     ]);
 
     if (order.error) throw order.error;
@@ -95,6 +97,34 @@ export class PurchaseOrderRepository {
       p_discount_amount: totals.discount_amount,
       p_tax_amount: totals.tax_amount,
       p_total_amount: totals.total_amount,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async getReceiveOptions(companyId: string, purchaseOrderId: string) {
+    const [detail, warehouses] = await Promise.all([
+      this.getById(companyId, purchaseOrderId),
+      this.supabase.from("warehouses").select("id,code,name").eq("company_id", companyId).eq("is_active", true).order("code"),
+    ]);
+
+    if (warehouses.error) throw warehouses.error;
+
+    return {
+      ...detail,
+      warehouses: warehouses.data ?? [],
+    };
+  }
+
+  async receive(companyId: string, input: ReceivePurchaseOrderInput) {
+    const { data, error } = await this.supabase.rpc("receive_purchase_order", {
+      p_company_id: companyId,
+      p_purchase_order_id: input.purchase_order_id,
+      p_warehouse_id: input.warehouse_id,
+      p_receipt_date: input.receipt_date,
+      p_notes: input.notes,
+      p_items: input.items.map((item, index) => ({ ...item, sort_order: index })),
     });
 
     if (error) throw error;

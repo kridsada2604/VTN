@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.10.1 — Sprint 10 Receive
+- เพิ่ม Purchase Receive จากหน้า PO
+- เพิ่มการรับสินค้าเข้าคลังและสร้าง Stock Movement อัตโนมัติ
+- เพิ่มตาราง `purchase_receipts` และ `purchase_receipt_items`
+- เพิ่ม SQL Migration `supabase/phase-1.9.sql`
+- เพิ่ม database function `receive_purchase_order`
+- อัปเดตสถานะ PO เป็น partially received / received ตามจำนวนรับจริง
+
 ## v0.10.0 — Sprint 10
 - เพิ่ม Purchase module
 - เพิ่ม Purchase Order list/create/detail
