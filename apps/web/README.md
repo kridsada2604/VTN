@@ -1,1 +1,0 @@
-# Web application (Next.js)
