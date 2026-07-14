@@ -1,0 +1,1 @@
+# Supabase configuration and migrations
