@@ -4,5 +4,7 @@ out/
 .env*
 !.env.example
 .vercel/
+supabase/.temp/
+tsconfig.tsbuildinfo
 *.log
 .DS_Store
