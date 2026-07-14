@@ -17,13 +17,18 @@
 - [ ] Refactor module เก่าให้ย้าย query จาก page/actions ไป Service/Repository ทั้งหมด
 
 ## Sprint 8 — Inventory
-- [ ] Stock Card
-- [ ] Movement
-- [ ] FIFO
-- [ ] Average Cost
-- [ ] Lot
-- [ ] Serial
-- [ ] Barcode
+- [x] Stock Card
+- [x] Movement
+- [x] FIFO layer foundation
+- [x] Average Cost foundation
+- [x] Lot field foundation
+- [x] Serial field foundation
+- [x] Barcode field foundation
+- [ ] เชื่อม Reserve Stock จาก Sales Order
+- [ ] เชื่อม Delivery เพื่อตัดสต๊อกจากเอกสารขาย
+- [ ] เพิ่ม Transfer ระหว่างคลังแบบ 2 ฝั่ง
+- [ ] เพิ่มหน้าจอปรับปรุง Barcode ใน Product master ผ่าน Service/Repository
+- [ ] เพิ่ม FIFO issue consumption แบบเต็มรูปแบบ
 
 ## Sprint 9 — Accounting
 - [ ] Journal

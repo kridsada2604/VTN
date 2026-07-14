@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.8.0 — Sprint 8
+- เพิ่ม Inventory dashboard ที่อ่านยอดจาก stock balance จริง
+- เพิ่ม Stock Movement สำหรับรับเข้า ตัดออก และปรับปรุงยอดสต๊อก
+- เพิ่ม Stock Card สำหรับดูประวัติการเคลื่อนไหวสินค้า
+- เพิ่ม stock balances, movements, movement items และ stock layers
+- เพิ่ม Average Cost foundation และ FIFO layer foundation
+- เพิ่ม Lot, Serial และ Barcode fields ใน stock movement items
+- เพิ่ม product fields สำหรับ barcode, costing method, lot tracking และ serial tracking
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Inventory
+- เพิ่ม SQL Migration `supabase/phase-1.6.sql`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ stock movement
+
 ## v0.7.0 — Sprint 7
 - เพิ่มโมดูล Invoice สำหรับสร้าง ดูรายการ และดูรายละเอียดใบแจ้งหนี้
 - เพิ่ม Receive Payment สำหรับบันทึกรับชำระเงินและอัปเดตสถานะใบแจ้งหนี้
