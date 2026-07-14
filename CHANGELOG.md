@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.12.0 — Sprint 12
+- เพิ่ม Projects module
+- เพิ่ม Project list/create/detail
+- เพิ่ม Project Task และ Project Cost foundation
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Projects
+- เพิ่ม SQL Migration `supabase/phase-2.1.sql`
+- เพิ่มตาราง `projects`, `project_tasks`, `project_costs`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ Project
+- เพิ่ม database function `create_project`
+
 ## v0.11.0 — Sprint 11
 - เพิ่ม CRM module
 - เพิ่ม Lead create และ CRM dashboard

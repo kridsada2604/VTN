@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   ClipboardList,
   UsersRound,
+  FolderKanban,
   Users,
 } from "lucide-react";
 import { SignOutButton } from "./sign-out-button";
@@ -23,6 +24,7 @@ const nav = [
   ["/sales", "การขาย", ShoppingCart],
   ["/purchase", "จัดซื้อ", ClipboardList],
   ["/crm", "CRM", UsersRound],
+  ["/projects", "Projects", FolderKanban],
   ["/accounting", "บัญชี", ReceiptText],
   ["/settings", "ตั้งค่า", Settings],
 ] as const;

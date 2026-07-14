@@ -57,3 +57,11 @@
 - [ ] Opportunity create/update
 - [ ] Lead convert to Customer
 - [ ] Activity create/complete
+
+## Sprint 12 — Projects
+- [x] Project
+- [x] Task foundation
+- [x] Cost foundation
+- [ ] Task create/update
+- [ ] Project billing
+- [ ] Project cost posting
