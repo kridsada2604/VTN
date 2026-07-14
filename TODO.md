@@ -49,3 +49,11 @@
 - [ ] Payment
 - [x] เชื่อม PO Receive เข้ากับ Stock Movement
 - [ ] เชื่อม Supplier Payment เข้ากับ Accounting
+
+## Sprint 11 — CRM
+- [x] Lead
+- [x] Activity view
+- [x] Pipeline foundation
+- [ ] Opportunity create/update
+- [ ] Lead convert to Customer
+- [ ] Activity create/complete

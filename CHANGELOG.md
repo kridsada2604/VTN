@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.11.0 — Sprint 11
+- เพิ่ม CRM module
+- เพิ่ม Lead create และ CRM dashboard
+- เพิ่ม Activities view
+- เพิ่ม Opportunity pipeline foundation
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ CRM
+- เพิ่ม SQL Migration `supabase/phase-2.0.sql`
+- เพิ่มตาราง `crm_leads`, `crm_opportunities`, `crm_activities`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ CRM Lead
+- เพิ่ม database function `create_crm_lead`
+
 ## v0.10.1 — Sprint 10 Receive
 - เพิ่ม Purchase Receive จากหน้า PO
 - เพิ่มการรับสินค้าเข้าคลังและสร้าง Stock Movement อัตโนมัติ
