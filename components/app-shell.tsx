@@ -21,7 +21,7 @@ export function AppShell({ children, email }: { children: React.ReactNode; email
       <div className="border-t border-white/10 pt-4"><p className="px-3 mb-3 truncate text-xs text-slate-400">{email}</p><SignOutButton/></div>
     </aside>
     <div>
-      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white/90 px-5 backdrop-blur sm:px-8"><div><p className="text-xs font-bold text-orange-600">VTN BUSINESS</p><p className="font-bold">ระบบบริหารธุรกิจ</p></div><div className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-bold text-orange-700">Phase 1.2</div></header>
+      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white/90 px-5 backdrop-blur sm:px-8"><div><p className="text-xs font-bold text-orange-600">VTN BUSINESS</p><p className="font-bold">ระบบบริหารธุรกิจ</p></div><div className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-bold text-orange-700">Phase 1.3</div></header>
       <main className="p-5 sm:p-8">{children}</main>
     </div>
   </div>;
