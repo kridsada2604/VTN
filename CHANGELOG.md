@@ -1,14 +1,10 @@
 # Changelog
-## 0.1.0-alpha.1
-- Next.js App Router foundation
-- Responsive login and dashboard
-- Supabase SSR authentication
-- Company, branches, users read views
-- Phase 1 SQL with RLS and bootstrap seed
-- GitHub Actions and Vercel setup guide
 
-## 0.1.1-alpha.1
-
-- Lock Node.js runtime to 22.x for Vercel.
-- Replace internal package registry URLs in package-lock.json with registry.npmjs.org.
-- Add deterministic Vercel install command using npm ci.
+## 0.2.0-alpha.1
+- ทำให้ทุกเมนู Sidebar คลิกเข้าได้
+- เพิ่มหน้า Inventory Hub
+- เพิ่ม Products, Categories, Units และ Warehouses
+- เพิ่ม Customers และ Suppliers
+- เพิ่มหน้าโครงสร้าง Sales, Accounting และ Settings
+- เพิ่ม Supabase migration Phase 1.1
+- ล็อก Node.js 22.x สำหรับ Vercel

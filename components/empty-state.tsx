@@ -1,0 +1,1 @@
+export function EmptyState({title,description}:{title:string;description:string}){return <div className="card mt-6 p-10 text-center"><h2 className="font-black">{title}</h2><p className="mt-2 text-sm text-gray-500">{description}</p></div>}
