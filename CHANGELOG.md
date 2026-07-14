@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.7.0 — Sprint 7
+- เพิ่มโมดูล Invoice สำหรับสร้าง ดูรายการ และดูรายละเอียดใบแจ้งหนี้
+- เพิ่ม Receive Payment สำหรับบันทึกรับชำระเงินและอัปเดตสถานะใบแจ้งหนี้
+- เพิ่ม Document Engine foundation สำหรับ format เงิน, print/PDF และ email draft
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Sales Invoice
+- เพิ่ม SQL Migration `supabase/phase-1.5.sql`
+- เพิ่มตาราง `sales_invoices`, `sales_invoice_items`, `sales_invoice_payments`, `sales_invoice_events`
+- เพิ่ม `audit_logs` สำหรับบันทึก action สำคัญ
+- เพิ่ม RLS และ permission policies สำหรับ Invoice/Payment/Audit Log
+- เพิ่ม database functions `create_sales_invoice` และ `receive_invoice_payment` เพื่อทำงานแบบ atomic
+- ปรับ Sales dashboard ให้แสดงข้อมูล Invoice และเข้าถึง Invoice/Payment ได้
+- อัปเดต system badge เป็น Sprint 7
+
+## v0.6.0 — Phase 1.5
+- Authentication
+- Dashboard
+- Sidebar
+- Master Data
+- Customer
+- Vendor
+- Product
+- Category
+- Unit
+- Warehouse
+- Quotation
+- Sales Order
+- Test Login
+- Deploy Vercel
+
 ## v0.5.0 — Phase 1.4
 - เพิ่ม Dashboard ภาพรวมการขาย
 - เพิ่มฟิลด์พนักงานขาย โครงการ เงื่อนไขชำระ และสกุลเงินในใบเสนอราคา
