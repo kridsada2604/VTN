@@ -31,9 +31,13 @@
 - [ ] เพิ่ม FIFO issue consumption แบบเต็มรูปแบบ
 
 ## Sprint 9 — Accounting
-- [ ] Journal
-- [ ] Ledger
-- [ ] Trial Balance
+- [x] Journal
+- [x] Ledger
+- [x] Trial Balance
 - [ ] P/L
 - [ ] Balance Sheet
 - [ ] Cash Flow
+- [ ] เชื่อม Invoice posting อัตโนมัติ
+- [ ] เชื่อม Receive Payment posting อัตโนมัติ
+- [ ] เพิ่ม Journal Entry manual form
+- [ ] เพิ่มงบการเงินจาก account type

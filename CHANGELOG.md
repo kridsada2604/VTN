@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.9.0 — Sprint 9
+- เพิ่ม Accounting foundation สำหรับระบบบัญชีคู่
+- เพิ่ม Chart of Accounts เริ่มต้นต่อบริษัท
+- เพิ่ม Journal Entries และ Journal Entry Lines
+- เพิ่ม Ledger และ Trial Balance pages
+- เพิ่ม Service Layer และ Repository Layer สำหรับ Accounting
+- เพิ่ม SQL Migration `supabase/phase-1.7.sql`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ Journal Entry
+- เพิ่ม database function `post_journal_entry` สำหรับบันทึกบัญชีแบบ balanced
+
 ## v0.8.0 — Sprint 8
 - เพิ่ม Inventory dashboard ที่อ่านยอดจาก stock balance จริง
 - เพิ่ม Stock Movement สำหรับรับเข้า ตัดออก และปรับปรุงยอดสต๊อก
