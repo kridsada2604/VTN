@@ -1,10 +1,8 @@
-# อัปเกรด VTN Business เป็น Phase 1.1
+# อัปเกรดเป็น VTN Business v0.3.0
 
-1. สำรอง Repository เดิม
-2. วางไฟล์ทั้งหมดจาก ZIP ทับ Repository
-3. เปิด Supabase SQL Editor
-4. รันไฟล์ `supabase/phase-1.1.sql` เพียงครั้งเดียว
-5. Commit และ Push ไป GitHub
-6. Vercel จะ Deploy อัตโนมัติ
+1. วางไฟล์อัปเดตทับ Repository เดิม
+2. Supabase SQL Editor: รัน `supabase/phase-1.2.sql`
+3. Commit และ Push ขึ้น GitHub
+4. รอ Vercel Deploy อัตโนมัติ
 
-เมนูที่เปิดใช้งาน: Dashboard, Company, Branches, Users, Inventory, Products, Categories, Units, Warehouses, Customers, Suppliers, Sales, Accounting และ Settings
+หมายเหตุ: ผู้ใช้ที่มี Role OWNER หรือ ADMIN เท่านั้นที่เพิ่มและแก้ไข Master Data ได้
