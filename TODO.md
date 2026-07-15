@@ -1,5 +1,14 @@
 # TODO
 
+## Sprint 13 — Claim
+- [x] Claim
+- [x] Claim timeline foundation
+- [x] Service Layer / Repository Layer / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [ ] Claim status workflow actions
+- [ ] Replacement / Refund / Credit Note flow
+- [ ] Warranty policy
+
 ## Sprint 7 — Invoice / Receive Payment / PDF / Email / Document Engine
 - [x] เพิ่ม Invoice list/create/detail
 - [x] เพิ่ม Receive Payment

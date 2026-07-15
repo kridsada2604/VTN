@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.13.0 — Sprint 13
+- เพิ่ม Claims module
+- เพิ่ม Claim list/create/detail
+- เพิ่ม Claim timeline foundation
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Claims
+- เพิ่ม SQL Migration `supabase/phase-2.2.sql`
+- เพิ่มตาราง `claims`, `claim_events`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ Claim
+- เพิ่ม database function `create_claim`
+
 ## v0.12.0 — Sprint 12
 - เพิ่ม Projects module
 - เพิ่ม Project list/create/detail
