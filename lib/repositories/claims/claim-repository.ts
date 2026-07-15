@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateClaimInput } from "@/lib/validation/claims/claim";
+import type { CreateClaimInput, UpdateClaimStatusInput } from "@/lib/validation/claims/claim";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -78,6 +78,18 @@ export class ClaimRepository {
       p_priority: input.priority,
       p_subject: input.subject,
       p_description: input.description,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async updateStatus(companyId: string, input: UpdateClaimStatusInput) {
+    const { data, error } = await this.supabase.rpc("update_claim_status", {
+      p_company_id: companyId,
+      p_claim_id: input.claim_id,
+      p_status: input.status,
+      p_resolution: input.resolution,
     });
 
     if (error) throw error;

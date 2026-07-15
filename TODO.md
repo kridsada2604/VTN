@@ -56,7 +56,7 @@
 - [x] Claim timeline foundation
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
-- [ ] Claim status workflow actions
+- [x] Claim status workflow actions
 - [ ] Replacement / Refund / Credit Note flow
 - [ ] Warranty policy
 

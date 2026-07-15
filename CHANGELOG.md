@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.1 — Claim Status Workflow
+- Add claim status update workflow with resolution notes.
+- Add claim timeline events and audit log for status changes.
+- Add SQL Migration `supabase/phase-3.4.sql` with claim update RLS and workflow database function.
+- Update Claim detail page with workflow controls.
+
 ## v0.17.0 — Project Cost Posting
 - Add project cost posting with automatic journal entry creation.
 - Add project cost account `6100` and journal link on project costs.

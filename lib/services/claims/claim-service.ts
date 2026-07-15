@@ -1,7 +1,7 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { ClaimRepository } from "@/lib/repositories/claims/claim-repository";
 import { createClient } from "@/lib/supabase/server";
-import type { CreateClaimInput } from "@/lib/validation/claims/claim";
+import type { CreateClaimInput, UpdateClaimStatusInput } from "@/lib/validation/claims/claim";
 
 export async function getClaims() {
   const supabase = await createClient();
@@ -25,4 +25,10 @@ export async function createClaim(input: CreateClaimInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
   return new ClaimRepository(supabase).create(companyId, input);
+}
+
+export async function updateClaimStatus(input: UpdateClaimStatusInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new ClaimRepository(supabase).updateStatus(companyId, input);
 }
