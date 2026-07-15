@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getProjectDetail } from "@/lib/services/projects/project-service";
-import { saveProjectCost, saveProjectTask, updateProjectTaskAction } from "../actions";
+import { saveProjectCost, saveProjectInvoice, saveProjectTask, updateProjectTaskAction } from "../actions";
 
 const statusLabel: Record<string, string> = {
   TODO: "To do",
@@ -21,7 +21,7 @@ const costTypeLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { project, tasks, costs } = await getProjectDetail(id);
+  const { project, tasks, costs, invoices } = await getProjectDetail(id);
   if (!project) notFound();
 
   const completedTasks = tasks.filter((task) => task.status === "DONE").length;
@@ -127,6 +127,44 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <label><span className="label">Description</span><input className="input" name="description" required /></label>
             <label><span className="label">Amount</span><input className="input" type="number" min="0.01" step="0.01" name="amount" required /></label>
             <button className="btn-primary w-full">Post Cost</button>
+          </form>
+        </aside>
+      </section>
+
+      <section className="mt-6 grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div className="card table-wrap">
+          <div className="border-b p-4"><h2 className="font-black">Project Billing</h2></div>
+          <table className="data-table">
+            <thead><tr><th>Invoice</th><th>Date</th><th>Due</th><th>Status</th><th>Total</th><th>Balance</th><th /></tr></thead>
+            <tbody>
+              {invoices.map((invoice) => (
+                <tr key={invoice.id}>
+                  <td className="font-bold">{invoice.document_no}</td>
+                  <td>{invoice.invoice_date}</td>
+                  <td>{invoice.due_date ?? "-"}</td>
+                  <td>{invoice.status}</td>
+                  <td>{formatDocumentMoney(invoice.total_amount)}</td>
+                  <td>{formatDocumentMoney(invoice.balance_amount)}</td>
+                  <td><Link className="btn-secondary btn-small" href={`/sales/invoices/${invoice.id}`}>Open</Link></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!invoices.length && <p className="p-6 text-gray-500">No project invoices yet.</p>}
+        </div>
+
+        <aside className="card p-5">
+          <h2 className="font-black">Create Invoice</h2>
+          <form action={saveProjectInvoice} className="mt-4 space-y-3">
+            <input type="hidden" name="project_id" value={project.id} />
+            <label><span className="label">Invoice date</span><input className="input" type="date" name="invoice_date" required defaultValue={new Date().toISOString().slice(0, 10)} /></label>
+            <label><span className="label">Due date</span><input className="input" type="date" name="due_date" /></label>
+            <label><span className="label">Description</span><input className="input" name="description" required defaultValue={`Project billing - ${project.project_no}`} /></label>
+            <label><span className="label">Amount before VAT</span><input className="input" type="number" min="0.01" step="0.01" name="amount" required /></label>
+            <label><span className="label">VAT %</span><input className="input" type="number" min="0" step="0.01" name="tax_rate" defaultValue="7" /></label>
+            <label><span className="label">Payment terms</span><input className="input" name="payment_terms" defaultValue="ชำระภายใน 30 วัน" /></label>
+            <label><span className="label">Notes</span><textarea className="input textarea" name="notes" /></label>
+            <button className="btn-primary w-full">Create Project Invoice</button>
           </form>
         </aside>
       </section>

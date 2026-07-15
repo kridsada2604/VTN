@@ -123,5 +123,5 @@
 - [x] Task foundation
 - [x] Cost foundation
 - [x] Task create/update
-- [ ] Project billing
+- [x] Project billing
 - [x] Project cost posting

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17.5 — Project Billing
+- Add project invoice creation workflow.
+- Link sales invoices to projects through `project_id`.
+- Update project revenue automatically when creating project invoices.
+- Add Project detail billing form and invoice history.
+- Add SQL Migration `supabase/phase-3.7.sql`.
+
 ## v0.17.4 — POS Void and Refund
 - Add POS full bill void and refund workflow.
 - Reverse POS stock through stock movement when voiding or refunding.

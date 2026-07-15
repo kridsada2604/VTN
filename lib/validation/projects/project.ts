@@ -32,6 +32,17 @@ export type CreateProjectCostInput = {
   amount: number;
 };
 
+export type CreateProjectInvoiceInput = {
+  project_id: string;
+  invoice_date: string;
+  due_date: string | null;
+  description: string;
+  amount: number;
+  tax_rate: number;
+  payment_terms: string | null;
+  notes: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -97,5 +108,24 @@ export function parseProjectCostForm(fd: FormData): CreateProjectCostInput {
   if (!input.project_id) throw new Error("Project is required");
   if (!input.description) throw new Error("Cost description is required");
   if (input.amount <= 0) throw new Error("Cost amount must be greater than zero");
+  return input;
+}
+
+export function parseProjectInvoiceForm(fd: FormData): CreateProjectInvoiceInput {
+  const input: CreateProjectInvoiceInput = {
+    project_id: text(fd, "project_id"),
+    invoice_date: text(fd, "invoice_date") || new Date().toISOString().slice(0, 10),
+    due_date: text(fd, "due_date") || null,
+    description: text(fd, "description"),
+    amount: numberOrZero(fd.get("amount")),
+    tax_rate: numberOrZero(fd.get("tax_rate")),
+    payment_terms: text(fd, "payment_terms") || null,
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.project_id) throw new Error("Project is required");
+  if (!input.description) throw new Error("Billing description is required");
+  if (input.amount <= 0) throw new Error("Billing amount must be greater than zero");
+  if (input.tax_rate < 0) throw new Error("Tax rate must not be negative");
   return input;
 }

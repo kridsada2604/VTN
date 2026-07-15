@@ -1,7 +1,7 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { ProjectRepository } from "@/lib/repositories/projects/project-repository";
 import { createClient } from "@/lib/supabase/server";
-import type { CreateProjectCostInput, CreateProjectInput, CreateProjectTaskInput, UpdateProjectTaskInput } from "@/lib/validation/projects/project";
+import type { CreateProjectCostInput, CreateProjectInput, CreateProjectInvoiceInput, CreateProjectTaskInput, UpdateProjectTaskInput } from "@/lib/validation/projects/project";
 
 export async function getProjects() {
   const supabase = await createClient();
@@ -43,4 +43,10 @@ export async function createProjectCost(input: CreateProjectCostInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
   return new ProjectRepository(supabase).createCost(companyId, input);
+}
+
+export async function createProjectInvoice(input: CreateProjectInvoiceInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new ProjectRepository(supabase).createInvoice(companyId, input);
 }

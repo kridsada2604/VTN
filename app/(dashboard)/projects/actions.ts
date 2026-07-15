@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createProject, createProjectCost, createProjectTask, updateProjectTask } from "@/lib/services/projects/project-service";
-import { parseProjectCostForm, parseProjectForm, parseProjectTaskForm, parseProjectTaskUpdateForm } from "@/lib/validation/projects/project";
+import { createProject, createProjectCost, createProjectInvoice, createProjectTask, updateProjectTask } from "@/lib/services/projects/project-service";
+import { parseProjectCostForm, parseProjectForm, parseProjectInvoiceForm, parseProjectTaskForm, parseProjectTaskUpdateForm } from "@/lib/validation/projects/project";
 
 export async function saveProject(fd: FormData) {
   const id = await createProject(parseProjectForm(fd));
@@ -35,4 +35,13 @@ export async function saveProjectCost(fd: FormData) {
   revalidatePath("/accounting");
   revalidatePath("/accounting/journal");
   redirect(`/projects/${input.project_id}`);
+}
+
+export async function saveProjectInvoice(fd: FormData) {
+  const input = parseProjectInvoiceForm(fd);
+  const invoiceId = await createProjectInvoice(input);
+  revalidatePath("/projects");
+  revalidatePath(`/projects/${input.project_id}`);
+  revalidatePath("/sales/invoices");
+  redirect(`/sales/invoices/${invoiceId}`);
 }
