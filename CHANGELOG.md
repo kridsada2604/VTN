@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.3 — Quotation to Sales Order
+- เพิ่มการสร้าง Sales Order จาก Quotation ที่ Accepted แล้ว
+- เพิ่มการกันสร้าง Sales Order ซ้ำจาก Quotation เดิม
+- เพิ่ม source link `quotation_id` ใน Sales Order
+- เพิ่ม SQL Migration `supabase/phase-2.8.sql`
+- เพิ่ม database function `create_sales_order_from_quotation`
+
 ## v0.16.2 — Sales Order to Invoice
 - เพิ่มการสร้าง Invoice จาก Sales Order ที่ส่งของแล้ว
 - เพิ่มการกันออก Invoice ซ้ำจาก Sales Order เดิม

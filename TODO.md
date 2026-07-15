@@ -7,7 +7,7 @@
 - [x] Stock deduction via Stock Movement
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
-- [ ] Convert Quotation → Sales Order
+- [x] Convert Quotation → Sales Order
 - [x] Convert Sales Order → Invoice
 - [ ] Partial delivery
 - [ ] Delivery print/PDF

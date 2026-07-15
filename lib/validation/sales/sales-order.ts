@@ -36,6 +36,12 @@ export type InvoiceSalesOrderInput = {
   notes: string | null;
 };
 
+export type QuotationToSalesOrderInput = {
+  quotation_id: string;
+  order_date: string;
+  requested_delivery_date: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -114,5 +120,17 @@ export function parseInvoiceSalesOrderForm(fd: FormData): InvoiceSalesOrderInput
 
   if (!input.sales_order_id) throw new Error("ไม่พบ Sales Order");
   if (!input.invoice_date) throw new Error("กรุณาระบุวันที่ใบแจ้งหนี้");
+  return input;
+}
+
+export function parseQuotationToSalesOrderForm(fd: FormData): QuotationToSalesOrderInput {
+  const input = {
+    quotation_id: text(fd, "quotation_id"),
+    order_date: text(fd, "order_date"),
+    requested_delivery_date: text(fd, "requested_delivery_date") || null,
+  };
+
+  if (!input.quotation_id) throw new Error("ไม่พบ Quotation");
+  if (!input.order_date) throw new Error("กรุณาระบุวันที่ Sales Order");
   return input;
 }

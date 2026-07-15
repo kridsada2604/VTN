@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentCompanyId } from "@/lib/current-company";
+import { createSalesOrderFromQuotation } from "@/lib/services/sales/sales-order-service";
+import { parseQuotationToSalesOrderForm } from "@/lib/validation/sales/sales-order";
 
 const text=(fd:FormData,k:string)=>String(fd.get(k)??"").trim();
 export async function saveQuotation(fd:FormData){
@@ -26,4 +28,12 @@ export async function updateQuotationStatus(fd:FormData){
  const {error}=await supabase.from("sales_quotations").update({status}).eq("id",id).eq("company_id",companyId); if(error) throw error;
  await supabase.from("sales_quotation_events").insert({quotation_id:id,event_type:"STATUS_CHANGED",from_status:current.status,to_status:status,message:`เปลี่ยนสถานะจาก ${current.status} เป็น ${status}`,created_by:user?.id});
  revalidatePath(`/sales/quotations/${id}`); revalidatePath("/sales/quotations"); revalidatePath("/sales");
+}
+
+export async function convertQuotationToSalesOrder(fd: FormData) {
+ const salesOrderId = await createSalesOrderFromQuotation(parseQuotationToSalesOrderForm(fd));
+ revalidatePath("/sales");
+ revalidatePath("/sales/quotations");
+ revalidatePath("/sales/orders");
+ redirect(`/sales/orders/${salesOrderId}`);
 }
