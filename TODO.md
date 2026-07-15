@@ -114,9 +114,9 @@
 - [x] Lead
 - [x] Activity view
 - [x] Pipeline foundation
-- [ ] Opportunity create/update
-- [ ] Lead convert to Customer
-- [ ] Activity create/complete
+- [x] Opportunity create/update
+- [x] Lead convert to Customer
+- [x] Activity create/complete
 
 ## Sprint 12 — Projects
 - [x] Project

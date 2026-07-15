@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.8 — CRM Workflow
+- Add CRM opportunity create and stage update workflow.
+- Add CRM activity create and complete workflow.
+- Add lead to customer conversion with audit log and generated customer code.
+- Add SQL Migration `supabase/phase-3.1.sql` with CRM update RLS and workflow database functions.
+- Update CRM dashboard and Activities page to use Service/Repository actions only.
+
 ## v0.16.7 — Purchase Payment
 - Add purchase order payment tracking with paid and balance amounts.
 - Add supplier payment posting to Accounting through Service/Repository and database functions.
