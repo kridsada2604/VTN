@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.16.0 — Sprint 16
+- เพิ่ม AI Assistant module
+- เพิ่ม AI conversation list/create/detail
+- เพิ่ม ERP insight foundation จาก Finance, Inventory, Marketplace และ Claims
+- เพิ่ม suggestion queue foundation
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ AI Assistant
+- เพิ่ม SQL Migration `supabase/phase-2.5.sql`
+- เพิ่มตาราง `ai_conversations`, `ai_messages`, `ai_suggestions`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ AI Assistant
+- เพิ่ม database functions `create_ai_conversation` และ `add_ai_message`
+
 ## v0.15.0 — Sprint 15
 - เพิ่ม Marketplace module
 - เพิ่ม Marketplace channel list/create

@@ -1,5 +1,18 @@
 # TODO
 
+## Sprint 16 — AI
+- [x] AI Assistant
+- [x] Conversation foundation
+- [x] ERP insight foundation
+- [x] Suggestion queue foundation
+- [x] Service Layer / Repository Layer / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [ ] OpenAI provider integration via Supabase Edge Function
+- [ ] Tool calling/action execution with permission checks
+- [ ] AI-generated dashboard summary
+- [ ] AI recommendation to task/action queue
+- [ ] Conversation follow-up message UI
+
 ## Sprint 15 — Marketplace
 - [x] Marketplace channel
 - [x] Marketplace order import foundation

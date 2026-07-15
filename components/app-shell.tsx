@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   Boxes,
+  Bot,
   Building2,
   ChevronRight,
   Globe2,
@@ -31,6 +32,7 @@ const nav = [
   ["/claims", "Claim", ShieldAlert],
   ["/pos", "POS", Store],
   ["/marketplace", "Marketplace", Globe2],
+  ["/ai", "AI Assistant", Bot],
   ["/accounting", "บัญชี", ReceiptText],
   ["/settings", "ตั้งค่า", Settings],
 ] as const;
@@ -66,7 +68,7 @@ export function AppShell({ children, email }: { children: React.ReactNode; email
             <p className="text-xs font-bold text-orange-600">VTN BUSINESS</p>
             <p className="font-bold">ระบบบริหารธุรกิจ</p>
           </div>
-          <div className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-bold text-orange-700">Sprint 15</div>
+          <div className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-bold text-orange-700">Sprint 16</div>
         </header>
         <main className="p-5 sm:p-8">{children}</main>
       </div>
