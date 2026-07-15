@@ -34,3 +34,15 @@ export async function receiveInvoicePayment(input: ReceivePaymentInput) {
   const companyId = await getCurrentCompanyId();
   return new InvoiceRepository(supabase).receivePayment(companyId, input);
 }
+
+export async function postInvoiceToAccounting(invoiceId: string) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new InvoiceRepository(supabase).postInvoiceToAccounting(companyId, invoiceId);
+}
+
+export async function postInvoicePaymentToAccounting(paymentId: string) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new InvoiceRepository(supabase).postPaymentToAccounting(companyId, paymentId);
+}

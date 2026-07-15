@@ -33,6 +33,7 @@ export type InvoiceDetail = {
   total_amount: number | string;
   paid_amount: number | string;
   balance_amount: number | string;
+  journal_entry_id: string | null;
   customers: {
     name: string;
     code: string;
@@ -61,6 +62,7 @@ export type InvoicePaymentRow = {
   amount: number | string;
   reference_no: string | null;
   notes: string | null;
+  journal_entry_id: string | null;
 };
 
 export type InvoiceEventRow = {
@@ -127,7 +129,7 @@ export class InvoiceRepository {
         .order("sort_order"),
       this.supabase
         .from("sales_invoice_payments")
-        .select("id,payment_no,payment_date,method,amount,reference_no,notes")
+        .select("id,payment_no,payment_date,method,amount,reference_no,notes,journal_entry_id")
         .eq("invoice_id", invoiceId)
         .order("payment_date", { ascending: false }),
       this.supabase
@@ -184,6 +186,26 @@ export class InvoiceRepository {
       p_amount: input.amount,
       p_reference_no: input.reference_no,
       p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async postInvoiceToAccounting(companyId: string, invoiceId: string) {
+    const { data, error } = await this.supabase.rpc("post_sales_invoice_to_accounting", {
+      p_company_id: companyId,
+      p_invoice_id: invoiceId,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async postPaymentToAccounting(companyId: string, paymentId: string) {
+    const { data, error } = await this.supabase.rpc("post_invoice_payment_to_accounting", {
+      p_company_id: companyId,
+      p_payment_id: paymentId,
     });
 
     if (error) throw error;

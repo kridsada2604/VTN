@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/sales/print-button";
 import { createInvoiceEmailDraft, formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getInvoiceDetail } from "@/lib/services/sales/invoice-service";
-import { receivePayment } from "../actions";
+import { postInvoiceAccountingAction, postPaymentAccountingAction, receivePayment } from "../actions";
 
 const statusLabel: Record<string, string> = {
   ISSUED: "ออกเอกสารแล้ว",
@@ -51,6 +51,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <a className="btn-secondary" href={emailLink}>
           ส่งอีเมล
         </a>
+        {!invoice.journal_entry_id && (
+          <form action={postInvoiceAccountingAction}>
+            <input type="hidden" name="invoice_id" value={invoice.id} />
+            <button className="btn-primary">Post Invoice</button>
+          </form>
+        )}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
@@ -187,6 +193,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                     {payment.payment_date} • {paymentMethodLabel[payment.method] ?? payment.method}
                   </p>
                   <p className="mt-1 font-black">฿{formatDocumentMoney(payment.amount)}</p>
+                  {!payment.journal_entry_id && (
+                    <form action={postPaymentAccountingAction} className="mt-3">
+                      <input type="hidden" name="invoice_id" value={invoice.id} />
+                      <input type="hidden" name="payment_id" value={payment.id} />
+                      <button className="btn-secondary btn-small">Post Payment</button>
+                    </form>
+                  )}
                 </div>
               ))}
               {!payments.length && <p className="text-sm text-gray-500">ยังไม่มีการรับชำระ</p>}

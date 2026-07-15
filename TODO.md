@@ -97,8 +97,8 @@
 - [ ] P/L
 - [ ] Balance Sheet
 - [ ] Cash Flow
-- [ ] เชื่อม Invoice posting อัตโนมัติ
-- [ ] เชื่อม Receive Payment posting อัตโนมัติ
+- [x] เชื่อม Invoice posting อัตโนมัติ
+- [x] เชื่อม Receive Payment posting อัตโนมัติ
 - [ ] เพิ่ม Journal Entry manual form
 - [ ] เพิ่มงบการเงินจาก account type
 

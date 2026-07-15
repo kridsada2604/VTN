@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.16.4 — Sales Accounting Posting
+- เพิ่ม posting Invoice เข้า Accounting
+- เพิ่ม posting Receive Payment เข้า Accounting
+- เพิ่ม journal link สำหรับ Invoice และ Payment เพื่อกันการ post ซ้ำ
+- เพิ่มปุ่ม Post Invoice และ Post Payment ในหน้า Invoice
+- เพิ่ม SQL Migration `supabase/phase-2.9.sql`
+- เพิ่ม database functions `post_sales_invoice_to_accounting` และ `post_invoice_payment_to_accounting`
+
 ## v0.16.3 — Quotation to Sales Order
 - เพิ่มการสร้าง Sales Order จาก Quotation ที่ Accepted แล้ว
 - เพิ่มการกันสร้าง Sales Order ซ้ำจาก Quotation เดิม
