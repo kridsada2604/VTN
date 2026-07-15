@@ -1,4 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
+import type { CreateJournalEntryInput } from "@/lib/validation/accounting/journal-entry";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -87,6 +88,33 @@ export class AccountingRepository {
 
     if (error) throw error;
     return (data ?? []) as JournalEntryRow[];
+  }
+
+  async getJournalFormOptions(companyId: string) {
+    const { data, error } = await this.supabase
+      .from("accounting_accounts")
+      .select("id,code,name,account_type,normal_balance,is_active")
+      .eq("company_id", companyId)
+      .eq("is_active", true)
+      .order("code");
+
+    if (error) throw error;
+    return (data ?? []) as AccountRow[];
+  }
+
+  async createJournalEntry(companyId: string, input: CreateJournalEntryInput) {
+    const lines = input.lines.map((line, index) => ({ ...line, sort_order: index + 1 }));
+    const { data, error } = await this.supabase.rpc("post_journal_entry", {
+      p_company_id: companyId,
+      p_entry_date: input.entry_date,
+      p_source_type: "manual_journal",
+      p_source_id: null,
+      p_memo: input.memo,
+      p_lines: lines,
+    });
+
+    if (error) throw error;
+    return data as string;
   }
 
   async getLedger(companyId: string) {

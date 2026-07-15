@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { getJournalEntries } from "@/lib/services/accounting/accounting-service";
 
@@ -6,7 +7,7 @@ export default async function Page() {
 
   return (
     <div>
-      <PageHeader eyebrow="ACCOUNTING" title="สมุดรายวัน" description="รายการ Journal Entry ที่ถูกบันทึกในระบบ" />
+      <PageHeader eyebrow="ACCOUNTING" title="สมุดรายวัน" description="รายการ Journal Entry ที่ถูกบันทึกในระบบ" action={<Link className="btn-primary" href="/accounting/journal/new">+ Manual Journal</Link>} />
       <section className="card table-wrap mt-6">
         <table className="data-table">
           <thead>

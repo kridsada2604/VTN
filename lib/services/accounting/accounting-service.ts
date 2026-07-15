@@ -1,6 +1,7 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { AccountingRepository } from "@/lib/repositories/accounting/accounting-repository";
 import { createClient } from "@/lib/supabase/server";
+import type { CreateJournalEntryInput } from "@/lib/validation/accounting/journal-entry";
 
 export async function getAccountingDashboard() {
   const supabase = await createClient();
@@ -12,6 +13,18 @@ export async function getJournalEntries() {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
   return new AccountingRepository(supabase).getJournalEntries(companyId);
+}
+
+export async function getJournalEntryFormOptions() {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new AccountingRepository(supabase).getJournalFormOptions(companyId);
+}
+
+export async function createManualJournalEntry(input: CreateJournalEntryInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new AccountingRepository(supabase).createJournalEntry(companyId, input);
 }
 
 export async function getLedger() {

@@ -99,7 +99,7 @@
 - [x] Cash Flow
 - [x] เชื่อม Invoice posting อัตโนมัติ
 - [x] เชื่อม Receive Payment posting อัตโนมัติ
-- [ ] เพิ่ม Journal Entry manual form
+- [x] เพิ่ม Journal Entry manual form
 - [ ] เพิ่มงบการเงินจาก account type
 
 ## Sprint 10 — Purchase

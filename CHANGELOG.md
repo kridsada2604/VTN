@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.6 — Manual Journal Entry
+- เพิ่ม Manual Journal Entry form
+- เพิ่ม validation ตรวจ Debit/Credit ให้สมดุล
+- เพิ่ม Service/Repository สำหรับสร้าง Journal Entry ผ่าน `post_journal_entry`
+- เพิ่มหน้า `/accounting/journal/new`
+- อัปเดตหน้า Journal ให้สร้างรายการ manual ได้
+
 ## v0.16.5 — Accounting Reports
 - เพิ่ม Profit / Loss report
 - เพิ่ม Balance Sheet report
