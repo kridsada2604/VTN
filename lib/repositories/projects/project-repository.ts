@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateProjectInput, CreateProjectTaskInput, UpdateProjectTaskInput } from "@/lib/validation/projects/project";
+import type { CreateProjectCostInput, CreateProjectInput, CreateProjectTaskInput, UpdateProjectTaskInput } from "@/lib/validation/projects/project";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -26,6 +26,15 @@ export type ProjectTaskRow = {
   sort_order: number;
 };
 
+export type ProjectCostRow = {
+  id: string;
+  cost_date: string;
+  cost_type: string;
+  description: string;
+  amount: number | string;
+  journal_entry_id: string | null;
+};
+
 export class ProjectRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -47,7 +56,7 @@ export class ProjectRepository {
   }
 
   async getById(companyId: string, projectId: string) {
-    const [project, tasks] = await Promise.all([
+    const [project, tasks, costs] = await Promise.all([
       this.supabase
         .from("projects")
         .select("id,project_no,name,status,start_date,end_date,budget_amount,actual_cost,revenue_amount,notes,customers(name)")
@@ -55,14 +64,17 @@ export class ProjectRepository {
         .eq("id", projectId)
         .maybeSingle(),
       this.supabase.from("project_tasks").select("id,title,status,due_date,estimated_hours,actual_hours,sort_order").eq("company_id", companyId).eq("project_id", projectId).order("sort_order"),
+      this.supabase.from("project_costs").select("id,cost_date,cost_type,description,amount,journal_entry_id").eq("company_id", companyId).eq("project_id", projectId).order("cost_date", { ascending: false }).limit(50),
     ]);
 
     if (project.error) throw project.error;
     if (tasks.error) throw tasks.error;
+    if (costs.error) throw costs.error;
 
     return {
       project: project.data as (ProjectRow & { notes: string | null }) | null,
       tasks: (tasks.data ?? []) as ProjectTaskRow[],
+      costs: (costs.data ?? []) as ProjectCostRow[],
     };
   }
 
@@ -103,6 +115,20 @@ export class ProjectRepository {
       p_due_date: input.due_date,
       p_estimated_hours: input.estimated_hours,
       p_actual_hours: input.actual_hours,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async createCost(companyId: string, input: CreateProjectCostInput) {
+    const { data, error } = await this.supabase.rpc("create_project_cost", {
+      p_company_id: companyId,
+      p_project_id: input.project_id,
+      p_cost_date: input.cost_date,
+      p_cost_type: input.cost_type,
+      p_description: input.description,
+      p_amount: input.amount,
     });
 
     if (error) throw error;

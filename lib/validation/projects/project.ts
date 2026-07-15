@@ -24,6 +24,14 @@ export type UpdateProjectTaskInput = {
   actual_hours: number;
 };
 
+export type CreateProjectCostInput = {
+  project_id: string;
+  cost_date: string;
+  cost_type: string;
+  description: string;
+  amount: number;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -74,5 +82,20 @@ export function parseProjectTaskUpdateForm(fd: FormData): UpdateProjectTaskInput
   if (!input.project_id) throw new Error("Project is required");
   if (!input.task_id) throw new Error("Task is required");
   if (input.estimated_hours < 0 || input.actual_hours < 0) throw new Error("Task hours must not be negative");
+  return input;
+}
+
+export function parseProjectCostForm(fd: FormData): CreateProjectCostInput {
+  const input: CreateProjectCostInput = {
+    project_id: text(fd, "project_id"),
+    cost_date: text(fd, "cost_date") || new Date().toISOString().slice(0, 10),
+    cost_type: text(fd, "cost_type") || "OTHER",
+    description: text(fd, "description"),
+    amount: numberOrZero(fd.get("amount")),
+  };
+
+  if (!input.project_id) throw new Error("Project is required");
+  if (!input.description) throw new Error("Cost description is required");
+  if (input.amount <= 0) throw new Error("Cost amount must be greater than zero");
   return input;
 }

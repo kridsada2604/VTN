@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17.0 — Project Cost Posting
+- Add project cost posting with automatic journal entry creation.
+- Add project cost account `6100` and journal link on project costs.
+- Update Project detail with cost posting form and project cost history.
+- Update project actual cost automatically when posting costs.
+- Add SQL Migration `supabase/phase-3.3.sql`.
+
 ## v0.16.9 — Project Task Workflow
 - Add project task create and update workflow.
 - Add project task status, due date, estimated hours, and actual hours editing.

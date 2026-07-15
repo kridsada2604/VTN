@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getProjectDetail } from "@/lib/services/projects/project-service";
-import { saveProjectTask, updateProjectTaskAction } from "../actions";
+import { saveProjectCost, saveProjectTask, updateProjectTaskAction } from "../actions";
 
 const statusLabel: Record<string, string> = {
   TODO: "To do",
@@ -12,9 +12,16 @@ const statusLabel: Record<string, string> = {
   BLOCKED: "Blocked",
 };
 
+const costTypeLabel: Record<string, string> = {
+  LABOR: "Labor",
+  MATERIAL: "Material",
+  EXPENSE: "Expense",
+  OTHER: "Other",
+};
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { project, tasks } = await getProjectDetail(id);
+  const { project, tasks, costs } = await getProjectDetail(id);
   if (!project) notFound();
 
   const completedTasks = tasks.filter((task) => task.status === "DONE").length;
@@ -83,6 +90,44 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <p className="mt-1">{project.notes}</p>
             </div>
           )}
+        </aside>
+      </section>
+
+      <section className="mt-6 grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div className="card table-wrap">
+          <div className="border-b p-4"><h2 className="font-black">Project Costs</h2></div>
+          <table className="data-table">
+            <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th><th>Accounting</th></tr></thead>
+            <tbody>
+              {costs.map((cost) => (
+                <tr key={cost.id}>
+                  <td>{cost.cost_date}</td>
+                  <td>{costTypeLabel[cost.cost_type] ?? cost.cost_type}</td>
+                  <td className="font-bold">{cost.description}</td>
+                  <td>{formatDocumentMoney(cost.amount)}</td>
+                  <td>{cost.journal_entry_id ? "Posted" : "Not posted"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!costs.length && <p className="p-6 text-gray-500">No project costs yet.</p>}
+        </div>
+
+        <aside className="card p-5">
+          <h2 className="font-black">Post Project Cost</h2>
+          <form action={saveProjectCost} className="mt-4 space-y-3">
+            <input type="hidden" name="project_id" value={project.id} />
+            <label><span className="label">Cost date</span><input className="input" type="date" name="cost_date" required defaultValue={new Date().toISOString().slice(0, 10)} /></label>
+            <label>
+              <span className="label">Type</span>
+              <select className="input" name="cost_type" defaultValue="OTHER">
+                {Object.entries(costTypeLabel).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label><span className="label">Description</span><input className="input" name="description" required /></label>
+            <label><span className="label">Amount</span><input className="input" type="number" min="0.01" step="0.01" name="amount" required /></label>
+            <button className="btn-primary w-full">Post Cost</button>
+          </form>
         </aside>
       </section>
     </div>

@@ -124,4 +124,4 @@
 - [x] Cost foundation
 - [x] Task create/update
 - [ ] Project billing
-- [ ] Project cost posting
+- [x] Project cost posting
