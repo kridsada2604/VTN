@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateProjectInput } from "@/lib/validation/projects/project";
+import type { CreateProjectInput, CreateProjectTaskInput, UpdateProjectTaskInput } from "@/lib/validation/projects/project";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -23,6 +23,7 @@ export type ProjectTaskRow = {
   due_date: string | null;
   estimated_hours: number | string;
   actual_hours: number | string;
+  sort_order: number;
 };
 
 export class ProjectRepository {
@@ -53,7 +54,7 @@ export class ProjectRepository {
         .eq("company_id", companyId)
         .eq("id", projectId)
         .maybeSingle(),
-      this.supabase.from("project_tasks").select("id,title,status,due_date,estimated_hours,actual_hours").eq("company_id", companyId).eq("project_id", projectId).order("sort_order"),
+      this.supabase.from("project_tasks").select("id,title,status,due_date,estimated_hours,actual_hours,sort_order").eq("company_id", companyId).eq("project_id", projectId).order("sort_order"),
     ]);
 
     if (project.error) throw project.error;
@@ -74,6 +75,34 @@ export class ProjectRepository {
       p_end_date: input.end_date,
       p_budget_amount: input.budget_amount,
       p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async createTask(companyId: string, input: CreateProjectTaskInput) {
+    const { data, error } = await this.supabase.rpc("create_project_task", {
+      p_company_id: companyId,
+      p_project_id: input.project_id,
+      p_title: input.title,
+      p_due_date: input.due_date,
+      p_estimated_hours: input.estimated_hours,
+      p_sort_order: input.sort_order,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async updateTask(companyId: string, input: UpdateProjectTaskInput) {
+    const { data, error } = await this.supabase.rpc("update_project_task", {
+      p_company_id: companyId,
+      p_task_id: input.task_id,
+      p_status: input.status,
+      p_due_date: input.due_date,
+      p_estimated_hours: input.estimated_hours,
+      p_actual_hours: input.actual_hours,
     });
 
     if (error) throw error;

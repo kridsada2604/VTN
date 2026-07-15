@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.9 — Project Task Workflow
+- Add project task create and update workflow.
+- Add project task status, due date, estimated hours, and actual hours editing.
+- Add project progress summary on Project detail.
+- Add SQL Migration `supabase/phase-3.2.sql` with task update RLS and task workflow database functions.
+- Keep Project UI routed through Service/Repository and validation layers.
+
 ## v0.16.8 — CRM Workflow
 - Add CRM opportunity create and stage update workflow.
 - Add CRM activity create and complete workflow.
