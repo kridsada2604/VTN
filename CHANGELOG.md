@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.2 — POS Session Workflow
+- Add POS session open and close workflow.
+- Add cash drawer summary with opening cash, cash sales, and expected cash.
+- Attach POS sales to the currently open warehouse session automatically.
+- Add SQL Migration `supabase/phase-3.5.sql` with POS session workflow functions.
+
 ## v0.17.1 — Claim Status Workflow
 - Add claim status update workflow with resolution notes.
 - Add claim timeline events and audit log for status changes.

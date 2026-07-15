@@ -46,8 +46,8 @@
 - [x] Stock deduction via Stock Movement
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
-- [ ] POS session open/close UI
-- [ ] Cash drawer summary
+- [x] POS session open/close UI
+- [x] Cash drawer summary
 - [ ] Barcode scanner optimized input
 - [ ] Refund / Void POS flow
 

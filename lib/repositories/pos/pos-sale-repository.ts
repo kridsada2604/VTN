@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreatePosSaleInput } from "@/lib/validation/pos/pos-sale";
+import type { ClosePosSessionInput, CreatePosSaleInput, OpenPosSessionInput } from "@/lib/validation/pos/pos-sale";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -13,6 +13,18 @@ export type PosSaleListRow = {
   change_amount: number | string;
   status: string;
   customers: { name: string }[] | null;
+  warehouses: { name: string }[] | null;
+};
+
+export type PosSessionRow = {
+  id: string;
+  warehouse_id: string;
+  opened_at: string;
+  closed_at: string | null;
+  opening_cash: number | string;
+  closing_cash: number | string | null;
+  status: string;
+  notes: string | null;
   warehouses: { name: string }[] | null;
 };
 
@@ -48,14 +60,29 @@ export class PosSaleRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
   async list(companyId: string) {
-    const { data, error } = await this.supabase
+    const [sales, sessions, warehouses] = await Promise.all([
+      this.supabase
       .from("pos_sales")
       .select("id,sale_no,sale_date,payment_method,total_amount,paid_amount,change_amount,status,customers(name),warehouses(name)")
       .eq("company_id", companyId)
-      .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false }),
+      this.supabase
+        .from("pos_sessions")
+        .select("id,warehouse_id,opened_at,closed_at,opening_cash,closing_cash,status,notes,warehouses(name)")
+        .eq("company_id", companyId)
+        .order("opened_at", { ascending: false }),
+      this.supabase.from("warehouses").select("id,code,name").eq("company_id", companyId).eq("is_active", true).order("name"),
+    ]);
 
-    if (error) throw error;
-    return (data ?? []) as PosSaleListRow[];
+    if (sales.error) throw sales.error;
+    if (sessions.error) throw sessions.error;
+    if (warehouses.error) throw warehouses.error;
+
+    return {
+      sales: (sales.data ?? []) as PosSaleListRow[],
+      sessions: (sessions.data ?? []) as PosSessionRow[],
+      warehouses: warehouses.data ?? [],
+    };
   }
 
   async getFormOptions(companyId: string) {
@@ -93,9 +120,19 @@ export class PosSaleRepository {
 
   async create(companyId: string, input: CreatePosSaleInput) {
     const items = input.items.map((item, index) => ({ ...item, sort_order: index + 1 }));
+    const { data: session } = await this.supabase
+      .from("pos_sessions")
+      .select("id")
+      .eq("company_id", companyId)
+      .eq("warehouse_id", input.warehouse_id)
+      .eq("status", "OPEN")
+      .order("opened_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
     const { data, error } = await this.supabase.rpc("create_pos_sale", {
       p_company_id: companyId,
-      p_session_id: null,
+      p_session_id: session?.id ?? null,
       p_warehouse_id: input.warehouse_id,
       p_customer_id: input.customer_id,
       p_sale_date: input.sale_date,
@@ -107,5 +144,29 @@ export class PosSaleRepository {
 
     if (error) throw error;
     return data as string;
+  }
+
+  async openSession(companyId: string, input: OpenPosSessionInput) {
+    const { data, error } = await this.supabase.rpc("open_pos_session", {
+      p_company_id: companyId,
+      p_warehouse_id: input.warehouse_id,
+      p_opening_cash: input.opening_cash,
+      p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async closeSession(companyId: string, input: ClosePosSessionInput) {
+    const { data, error } = await this.supabase.rpc("close_pos_session", {
+      p_company_id: companyId,
+      p_session_id: input.session_id,
+      p_closing_cash: input.closing_cash,
+      p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
   }
 }

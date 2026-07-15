@@ -18,6 +18,18 @@ export type CreatePosSaleInput = {
   items: PosSaleItemInput[];
 };
 
+export type OpenPosSessionInput = {
+  warehouse_id: string;
+  opening_cash: number;
+  notes: string | null;
+};
+
+export type ClosePosSessionInput = {
+  session_id: string;
+  closing_cash: number;
+  notes: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -60,5 +72,29 @@ export function parsePosSaleForm(fd: FormData): CreatePosSaleInput {
     throw new Error("กรุณาตรวจสอบสินค้า จำนวน ราคา ส่วนลด และภาษี");
   }
 
+  return input;
+}
+
+export function parseOpenPosSessionForm(fd: FormData): OpenPosSessionInput {
+  const input: OpenPosSessionInput = {
+    warehouse_id: text(fd, "warehouse_id"),
+    opening_cash: numberOrZero(fd.get("opening_cash")),
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.warehouse_id) throw new Error("Warehouse is required");
+  if (input.opening_cash < 0) throw new Error("Opening cash must not be negative");
+  return input;
+}
+
+export function parseClosePosSessionForm(fd: FormData): ClosePosSessionInput {
+  const input: ClosePosSessionInput = {
+    session_id: text(fd, "session_id"),
+    closing_cash: numberOrZero(fd.get("closing_cash")),
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.session_id) throw new Error("POS session is required");
+  if (input.closing_cash < 0) throw new Error("Closing cash must not be negative");
   return input;
 }
