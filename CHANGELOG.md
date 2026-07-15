@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.16.5 — Accounting Reports
+- เพิ่ม Profit / Loss report
+- เพิ่ม Balance Sheet report
+- เพิ่ม Cash Flow foundation
+- เพิ่ม accounting report calculations จาก posted journal ledger
+- อัปเดต Accounting hub ให้เข้า financial reports ได้
+- ไม่ต้องเพิ่ม migration เพราะใช้ Journal/Account schema เดิม
+
 ## v0.16.4 — Sales Accounting Posting
 - เพิ่ม posting Invoice เข้า Accounting
 - เพิ่ม posting Receive Payment เข้า Accounting

@@ -8,7 +8,9 @@ const modules = [
   ["/accounting/journal", "สมุดรายวัน", "รายการ Journal Entry ที่ถูก posted", Landmark],
   ["/accounting/ledger", "บัญชีแยกประเภท", "ดู debit/credit แยกบัญชี", BookOpen],
   ["/accounting/trial-balance", "งบทดลอง", "ตรวจยอด debit และ credit", Scale],
-  ["#", "รายงานการเงิน", "P/L, Balance Sheet และ Cash Flow ในรอบถัดไป", ChartNoAxesCombined],
+  ["/accounting/profit-loss", "Profit / Loss", "รายงานกำไรขาดทุน", ChartNoAxesCombined],
+  ["/accounting/balance-sheet", "Balance Sheet", "รายงานฐานะการเงิน", ChartNoAxesCombined],
+  ["/accounting/cash-flow", "Cash Flow", "รายงานกระแสเงินสด", ChartNoAxesCombined],
 ] as const;
 
 export default async function Page() {

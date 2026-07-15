@@ -94,9 +94,9 @@
 - [x] Journal
 - [x] Ledger
 - [x] Trial Balance
-- [ ] P/L
-- [ ] Balance Sheet
-- [ ] Cash Flow
+- [x] P/L
+- [x] Balance Sheet
+- [x] Cash Flow
 - [x] เชื่อม Invoice posting อัตโนมัติ
 - [x] เชื่อม Receive Payment posting อัตโนมัติ
 - [ ] เพิ่ม Journal Entry manual form

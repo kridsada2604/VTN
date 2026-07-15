@@ -25,3 +25,9 @@ export async function getTrialBalance() {
   const companyId = await getCurrentCompanyId();
   return new AccountingRepository(supabase).getTrialBalance(companyId);
 }
+
+export async function getFinancialReports() {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new AccountingRepository(supabase).getFinancialReports(companyId);
+}

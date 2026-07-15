@@ -38,6 +38,10 @@ export type TrialBalanceRow = {
   credit: number;
 };
 
+export type FinancialReportRow = TrialBalanceRow & {
+  amount: number;
+};
+
 export class AccountingRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -99,6 +103,45 @@ export class AccountingRepository {
 
   async getTrialBalance(companyId: string) {
     return this.toTrialBalance(await this.getLedger(companyId));
+  }
+
+  async getFinancialReports(companyId: string) {
+    const trialBalance = await this.getTrialBalance(companyId);
+    const profitLossRows: FinancialReportRow[] = trialBalance
+      .filter((row) => row.accountType === "REVENUE" || row.accountType === "EXPENSE")
+      .map((row) => ({
+        ...row,
+        amount: row.accountType === "REVENUE" ? row.credit - row.debit : row.debit - row.credit,
+      }));
+
+    const balanceSheetRows: FinancialReportRow[] = trialBalance
+      .filter((row) => row.accountType === "ASSET" || row.accountType === "LIABILITY" || row.accountType === "EQUITY")
+      .map((row) => ({
+        ...row,
+        amount: row.accountType === "ASSET" ? row.debit - row.credit : row.credit - row.debit,
+      }));
+
+    const revenue = profitLossRows.filter((row) => row.accountType === "REVENUE").reduce((sum, row) => sum + row.amount, 0);
+    const expense = profitLossRows.filter((row) => row.accountType === "EXPENSE").reduce((sum, row) => sum + row.amount, 0);
+    const assets = balanceSheetRows.filter((row) => row.accountType === "ASSET").reduce((sum, row) => sum + row.amount, 0);
+    const liabilities = balanceSheetRows.filter((row) => row.accountType === "LIABILITY").reduce((sum, row) => sum + row.amount, 0);
+    const equity = balanceSheetRows.filter((row) => row.accountType === "EQUITY").reduce((sum, row) => sum + row.amount, 0);
+    const cashMovement = balanceSheetRows.filter((row) => row.code === "1000").reduce((sum, row) => sum + row.amount, 0);
+
+    return {
+      profitLossRows,
+      balanceSheetRows,
+      totals: {
+        revenue,
+        expense,
+        netProfit: revenue - expense,
+        assets,
+        liabilities,
+        equity,
+        liabilitiesAndEquity: liabilities + equity,
+        cashMovement,
+      },
+    };
   }
 
   private toTrialBalance(lines: JournalLineRow[]): TrialBalanceRow[] {
