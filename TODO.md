@@ -1,5 +1,18 @@
 # TODO
 
+## Sprint 15 — Marketplace
+- [x] Marketplace channel
+- [x] Marketplace order import foundation
+- [x] Product mapping foundation
+- [x] Marketplace order timeline
+- [x] Service Layer / Repository Layer / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [ ] API connector ต่อ Shopee/Lazada/TikTok จริง
+- [ ] Auto sync orders ผ่าน Edge Function
+- [ ] Convert Marketplace Order → Sales Order / Delivery
+- [ ] Marketplace fee reconciliation
+- [ ] Unmapped SKU management page
+
 ## Sprint 14 — POS
 - [x] POS sale
 - [x] POS receipt print foundation

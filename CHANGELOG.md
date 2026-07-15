@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.15.0 — Sprint 15
+- เพิ่ม Marketplace module
+- เพิ่ม Marketplace channel list/create
+- เพิ่ม Marketplace order import list/create/detail
+- เพิ่ม product mapping foundation สำหรับ SKU Marketplace
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Marketplace
+- เพิ่ม SQL Migration `supabase/phase-2.4.sql`
+- เพิ่มตาราง `marketplace_channels`, `marketplace_product_mappings`, `marketplace_orders`, `marketplace_order_items`, `marketplace_order_events`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ Marketplace
+- เพิ่ม database functions `create_marketplace_channel` และ `import_marketplace_order`
+
 ## v0.14.0 — Sprint 14
 - เพิ่ม POS module
 - เพิ่ม POS sale list/create/detail และ receipt print
