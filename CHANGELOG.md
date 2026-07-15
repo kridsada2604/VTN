@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17.4 — POS Void and Refund
+- Add POS full bill void and refund workflow.
+- Reverse POS stock through stock movement when voiding or refunding.
+- Add POS receipt controls for Void Bill and Refund Full Bill.
+- Add adjustment status fields for reason, adjusted time, and stock reversal.
+- Add SQL Migration `supabase/phase-3.6.sql`.
+
 ## v0.17.3 — POS Terminal Foundation
 - Add full-screen POS Terminal route `/pos/terminal`.
 - Add barcode/SKU/product search input with Enter-to-add flow.

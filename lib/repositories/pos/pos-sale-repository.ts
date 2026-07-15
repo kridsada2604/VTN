@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { ClosePosSessionInput, CreatePosSaleInput, OpenPosSessionInput } from "@/lib/validation/pos/pos-sale";
+import type { ClosePosSessionInput, CreatePosSaleInput, OpenPosSessionInput, PosSaleAdjustmentInput } from "@/lib/validation/pos/pos-sale";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -41,6 +41,9 @@ export type PosSaleDetail = {
   paid_amount: number | string;
   change_amount: number | string;
   notes: string | null;
+  voided_at: string | null;
+  refund_reason: string | null;
+  reversal_stock_movement_id: string | null;
   customers: { name: string; phone: string | null }[] | null;
   warehouses: { name: string }[] | null;
 };
@@ -164,6 +167,28 @@ export class PosSaleRepository {
       p_session_id: input.session_id,
       p_closing_cash: input.closing_cash,
       p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async voidSale(companyId: string, input: PosSaleAdjustmentInput) {
+    const { data, error } = await this.supabase.rpc("void_pos_sale", {
+      p_company_id: companyId,
+      p_sale_id: input.sale_id,
+      p_reason: input.reason,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async refundSale(companyId: string, input: PosSaleAdjustmentInput) {
+    const { data, error } = await this.supabase.rpc("refund_pos_sale", {
+      p_company_id: companyId,
+      p_sale_id: input.sale_id,
+      p_reason: input.reason,
     });
 
     if (error) throw error;

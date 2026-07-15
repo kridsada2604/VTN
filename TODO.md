@@ -49,7 +49,7 @@
 - [x] POS session open/close UI
 - [x] Cash drawer summary
 - [x] Barcode scanner optimized input
-- [ ] Refund / Void POS flow
+- [x] Refund / Void POS flow
 
 ## Sprint 13 — Claim
 - [x] Claim

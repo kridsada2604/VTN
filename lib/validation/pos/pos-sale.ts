@@ -30,6 +30,11 @@ export type ClosePosSessionInput = {
   notes: string | null;
 };
 
+export type PosSaleAdjustmentInput = {
+  sale_id: string;
+  reason: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -96,5 +101,15 @@ export function parseClosePosSessionForm(fd: FormData): ClosePosSessionInput {
 
   if (!input.session_id) throw new Error("POS session is required");
   if (input.closing_cash < 0) throw new Error("Closing cash must not be negative");
+  return input;
+}
+
+export function parsePosSaleAdjustmentForm(fd: FormData): PosSaleAdjustmentInput {
+  const input: PosSaleAdjustmentInput = {
+    sale_id: text(fd, "sale_id"),
+    reason: text(fd, "reason") || null,
+  };
+
+  if (!input.sale_id) throw new Error("POS sale is required");
   return input;
 }
