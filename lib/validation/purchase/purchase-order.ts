@@ -34,6 +34,15 @@ export type ReceivePurchaseOrderInput = {
   items: PurchaseReceiveItemInput[];
 };
 
+export type PayPurchaseOrderInput = {
+  purchase_order_id: string;
+  payment_date: string;
+  method: string;
+  amount: number;
+  reference_no: string | null;
+  notes: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -113,5 +122,21 @@ export function parseReceivePurchaseOrderForm(fd: FormData): ReceivePurchaseOrde
     throw new Error("กรุณาตรวจสอบรายการรับสินค้า");
   }
 
+  return input;
+}
+
+export function parsePayPurchaseOrderForm(fd: FormData): PayPurchaseOrderInput {
+  const input = {
+    purchase_order_id: text(fd, "purchase_order_id"),
+    payment_date: text(fd, "payment_date"),
+    method: text(fd, "method") || "BANK_TRANSFER",
+    amount: numberOrZero(fd.get("amount")),
+    reference_no: text(fd, "reference_no") || null,
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.purchase_order_id) throw new Error("ไม่พบ Purchase Order");
+  if (!input.payment_date) throw new Error("กรุณาระบุวันที่จ่ายเงิน");
+  if (input.amount <= 0) throw new Error("ยอดจ่ายต้องมากกว่า 0");
   return input;
 }

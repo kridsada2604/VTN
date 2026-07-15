@@ -1,7 +1,7 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { PurchaseOrderRepository } from "@/lib/repositories/purchase/purchase-order-repository";
 import { createClient } from "@/lib/supabase/server";
-import type { CreatePurchaseOrderInput, ReceivePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
+import type { CreatePurchaseOrderInput, PayPurchaseOrderInput, ReceivePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
 import { computePurchaseOrderItems } from "./purchase-order-calculator";
 
 export async function getPurchaseOrders() {
@@ -39,4 +39,16 @@ export async function receivePurchaseOrder(input: ReceivePurchaseOrderInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
   return new PurchaseOrderRepository(supabase).receive(companyId, input);
+}
+
+export async function postPurchaseOrderToAccounting(purchaseOrderId: string) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new PurchaseOrderRepository(supabase).postToAccounting(companyId, purchaseOrderId);
+}
+
+export async function payPurchaseOrder(input: PayPurchaseOrderInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new PurchaseOrderRepository(supabase).pay(companyId, input);
 }

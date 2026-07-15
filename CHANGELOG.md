@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.7 — Purchase Payment
+- Add purchase order payment tracking with paid and balance amounts.
+- Add supplier payment posting to Accounting through Service/Repository and database functions.
+- Add purchase order accounting posting for received purchase orders.
+- Add Purchase Order detail payment panel, payment history, accounting status, and timeline.
+- Add SQL Migration `supabase/phase-3.0.sql` with RLS, audit log, payment table, and input VAT account.
+
 ## v0.16.6 — Manual Journal Entry
 - เพิ่ม Manual Journal Entry form
 - เพิ่ม validation ตรวจ Debit/Credit ให้สมดุล

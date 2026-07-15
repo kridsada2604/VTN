@@ -1,6 +1,6 @@
 import type { createClient } from "@/lib/supabase/server";
 import type { PurchaseOrderComputedItem, PurchaseOrderTotals } from "@/lib/services/purchase/purchase-order-calculator";
-import type { CreatePurchaseOrderInput, ReceivePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
+import type { CreatePurchaseOrderInput, PayPurchaseOrderInput, ReceivePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -11,6 +11,9 @@ export type PurchaseOrderListRow = {
   expected_date: string | null;
   status: string;
   total_amount: number | string;
+  paid_amount: number | string;
+  balance_amount: number | string;
+  journal_entry_id: string | null;
   suppliers: { name: string }[] | null;
 };
 
@@ -35,13 +38,30 @@ export type PurchaseOrderItemRow = {
   quantity_received?: number | string;
 };
 
+export type PurchasePaymentRow = {
+  id: string;
+  payment_no: string;
+  payment_date: string;
+  method: string;
+  amount: number | string;
+  reference_no: string | null;
+  journal_entry_id: string | null;
+};
+
+export type PurchaseOrderEventRow = {
+  id: string;
+  event_type: string;
+  message: string | null;
+  created_at: string;
+};
+
 export class PurchaseOrderRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
   async list(companyId: string) {
     const { data, error } = await this.supabase
       .from("purchase_orders")
-      .select("id,document_no,order_date,expected_date,status,total_amount,suppliers(name)")
+      .select("id,document_no,order_date,expected_date,status,total_amount,paid_amount,balance_amount,journal_entry_id,suppliers(name)")
       .eq("company_id", companyId)
       .order("created_at", { ascending: false });
 
@@ -65,7 +85,7 @@ export class PurchaseOrderRepository {
   }
 
   async getById(companyId: string, purchaseOrderId: string) {
-    const [order, items] = await Promise.all([
+    const [order, items, payments, events] = await Promise.all([
       this.supabase
         .from("purchase_orders")
         .select("*,suppliers(code,name,tax_id,phone,email,address)")
@@ -73,14 +93,28 @@ export class PurchaseOrderRepository {
         .eq("id", purchaseOrderId)
         .maybeSingle(),
       this.supabase.from("purchase_order_items").select("id,product_id,description,quantity,unit_cost,line_discount,line_tax,line_total,quantity_received").eq("purchase_order_id", purchaseOrderId).order("sort_order"),
+      this.supabase
+        .from("purchase_order_payments")
+        .select("id,payment_no,payment_date,method,amount,reference_no,journal_entry_id")
+        .eq("purchase_order_id", purchaseOrderId)
+        .order("payment_date", { ascending: false }),
+      this.supabase
+        .from("purchase_order_events")
+        .select("id,event_type,message,created_at")
+        .eq("purchase_order_id", purchaseOrderId)
+        .order("created_at", { ascending: false }),
     ]);
 
     if (order.error) throw order.error;
     if (items.error) throw items.error;
+    if (payments.error) throw payments.error;
+    if (events.error) throw events.error;
 
     return {
       order: order.data as PurchaseOrderDetail | null,
       items: (items.data ?? []) as PurchaseOrderItemRow[],
+      payments: (payments.data ?? []) as PurchasePaymentRow[],
+      events: (events.data ?? []) as PurchaseOrderEventRow[],
     };
   }
 
@@ -125,6 +159,31 @@ export class PurchaseOrderRepository {
       p_receipt_date: input.receipt_date,
       p_notes: input.notes,
       p_items: input.items.map((item, index) => ({ ...item, sort_order: index })),
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async postToAccounting(companyId: string, purchaseOrderId: string) {
+    const { data, error } = await this.supabase.rpc("post_purchase_order_to_accounting", {
+      p_company_id: companyId,
+      p_purchase_order_id: purchaseOrderId,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async pay(companyId: string, input: PayPurchaseOrderInput) {
+    const { data, error } = await this.supabase.rpc("pay_purchase_order", {
+      p_company_id: companyId,
+      p_purchase_order_id: input.purchase_order_id,
+      p_payment_date: input.payment_date,
+      p_method: input.method,
+      p_amount: input.amount,
+      p_reference_no: input.reference_no,
+      p_notes: input.notes,
     });
 
     if (error) throw error;

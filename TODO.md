@@ -106,9 +106,9 @@
 - [x] Supplier
 - [x] PO
 - [x] Receive
-- [ ] Payment
+- [x] Payment
 - [x] เชื่อม PO Receive เข้ากับ Stock Movement
-- [ ] เชื่อม Supplier Payment เข้ากับ Accounting
+- [x] เชื่อม Supplier Payment เข้ากับ Accounting
 
 ## Sprint 11 — CRM
 - [x] Lead
