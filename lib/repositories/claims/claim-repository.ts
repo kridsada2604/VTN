@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateClaimInput, UpdateClaimStatusInput } from "@/lib/validation/claims/claim";
+import type { CreateClaimInput, CreateClaimResolutionInput, UpdateClaimStatusInput } from "@/lib/validation/claims/claim";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -20,6 +20,18 @@ export type ClaimEventRow = {
   event_type: string;
   message: string | null;
   created_at: string;
+};
+
+export type ClaimResolutionRow = {
+  id: string;
+  action_type: string;
+  quantity: number | string;
+  amount: number | string;
+  notes: string | null;
+  stock_movement_id: string | null;
+  created_at: string;
+  products: { sku: string; name: string }[] | null;
+  warehouses: { name: string }[] | null;
 };
 
 export class ClaimRepository {
@@ -49,7 +61,7 @@ export class ClaimRepository {
   }
 
   async getById(companyId: string, claimId: string) {
-    const [claim, events] = await Promise.all([
+    const [claim, events, resolutions, products, warehouses] = await Promise.all([
       this.supabase
         .from("claims")
         .select("id,claim_no,claim_date,claim_type,priority,status,subject,description,resolution,customers(name),products(sku,name)")
@@ -57,14 +69,23 @@ export class ClaimRepository {
         .eq("id", claimId)
         .maybeSingle(),
       this.supabase.from("claim_events").select("id,event_type,message,created_at").eq("claim_id", claimId).order("created_at", { ascending: false }),
+      this.supabase.from("claim_resolutions").select("id,action_type,quantity,amount,notes,stock_movement_id,created_at,products(sku,name),warehouses(name)").eq("claim_id", claimId).order("created_at", { ascending: false }),
+      this.supabase.from("products").select("id,sku,name").eq("company_id", companyId).eq("is_active", true).order("name"),
+      this.supabase.from("warehouses").select("id,code,name").eq("company_id", companyId).eq("is_active", true).order("name"),
     ]);
 
     if (claim.error) throw claim.error;
     if (events.error) throw events.error;
+    if (resolutions.error) throw resolutions.error;
+    if (products.error) throw products.error;
+    if (warehouses.error) throw warehouses.error;
 
     return {
       claim: claim.data as (ClaimRow & { description: string | null; resolution: string | null }) | null,
       events: (events.data ?? []) as ClaimEventRow[],
+      resolutions: (resolutions.data ?? []) as ClaimResolutionRow[],
+      products: products.data ?? [],
+      warehouses: warehouses.data ?? [],
     };
   }
 
@@ -90,6 +111,22 @@ export class ClaimRepository {
       p_claim_id: input.claim_id,
       p_status: input.status,
       p_resolution: input.resolution,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async createResolution(companyId: string, input: CreateClaimResolutionInput) {
+    const { data, error } = await this.supabase.rpc("create_claim_resolution", {
+      p_company_id: companyId,
+      p_claim_id: input.claim_id,
+      p_action_type: input.action_type,
+      p_warehouse_id: input.warehouse_id,
+      p_product_id: input.product_id,
+      p_quantity: input.quantity,
+      p_amount: input.amount,
+      p_notes: input.notes,
     });
 
     if (error) throw error;

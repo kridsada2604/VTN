@@ -57,7 +57,7 @@
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Claim status workflow actions
-- [ ] Replacement / Refund / Credit Note flow
+- [x] Replacement / Refund / Credit Note flow
 - [ ] Warranty policy
 
 ## Sprint 7 — Invoice / Receive Payment / PDF / Email / Document Engine

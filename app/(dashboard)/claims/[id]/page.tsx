@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { getClaimDetail } from "@/lib/services/claims/claim-service";
-import { updateClaimStatusAction } from "../actions";
+import { createClaimResolutionAction, updateClaimStatusAction } from "../actions";
 
 const statusLabel: Record<string, string> = {
   OPEN: "Open",
@@ -15,7 +15,7 @@ const statusLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { claim, events } = await getClaimDetail(id);
+  const { claim, events, resolutions, products, warehouses } = await getClaimDetail(id);
   if (!claim) notFound();
 
   return (
@@ -39,6 +39,41 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
         <aside className="space-y-6">
           <section className="card p-5">
+            <h2 className="font-black">Resolution Action</h2>
+            <form action={createClaimResolutionAction} className="mt-4 space-y-3">
+              <input type="hidden" name="claim_id" value={claim.id} />
+              <label>
+                <span className="label">Action</span>
+                <select className="input" name="action_type" defaultValue="REPLACEMENT">
+                  <option value="REPLACEMENT">Replacement</option>
+                  <option value="REFUND">Refund</option>
+                  <option value="CREDIT_NOTE">Credit Note</option>
+                </select>
+              </label>
+              <label>
+                <span className="label">Warehouse for replacement</span>
+                <select className="input" name="warehouse_id" defaultValue={warehouses[0]?.id ?? ""}>
+                  <option value="">No warehouse</option>
+                  {warehouses.map((warehouse) => <option key={warehouse.id} value={warehouse.id}>{warehouse.code} - {warehouse.name}</option>)}
+                </select>
+              </label>
+              <label>
+                <span className="label">Replacement product</span>
+                <select className="input" name="product_id" defaultValue="">
+                  <option value="">No product</option>
+                  {products.map((product) => <option key={product.id} value={product.id}>{product.sku} - {product.name}</option>)}
+                </select>
+              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label><span className="label">Quantity</span><input className="input" type="number" min="0" step="0.0001" name="quantity" defaultValue="0" /></label>
+                <label><span className="label">Refund / Credit amount</span><input className="input" type="number" min="0" step="0.01" name="amount" defaultValue="0" /></label>
+              </div>
+              <label><span className="label">Notes</span><textarea className="input textarea" name="notes" /></label>
+              <button className="btn-primary w-full">Create Resolution</button>
+            </form>
+          </section>
+
+          <section className="card p-5">
             <h2 className="font-black">Workflow</h2>
             <form action={updateClaimStatusAction} className="mt-4 space-y-3">
               <input type="hidden" name="claim_id" value={claim.id} />
@@ -51,6 +86,23 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <label><span className="label">Resolution</span><textarea className="input textarea" name="resolution" defaultValue={claim.resolution ?? ""} /></label>
               <button className="btn-primary w-full">Update Claim</button>
             </form>
+          </section>
+
+          <section className="card p-5">
+            <h2 className="font-black">Resolution History</h2>
+            <div className="mt-4 space-y-3">
+              {resolutions.map((resolution) => (
+                <div key={resolution.id} className="rounded-xl border border-gray-200 p-3">
+                  <p className="font-bold">{resolution.action_type}</p>
+                  <p className="text-sm text-gray-500">{new Date(resolution.created_at).toLocaleString("th-TH")}</p>
+                  <p className="mt-1 text-sm">Product: {resolution.products?.[0]?.name ?? "-"}</p>
+                  <p className="text-sm">Qty: {resolution.quantity} / Amount: {resolution.amount}</p>
+                  <p className="text-sm">Stock: {resolution.stock_movement_id ? "Posted" : "-"}</p>
+                  {resolution.notes && <p className="mt-2 text-sm text-gray-600">{resolution.notes}</p>}
+                </div>
+              ))}
+              {!resolutions.length && <p className="text-sm text-gray-500">No resolution actions yet.</p>}
+            </div>
           </section>
 
           <section className="card p-5">

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.6 — Claim Resolution Actions
+- Add claim replacement, refund, and credit note resolution workflow.
+- Add claim resolution history and resolution action form.
+- Post replacement stock through Stock Movement.
+- Add SQL Migration `supabase/phase-3.8.sql` with claim resolution table, RLS, audit log, and workflow function.
+
 ## v0.17.5 — Project Billing
 - Add project invoice creation workflow.
 - Link sales invoices to projects through `project_id`.
