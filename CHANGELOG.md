@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.14.0 — Sprint 14
+- เพิ่ม POS module
+- เพิ่ม POS sale list/create/detail และ receipt print
+- เพิ่มการรับชำระเงิน POS แบบ paid sale
+- เพิ่มการตัดสต๊อกอัตโนมัติผ่าน `post_stock_movement`
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ POS
+- เพิ่ม SQL Migration `supabase/phase-2.3.sql`
+- เพิ่มตาราง `pos_sessions`, `pos_sales`, `pos_sale_items`, `pos_payments`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ POS
+- เพิ่ม database function `create_pos_sale`
+
 ## v0.13.0 — Sprint 13
 - เพิ่ม Claims module
 - เพิ่ม Claim list/create/detail

@@ -1,5 +1,17 @@
 # TODO
 
+## Sprint 14 — POS
+- [x] POS sale
+- [x] POS receipt print foundation
+- [x] POS payment foundation
+- [x] Stock deduction via Stock Movement
+- [x] Service Layer / Repository Layer / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [ ] POS session open/close UI
+- [ ] Cash drawer summary
+- [ ] Barcode scanner optimized input
+- [ ] Refund / Void POS flow
+
 ## Sprint 13 — Claim
 - [x] Claim
 - [x] Claim timeline foundation
