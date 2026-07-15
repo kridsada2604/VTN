@@ -1,7 +1,7 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { SalesOrderRepository } from "@/lib/repositories/sales/sales-order-repository";
 import { createClient } from "@/lib/supabase/server";
-import type { CreateSalesOrderInput, DeliverSalesOrderInput, ReserveSalesOrderInput } from "@/lib/validation/sales/sales-order";
+import type { CreateSalesOrderInput, DeliverSalesOrderInput, InvoiceSalesOrderInput, ReserveSalesOrderInput } from "@/lib/validation/sales/sales-order";
 import { computeSalesOrderItems } from "./sales-order-calculator";
 
 export async function getSalesOrders() {
@@ -39,4 +39,10 @@ export async function deliverSalesOrder(input: DeliverSalesOrderInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
   return new SalesOrderRepository(supabase).deliver(companyId, input);
+}
+
+export async function createInvoiceFromSalesOrder(input: InvoiceSalesOrderInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new SalesOrderRepository(supabase).createInvoice(companyId, input);
 }

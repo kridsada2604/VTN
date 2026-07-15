@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createSalesOrder, deliverSalesOrder, reserveSalesOrder } from "@/lib/services/sales/sales-order-service";
-import { parseDeliverSalesOrderForm, parseReserveSalesOrderForm, parseSalesOrderForm } from "@/lib/validation/sales/sales-order";
+import { createInvoiceFromSalesOrder, createSalesOrder, deliverSalesOrder, reserveSalesOrder } from "@/lib/services/sales/sales-order-service";
+import { parseDeliverSalesOrderForm, parseInvoiceSalesOrderForm, parseReserveSalesOrderForm, parseSalesOrderForm } from "@/lib/validation/sales/sales-order";
 
 export async function saveSalesOrder(fd: FormData) {
   const id = await createSalesOrder(parseSalesOrderForm(fd));
@@ -29,4 +29,12 @@ export async function deliverSalesOrderAction(fd: FormData) {
   revalidatePath("/inventory");
   revalidatePath("/inventory/stock-card");
   redirect(`/sales/orders/${input.sales_order_id}`);
+}
+
+export async function createInvoiceFromSalesOrderAction(fd: FormData) {
+  const invoiceId = await createInvoiceFromSalesOrder(parseInvoiceSalesOrderForm(fd));
+  revalidatePath("/sales/orders");
+  revalidatePath("/sales/invoices");
+  revalidatePath("/sales");
+  redirect(`/sales/invoices/${invoiceId}`);
 }

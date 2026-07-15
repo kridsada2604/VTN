@@ -1,6 +1,6 @@
 import type { createClient } from "@/lib/supabase/server";
 import type { SalesOrderComputedItem } from "@/lib/services/sales/sales-order-calculator";
-import type { CreateSalesOrderInput, DeliverSalesOrderInput, ReserveSalesOrderInput } from "@/lib/validation/sales/sales-order";
+import type { CreateSalesOrderInput, DeliverSalesOrderInput, InvoiceSalesOrderInput, ReserveSalesOrderInput } from "@/lib/validation/sales/sales-order";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -142,6 +142,19 @@ export class SalesOrderRepository {
       p_company_id: companyId,
       p_sales_order_id: input.sales_order_id,
       p_delivery_date: input.delivery_date,
+      p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return data as string;
+  }
+
+  async createInvoice(companyId: string, input: InvoiceSalesOrderInput) {
+    const { data, error } = await this.supabase.rpc("create_invoice_from_sales_order", {
+      p_company_id: companyId,
+      p_sales_order_id: input.sales_order_id,
+      p_invoice_date: input.invoice_date,
+      p_due_date: input.due_date,
       p_notes: input.notes,
     });
 

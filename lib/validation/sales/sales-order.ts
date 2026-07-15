@@ -29,6 +29,13 @@ export type DeliverSalesOrderInput = {
   notes: string | null;
 };
 
+export type InvoiceSalesOrderInput = {
+  sales_order_id: string;
+  invoice_date: string;
+  due_date: string | null;
+  notes: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -94,5 +101,18 @@ export function parseDeliverSalesOrderForm(fd: FormData): DeliverSalesOrderInput
 
   if (!input.sales_order_id) throw new Error("ไม่พบ Sales Order");
   if (!input.delivery_date) throw new Error("กรุณาระบุวันที่ส่งของ");
+  return input;
+}
+
+export function parseInvoiceSalesOrderForm(fd: FormData): InvoiceSalesOrderInput {
+  const input = {
+    sales_order_id: text(fd, "sales_order_id"),
+    invoice_date: text(fd, "invoice_date"),
+    due_date: text(fd, "due_date") || null,
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.sales_order_id) throw new Error("ไม่พบ Sales Order");
+  if (!input.invoice_date) throw new Error("กรุณาระบุวันที่ใบแจ้งหนี้");
   return input;
 }

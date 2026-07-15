@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.2 — Sales Order to Invoice
+- เพิ่มการสร้าง Invoice จาก Sales Order ที่ส่งของแล้ว
+- เพิ่มการกันออก Invoice ซ้ำจาก Sales Order เดิม
+- เพิ่ม source link `sales_order_id` และ `sales_order_item_id` ใน Invoice
+- เพิ่ม SQL Migration `supabase/phase-2.7.sql`
+- เพิ่ม database function `create_invoice_from_sales_order`
+
 ## v0.16.1 — Sales Fulfillment
 - เพิ่ม Sales Order foundation
 - เพิ่ม Sales Order list/create/detail

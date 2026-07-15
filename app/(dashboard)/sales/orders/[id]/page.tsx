@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { getSalesOrderDetail } from "@/lib/services/sales/sales-order-service";
-import { deliverSalesOrderAction, reserveSalesOrderAction } from "../actions";
+import { createInvoiceFromSalesOrderAction, deliverSalesOrderAction, reserveSalesOrderAction } from "../actions";
 
 const money = (value: number | string) => Number(value).toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
@@ -32,6 +32,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <input type="hidden" name="sales_order_id" value={order.id} />
             <input className="input" type="date" name="delivery_date" defaultValue={today} required />
             <button className="btn-primary">Delivery</button>
+          </form>
+        )}
+        {order.status === "DELIVERED" && (
+          <form action={createInvoiceFromSalesOrderAction} className="flex gap-2">
+            <input type="hidden" name="sales_order_id" value={order.id} />
+            <input className="input" type="date" name="invoice_date" defaultValue={today} required />
+            <button className="btn-primary">Create Invoice</button>
           </form>
         )}
       </div>
