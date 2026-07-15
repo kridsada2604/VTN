@@ -48,7 +48,7 @@
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] POS session open/close UI
 - [x] Cash drawer summary
-- [ ] Barcode scanner optimized input
+- [x] Barcode scanner optimized input
 - [ ] Refund / Void POS flow
 
 ## Sprint 13 — Claim

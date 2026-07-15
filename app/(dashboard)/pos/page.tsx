@@ -19,7 +19,7 @@ export default async function Page() {
         eyebrow="POS"
         title="Point of Sale"
         description="POS sales, sessions, cash drawer, and stock deduction"
-        action={<Link className="btn-primary" href="/pos/sales/new">+ New POS Sale</Link>}
+        action={<div className="flex gap-2"><Link className="btn-secondary" href="/pos/sales/new">ERP Sale Form</Link><Link className="btn-primary" href="/pos/terminal">Open Terminal</Link></div>}
       />
 
       <section className="mt-6 grid gap-4 md:grid-cols-4">

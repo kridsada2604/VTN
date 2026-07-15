@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17.3 — POS Terminal Foundation
+- Add full-screen POS Terminal route `/pos/terminal`.
+- Add barcode/SKU/product search input with Enter-to-add flow.
+- Add cashier cart with quantity controls, product tiles, payment method buttons, paid amount, and change calculation.
+- Keep POS Terminal creating sales through the existing Service/Repository server action.
+- Add POS dashboard entry point to Terminal while keeping the ERP sale form available.
+
 ## v0.17.2 — POS Session Workflow
 - Add POS session open and close workflow.
 - Add cash drawer summary with opening cash, cash sales, and expected cash.
