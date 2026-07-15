@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.16.1 — Sales Fulfillment
+- เพิ่ม Sales Order foundation
+- เพิ่ม Sales Order list/create/detail
+- เพิ่ม Reserve Stock จาก Sales Order
+- เพิ่ม Delivery จาก Sales Order และตัดสต๊อกผ่าน `post_stock_movement`
+- เพิ่ม Service Layer, Repository Layer และ Validation สำหรับ Sales Order
+- เพิ่ม SQL Migration `supabase/phase-2.6.sql`
+- เพิ่มตาราง `sales_orders`, `sales_order_items`, `sales_deliveries`, `sales_delivery_items`, `sales_order_events`
+- เพิ่ม RLS, Permission และ Audit Log สำหรับ Sales fulfillment
+- เพิ่ม database functions `create_sales_order`, `reserve_sales_order_stock` และ `deliver_sales_order`
+
 ## v0.16.0 — Sprint 16
 - เพิ่ม AI Assistant module
 - เพิ่ม AI conversation list/create/detail

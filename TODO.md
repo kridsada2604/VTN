@@ -1,5 +1,18 @@
 # TODO
 
+## Sales Fulfillment
+- [x] Sales Order
+- [x] Reserve Stock
+- [x] Delivery
+- [x] Stock deduction via Stock Movement
+- [x] Service Layer / Repository Layer / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [ ] Convert Quotation → Sales Order
+- [ ] Convert Sales Order → Invoice
+- [ ] Partial delivery
+- [ ] Delivery print/PDF
+- [ ] Backorder flow
+
 ## Sprint 16 — AI
 - [x] AI Assistant
 - [x] Conversation foundation

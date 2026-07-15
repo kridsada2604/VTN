@@ -6,7 +6,7 @@ import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 
 const modules = [
   ["/sales/quotations", "ใบเสนอราคา", "สร้างและติดตามใบเสนอราคา", FileText, true],
-  ["#", "ใบสั่งขาย", "รับคำสั่งซื้อก่อนจองสต๊อก", ShoppingBag, false],
+  ["/sales/orders", "ใบสั่งขาย", "รับคำสั่งซื้อ จองสต๊อก และส่งของ", ShoppingBag, true],
   ["/sales/invoices", "ใบแจ้งหนี้", "ออกเอกสาร PDF และติดตามยอดค้าง", Receipt, true],
   ["/sales/invoices", "รับชำระเงิน", "บันทึกเงินสด โอน เช็ค และบัตรเครดิต", CreditCard, true],
 ] as const;
