@@ -24,7 +24,7 @@
 - [ ] Tool calling/action execution with permission checks
 - [x] AI-generated dashboard summary
 - [x] AI recommendation to task/action queue
-- [ ] Conversation follow-up message UI
+- [x] Conversation follow-up message UI
 
 ## Sprint 15 — Marketplace
 - [x] Marketplace channel

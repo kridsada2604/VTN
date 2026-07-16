@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateAiConversationInput } from "@/lib/validation/ai/ai";
+import type { AddAiConversationMessageInput, CreateAiConversationInput } from "@/lib/validation/ai/ai";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -183,5 +183,16 @@ export class AiRepository {
 
     if (error) throw error;
     return Number(data ?? 0);
+  }
+
+  async addMessage(companyId: string, input: AddAiConversationMessageInput) {
+    const { data, error } = await this.supabase.rpc("add_ai_conversation_message", {
+      p_company_id: companyId,
+      p_conversation_id: input.conversation_id,
+      p_message: input.message,
+    });
+
+    if (error) throw error;
+    return String(data);
   }
 }

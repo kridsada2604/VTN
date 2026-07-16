@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.8 — AI Conversation Follow-up
+- Add follow-up message form to AI conversation detail.
+- Add Service/Repository action and Supabase RPC to append messages.
+- Add placeholder assistant response until OpenAI provider is connected.
+- Add SQL Migration `supabase/phase-4.8.sql`.
+
 ## v0.18.7 — AI Recommendation Queue
 - Add AI recommendation generation into suggestion queue.
 - Add Service/Repository action and Supabase RPC for ERP signal recommendations.
