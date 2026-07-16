@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AiConversationForm } from "@/components/ai/ai-conversation-form";
 import { PageHeader } from "@/components/page-header";
 import { getAiDashboard } from "@/lib/services/ai/ai-service";
-import { generateAiRecommendationQueue, startAiConversation } from "./actions";
+import { createAiActionRequestFromForm, generateAiRecommendationQueue, reviewAiActionRequestFromForm, startAiConversation } from "./actions";
 
 const priorityClass: Record<string, string> = {
   URGENT: "text-red-700",
@@ -12,7 +12,7 @@ const priorityClass: Record<string, string> = {
 };
 
 export default async function Page() {
-  const { conversations, suggestions, insights, summary } = await getAiDashboard();
+  const { conversations, suggestions, actionRequests, insights, summary } = await getAiDashboard();
 
   return (
     <div>
@@ -86,10 +86,71 @@ export default async function Page() {
             </table>
             {!suggestions.length && <p className="p-6 text-gray-500">No saved suggestions yet.</p>}
           </section>
+
+          <section className="card table-wrap">
+            <div className="border-b p-4"><h2 className="font-black">AI Action Approval Queue</h2></div>
+            <table className="data-table">
+              <thead><tr><th>Action</th><th>Module</th><th>Status</th><th>Review</th></tr></thead>
+              <tbody>
+                {actionRequests.map((request) => (
+                  <tr key={request.id}>
+                    <td>
+                      <b>{request.title}</b>
+                      <p className="text-xs text-gray-500">{request.description}</p>
+                      <p className="mt-1 text-xs text-gray-400">{request.action_type} / {request.created_at}</p>
+                    </td>
+                    <td>{request.module}</td>
+                    <td>{request.status}</td>
+                    <td>
+                      {request.status === "PENDING" ? (
+                        <div className="flex flex-wrap gap-2">
+                          <form action={reviewAiActionRequestFromForm}>
+                            <input type="hidden" name="action_request_id" value={request.id} />
+                            <input type="hidden" name="decision" value="APPROVED" />
+                            <button className="btn-primary btn-small">Approve</button>
+                          </form>
+                          <form action={reviewAiActionRequestFromForm}>
+                            <input type="hidden" name="action_request_id" value={request.id} />
+                            <input type="hidden" name="decision" value="REJECTED" />
+                            <button className="btn-secondary btn-small">Reject</button>
+                          </form>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-500">{request.review_note ?? request.reviewed_at ?? "-"}</p>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {!actionRequests.length && <p className="p-6 text-gray-500">No AI action requests yet.</p>}
+          </section>
         </div>
 
-        <div>
+        <div className="space-y-6">
           <AiConversationForm action={startAiConversation} />
+          <section className="card p-5">
+            <h2 className="font-black">Create Action Request</h2>
+            <form action={createAiActionRequestFromForm} className="mt-4 space-y-3">
+              <select className="input" name="module" defaultValue="SYSTEM">
+                <option value="SALES">Sales</option>
+                <option value="INVENTORY">Inventory</option>
+                <option value="ACCOUNTING">Accounting</option>
+                <option value="PURCHASE">Purchase</option>
+                <option value="CRM">CRM</option>
+                <option value="PROJECTS">Projects</option>
+                <option value="CLAIMS">Claims</option>
+                <option value="POS">POS</option>
+                <option value="MARKETPLACE">Marketplace</option>
+                <option value="SYSTEM">System</option>
+              </select>
+              <input className="input" name="action_type" placeholder="Action type เช่น CREATE_TASK" />
+              <input className="input" name="title" placeholder="Action title" required />
+              <textarea className="input textarea" name="description" placeholder="What should be reviewed before execution?" required />
+              <textarea className="input textarea font-mono text-xs" name="payload" placeholder='{"target":"invoice","risk":"low"}' />
+              <button className="btn-primary">Queue for Review</button>
+            </form>
+          </section>
         </div>
       </section>
     </div>

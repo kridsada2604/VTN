@@ -1,5 +1,10 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { AddAiConversationMessageInput, CreateAiConversationInput } from "@/lib/validation/ai/ai";
+import type {
+  AddAiConversationMessageInput,
+  CreateAiActionRequestInput,
+  CreateAiConversationInput,
+  ReviewAiActionRequestInput,
+} from "@/lib/validation/ai/ai";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -28,6 +33,18 @@ export type AiSuggestionRow = {
   status: string;
 };
 
+export type AiActionRequestRow = {
+  id: string;
+  module: string;
+  action_type: string;
+  title: string;
+  description: string;
+  status: string;
+  created_at: string;
+  reviewed_at: string | null;
+  review_note: string | null;
+};
+
 export type AiInsight = {
   module: string;
   title: string;
@@ -45,7 +62,7 @@ export class AiRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
   async dashboard(companyId: string) {
-    const [conversations, suggestions, invoices, stockBalances, marketplaceOrders, claims] = await Promise.all([
+    const [conversations, suggestions, actionRequests, invoices, stockBalances, marketplaceOrders, claims] = await Promise.all([
       this.supabase
         .from("ai_conversations")
         .select("id,title,context_scope,status,updated_at,created_at")
@@ -56,6 +73,11 @@ export class AiRepository {
         .select("id,module,title,description,priority,status")
         .eq("company_id", companyId)
         .eq("status", "OPEN")
+        .order("created_at", { ascending: false }),
+      this.supabase
+        .from("ai_action_requests")
+        .select("id,module,action_type,title,description,status,created_at,reviewed_at,review_note")
+        .eq("company_id", companyId)
         .order("created_at", { ascending: false }),
       this.supabase
         .from("sales_invoices")
@@ -81,6 +103,7 @@ export class AiRepository {
 
     if (conversations.error) throw conversations.error;
     if (suggestions.error) throw suggestions.error;
+    if (actionRequests.error) throw actionRequests.error;
     if (invoices.error) throw invoices.error;
     if (stockBalances.error) throw stockBalances.error;
     if (marketplaceOrders.error) throw marketplaceOrders.error;
@@ -135,6 +158,7 @@ export class AiRepository {
     return {
       conversations: (conversations.data ?? []) as AiConversationRow[],
       suggestions: (suggestions.data ?? []) as AiSuggestionRow[],
+      actionRequests: (actionRequests.data ?? []) as AiActionRequestRow[],
       insights,
       summary,
     };
@@ -190,6 +214,33 @@ export class AiRepository {
       p_company_id: companyId,
       p_conversation_id: input.conversation_id,
       p_message: input.message,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async createActionRequest(companyId: string, input: CreateAiActionRequestInput) {
+    const { data, error } = await this.supabase.rpc("create_ai_action_request", {
+      p_company_id: companyId,
+      p_conversation_id: input.conversation_id,
+      p_module: input.module,
+      p_action_type: input.action_type,
+      p_title: input.title,
+      p_description: input.description,
+      p_payload: input.payload,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async reviewActionRequest(companyId: string, input: ReviewAiActionRequestInput) {
+    const { data, error } = await this.supabase.rpc("review_ai_action_request", {
+      p_company_id: companyId,
+      p_action_request_id: input.action_request_id,
+      p_decision: input.decision,
+      p_review_note: input.review_note,
     });
 
     if (error) throw error;

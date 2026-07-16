@@ -1,7 +1,12 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { AiRepository } from "@/lib/repositories/ai/ai-repository";
 import { createClient } from "@/lib/supabase/server";
-import type { AddAiConversationMessageInput, CreateAiConversationInput } from "@/lib/validation/ai/ai";
+import type {
+  AddAiConversationMessageInput,
+  CreateAiActionRequestInput,
+  CreateAiConversationInput,
+  ReviewAiActionRequestInput,
+} from "@/lib/validation/ai/ai";
 
 export async function getAiDashboard() {
   const supabase = await createClient();
@@ -41,4 +46,16 @@ export async function addAiConversationMessage(input: AddAiConversationMessageIn
   if (!error) return input.conversation_id;
 
   return new AiRepository(supabase).addMessage(companyId, input);
+}
+
+export async function createAiActionRequest(input: CreateAiActionRequestInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new AiRepository(supabase).createActionRequest(companyId, input);
+}
+
+export async function reviewAiActionRequest(input: ReviewAiActionRequestInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new AiRepository(supabase).reviewActionRequest(companyId, input);
 }

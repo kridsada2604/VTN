@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { getAiConversation } from "@/lib/services/ai/ai-service";
-import { sendAiConversationMessage } from "../../actions";
+import { createAiActionRequestFromForm, sendAiConversationMessage } from "../../actions";
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,14 +31,39 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       </section>
 
       {conversation.status === "OPEN" && (
-        <section className="card mt-6 p-5">
-          <h2 className="font-black">Follow up</h2>
-          <form action={sendAiConversationMessage} className="mt-4 space-y-3">
-            <input type="hidden" name="conversation_id" value={conversation.id} />
-            <textarea className="input textarea" name="message" required placeholder="Ask a follow-up question or request the next ERP action." />
-            <button className="btn-primary">Send Message</button>
-          </form>
-        </section>
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <section className="card p-5">
+            <h2 className="font-black">Follow up</h2>
+            <form action={sendAiConversationMessage} className="mt-4 space-y-3">
+              <input type="hidden" name="conversation_id" value={conversation.id} />
+              <textarea className="input textarea" name="message" required placeholder="Ask a follow-up question or request the next ERP action." />
+              <button className="btn-primary">Send Message</button>
+            </form>
+          </section>
+          <section className="card p-5">
+            <h2 className="font-black">Queue Action</h2>
+            <form action={createAiActionRequestFromForm} className="mt-4 space-y-3">
+              <input type="hidden" name="conversation_id" value={conversation.id} />
+              <select className="input" name="module" defaultValue={conversation.context_scope === "ERP" ? "SYSTEM" : conversation.context_scope}>
+                <option value="SALES">Sales</option>
+                <option value="INVENTORY">Inventory</option>
+                <option value="ACCOUNTING">Accounting</option>
+                <option value="PURCHASE">Purchase</option>
+                <option value="CRM">CRM</option>
+                <option value="PROJECTS">Projects</option>
+                <option value="CLAIMS">Claims</option>
+                <option value="POS">POS</option>
+                <option value="MARKETPLACE">Marketplace</option>
+                <option value="SYSTEM">System</option>
+              </select>
+              <input className="input" name="action_type" placeholder="Action type เช่น CREATE_TASK" />
+              <input className="input" name="title" placeholder="Action title" required />
+              <textarea className="input textarea" name="description" placeholder="Summarize the proposed ERP action before approval." required />
+              <textarea className="input textarea font-mono text-xs" name="payload" placeholder='{"source":"conversation"}' />
+              <button className="btn-primary">Queue for Review</button>
+            </form>
+          </section>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.0 — AI Action Approval Queue
+- Add `ai_action_requests` with RLS, audit log, and approval/rejection RPCs.
+- Add AI service/repository/validation workflow for queued action requests.
+- Add AI dashboard and conversation UI for creating, approving, and rejecting action requests.
+
 ## v0.18.9 — OpenAI Edge Provider
 - Add Supabase Edge Function `ai-provider` for OpenAI Responses API.
 - Wire AI conversation follow-up to call the provider with fallback placeholder behavior.

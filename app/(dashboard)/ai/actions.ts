@@ -2,8 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addAiConversationMessage, createAiConversation, generateAiRecommendations } from "@/lib/services/ai/ai-service";
-import { parseAiConversationForm, parseAiConversationMessageForm } from "@/lib/validation/ai/ai";
+import {
+  addAiConversationMessage,
+  createAiActionRequest,
+  createAiConversation,
+  generateAiRecommendations,
+  reviewAiActionRequest,
+} from "@/lib/services/ai/ai-service";
+import {
+  parseAiActionRequestForm,
+  parseAiActionReviewForm,
+  parseAiConversationForm,
+  parseAiConversationMessageForm,
+} from "@/lib/validation/ai/ai";
 
 export async function startAiConversation(fd: FormData) {
   const id = await createAiConversation(parseAiConversationForm(fd));
@@ -23,4 +34,18 @@ export async function sendAiConversationMessage(fd: FormData) {
   revalidatePath("/ai");
   revalidatePath(`/ai/conversations/${input.conversation_id}`);
   redirect(`/ai/conversations/${input.conversation_id}`);
+}
+
+export async function createAiActionRequestFromForm(fd: FormData) {
+  const input = parseAiActionRequestForm(fd);
+  await createAiActionRequest(input);
+  revalidatePath("/ai");
+  if (input.conversation_id) revalidatePath(`/ai/conversations/${input.conversation_id}`);
+  redirect(input.conversation_id ? `/ai/conversations/${input.conversation_id}` : "/ai");
+}
+
+export async function reviewAiActionRequestFromForm(fd: FormData) {
+  await reviewAiActionRequest(parseAiActionReviewForm(fd));
+  revalidatePath("/ai");
+  redirect("/ai");
 }
