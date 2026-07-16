@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.2 — Partial Delivery and Backorder
+- Add partial delivery quantity input per Sales Order item.
+- Update Sales Delivery posting to support partial quantities.
+- Keep backorder quantity visible on Sales Order detail.
+- Add SQL Migration `supabase/phase-4.3.sql`.
+
 ## v0.18.1 — Product Barcode Workflow
 - Add Product Service/Repository/Validation workflow.
 - Move Product master page and actions away from direct Supabase access.

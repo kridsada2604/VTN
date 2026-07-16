@@ -11,6 +11,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { order, items, deliveries, events, warehouses } = await getSalesOrderDetail(id);
   if (!order) notFound();
   const today = new Date().toISOString().slice(0, 10);
+  const canDeliver = order.status === "RESERVED" || order.status === "PARTIALLY_DELIVERED";
+  const deliverableItems = items
+    .map((item) => ({
+      ...item,
+      remainingQuantity: Math.max(Number(item.quantity) - Number(item.delivered_quantity), 0),
+      reservedRemaining: Math.max(Number(item.reserved_quantity) - Number(item.delivered_quantity), 0),
+    }))
+    .filter((item) => item.product_id && item.remainingQuantity > 0 && item.reservedRemaining > 0);
 
   return (
     <div>
@@ -34,13 +42,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               ))}
             </select>
             <button className="btn-primary">Reserve Stock</button>
-          </form>
-        )}
-        {order.status === "RESERVED" && (
-          <form action={deliverSalesOrderAction} className="flex flex-wrap gap-2">
-            <input type="hidden" name="sales_order_id" value={order.id} />
-            <input className="input" type="date" name="delivery_date" defaultValue={today} required />
-            <button className="btn-primary">Delivery</button>
           </form>
         )}
         {order.status === "DELIVERED" && (
@@ -70,6 +71,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <th>Qty</th>
               <th>Reserved</th>
               <th>Delivered</th>
+              <th>Backorder</th>
               <th>Price</th>
               <th>Total</th>
             </tr>
@@ -82,6 +84,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <td>{Number(item.quantity).toLocaleString("th-TH")}</td>
                 <td>{Number(item.reserved_quantity).toLocaleString("th-TH")}</td>
                 <td>{Number(item.delivered_quantity).toLocaleString("th-TH")}</td>
+                <td>{Math.max(Number(item.quantity) - Number(item.delivered_quantity), 0).toLocaleString("th-TH")}</td>
                 <td>THB {money(item.unit_price)}</td>
                 <td className="font-bold">THB {money(item.line_total)}</td>
               </tr>
@@ -119,12 +122,51 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </div>
         </div>
 
-        <div className="card space-y-2 p-5">
-          <div className="flex justify-between"><span>Subtotal</span><b>THB {money(order.subtotal)}</b></div>
-          <div className="flex justify-between"><span>Discount</span><b>THB {money(order.discount_amount)}</b></div>
-          <div className="flex justify-between"><span>Tax</span><b>THB {money(order.tax_amount)}</b></div>
-          <div className="mt-3 flex justify-between border-t pt-3 text-xl"><span className="font-black">Total</span><b>THB {money(order.total_amount)}</b></div>
-        </div>
+        <aside className="space-y-4">
+          {canDeliver && (
+            <div className="card p-5">
+              <h2 className="font-black">Create Delivery</h2>
+              <form action={deliverSalesOrderAction} className="mt-4 space-y-3">
+                <input type="hidden" name="sales_order_id" value={order.id} />
+                <label>
+                  <span className="label">Delivery date</span>
+                  <input className="input" type="date" name="delivery_date" defaultValue={today} required />
+                </label>
+                <div className="space-y-2">
+                  {deliverableItems.map((item) => (
+                    <label key={item.id} className="block rounded-lg border p-3">
+                      <span className="text-sm font-bold">{item.products?.[0]?.sku ?? item.description}</span>
+                      <span className="mt-1 block text-xs text-gray-500">
+                        Remaining {item.remainingQuantity.toLocaleString("th-TH")} / Reserved {item.reservedRemaining.toLocaleString("th-TH")}
+                      </span>
+                      <input
+                        className="input mt-2"
+                        type="number"
+                        min="0"
+                        max={item.reservedRemaining}
+                        step="0.0001"
+                        name={`delivery_quantity_${item.id}`}
+                        defaultValue={item.reservedRemaining}
+                      />
+                    </label>
+                  ))}
+                </div>
+                <label>
+                  <span className="label">Notes</span>
+                  <textarea className="input textarea" name="notes" placeholder="Delivery note, vehicle, receiver, or backorder note" />
+                </label>
+                <button className="btn-primary w-full">Post Delivery</button>
+              </form>
+            </div>
+          )}
+
+          <div className="card space-y-2 p-5">
+            <div className="flex justify-between"><span>Subtotal</span><b>THB {money(order.subtotal)}</b></div>
+            <div className="flex justify-between"><span>Discount</span><b>THB {money(order.discount_amount)}</b></div>
+            <div className="flex justify-between"><span>Tax</span><b>THB {money(order.tax_amount)}</b></div>
+            <div className="mt-3 flex justify-between border-t pt-3 text-xl"><span className="font-black">Total</span><b>THB {money(order.total_amount)}</b></div>
+          </div>
+        </aside>
       </section>
     </div>
   );

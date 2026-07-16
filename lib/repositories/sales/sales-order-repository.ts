@@ -202,6 +202,7 @@ export class SalesOrderRepository {
       p_sales_order_id: input.sales_order_id,
       p_delivery_date: input.delivery_date,
       p_notes: input.notes,
+      p_items: input.items,
     });
 
     if (error) throw error;

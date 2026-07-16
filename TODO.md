@@ -9,9 +9,9 @@
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Convert Quotation → Sales Order
 - [x] Convert Sales Order → Invoice
-- [ ] Partial delivery
+- [x] Partial delivery
 - [x] Delivery print/PDF
-- [ ] Backorder flow
+- [x] Backorder flow
 
 ## Sprint 16 — AI
 - [x] AI Assistant

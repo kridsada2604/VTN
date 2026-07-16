@@ -27,6 +27,10 @@ export type DeliverSalesOrderInput = {
   sales_order_id: string;
   delivery_date: string;
   notes: string | null;
+  items: Array<{
+    sales_order_item_id: string;
+    quantity: number;
+  }>;
 };
 
 export type InvoiceSalesOrderInput = {
@@ -99,14 +103,24 @@ export function parseReserveSalesOrderForm(fd: FormData): ReserveSalesOrderInput
 }
 
 export function parseDeliverSalesOrderForm(fd: FormData): DeliverSalesOrderInput {
+  const items = Array.from(fd.entries())
+    .filter(([key]) => key.startsWith("delivery_quantity_"))
+    .map(([key, value]) => ({
+      sales_order_item_id: key.replace("delivery_quantity_", ""),
+      quantity: numberOrZero(value),
+    }))
+    .filter((item) => item.sales_order_item_id && item.quantity > 0);
+
   const input = {
     sales_order_id: text(fd, "sales_order_id"),
     delivery_date: text(fd, "delivery_date"),
     notes: text(fd, "notes") || null,
+    items,
   };
 
   if (!input.sales_order_id) throw new Error("ไม่พบ Sales Order");
   if (!input.delivery_date) throw new Error("กรุณาระบุวันที่ส่งของ");
+  if (!input.items.length) throw new Error("กรุณาระบุจำนวนสินค้าที่ต้องการส่ง");
   return input;
 }
 
