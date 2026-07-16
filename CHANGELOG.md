@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.2 — Application Error Boundaries
+- Add dashboard route error boundary with retry and dashboard recovery path.
+- Add global application error boundary for root-level rendering failures.
+- Improve production resilience for server-rendered ERP pages.
+
 ## v0.19.1 — Marketplace Sync Foundation
 - Add marketplace sync logs with RLS, audit log, and start/finish RPCs.
 - Add Supabase Edge Function `marketplace-sync` as the connector entry point.
