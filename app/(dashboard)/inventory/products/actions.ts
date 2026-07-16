@@ -1,5 +1,15 @@
 "use server";
-import { revalidatePath } from "next/cache";import{createClient}from"@/lib/supabase/server";import{getCurrentCompanyId}from"@/lib/current-company";
-const t=(f:FormData,k:string)=>String(f.get(k)??"").trim();const n=(f:FormData,k:string)=>Number(f.get(k)??0);
-export async function saveProduct(f:FormData){const s=await createClient(),company_id=await getCurrentCompanyId(),id=t(f,"id"),payload={company_id,sku:t(f,"sku"),name:t(f,"name"),category_id:t(f,"category_id")||null,unit_id:t(f,"unit_id")||null,cost_price:n(f,"cost_price"),selling_price:n(f,"selling_price")};if(!payload.sku||!payload.name)throw new Error("กรุณากรอก SKU และชื่อสินค้า");const{error}=id?await s.from("products").update(payload).eq("id",id).eq("company_id",company_id):await s.from("products").insert(payload);if(error)throw error;revalidatePath("/inventory/products");}
-export async function toggleProduct(f:FormData){const s=await createClient(),company_id=await getCurrentCompanyId();const{error}=await s.from("products").update({is_active:t(f,"next")==="true"}).eq("id",t(f,"id")).eq("company_id",company_id);if(error)throw error;revalidatePath("/inventory/products");}
+
+import { revalidatePath } from "next/cache";
+import { saveProductMaster, setProductActive } from "@/lib/services/inventory/product-service";
+import { parseProductForm, parseToggleProductForm } from "@/lib/validation/inventory/product";
+
+export async function saveProduct(fd: FormData) {
+  await saveProductMaster(parseProductForm(fd));
+  revalidatePath("/inventory/products");
+}
+
+export async function toggleProduct(fd: FormData) {
+  await setProductActive(parseToggleProductForm(fd));
+  revalidatePath("/inventory/products");
+}

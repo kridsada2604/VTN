@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.1 — Product Barcode Workflow
+- Add Product Service/Repository/Validation workflow.
+- Move Product master page and actions away from direct Supabase access.
+- Add barcode field to Product list, search, and form.
+- Add SQL Migration `supabase/phase-4.2.sql` with RPC workflow and audit log.
+
 ## v0.18.0 — Delivery Print
 - Add printable Delivery Note page for Sales Delivery.
 - Add delivery print data access through Sales Service/Repository.

@@ -1,2 +1,117 @@
-import Link from"next/link";import{createClient}from"@/lib/supabase/server";import{getCurrentCompanyId}from"@/lib/current-company";import{PageHeader}from"@/components/page-header";import{FormCard}from"@/components/master-data/form-card";import{StatusBadge}from"@/components/master-data/status-badge";import{saveProduct,toggleProduct}from"./actions";
-export default async function Page({searchParams}:{searchParams:Promise<{q?:string;edit?:string}>}){const{q="",edit=""}=await searchParams,s=await createClient(),companyId=await getCurrentCompanyId();let query=s.from("products").select("id,sku,name,cost_price,selling_price,is_active,category_id,unit_id,product_categories(name),units(name)").eq("company_id",companyId).order("name");if(q)query=query.or(`sku.ilike.%${q}%,name.ilike.%${q}%`);const{data:rows=[]}=await query;const[{data:cats=[]},{data:units=[]}]=await Promise.all([s.from("product_categories").select("id,name").eq("company_id",companyId).eq("is_active",true).order("name"),s.from("units").select("id,name").eq("company_id",companyId).eq("is_active",true).order("name")]);const e=edit?rows?.find(x=>x.id===edit):undefined;return <div><PageHeader eyebrow="INVENTORY" title="สินค้า" description="จัดการสินค้า ราคา และข้อมูลพื้นฐาน"/><div className="two-column-page mt-6"><section className="card table-wrap"><div className="p-4 border-b"><form className="search-bar"><input className="input" name="q" defaultValue={q} placeholder="ค้นหา SKU หรือชื่อสินค้า"/><button className="btn-secondary">ค้นหา</button>{q&&<Link className="btn-secondary" href="/inventory/products">ล้าง</Link>}</form></div><table className="data-table"><thead><tr><th>SKU</th><th>สินค้า</th><th>หมวด</th><th>หน่วย</th><th>ต้นทุน</th><th>ขาย</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>{rows?.map((x:{id:string;sku:string;name:string;cost_price:number|string;selling_price:number|string;is_active:boolean;category_id:string|null;unit_id:string|null;product_categories:{name:string}[];units:{name:string}[]})=><tr key={x.id}><td className="font-bold">{x.sku}</td><td>{x.name}</td><td>{x.product_categories?.[0]?.name||"-"}</td><td>{x.units?.[0]?.name||"-"}</td><td>฿{Number(x.cost_price).toLocaleString()}</td><td>฿{Number(x.selling_price).toLocaleString()}</td><td><StatusBadge active={x.is_active}/></td><td><div className="action-row"><Link className="btn-secondary btn-small" href={`/inventory/products?edit=${x.id}`}>แก้ไข</Link><form action={toggleProduct}><input type="hidden" name="id" value={x.id}/><input type="hidden" name="next" value={String(!x.is_active)}/><button className="btn-secondary btn-small">{x.is_active?"ปิด":"เปิด"}</button></form></div></td></tr>)}</tbody></table></section><FormCard title={e?"แก้ไขสินค้า":"เพิ่มสินค้าใหม่"}><form action={saveProduct} className="form-grid"><input type="hidden" name="id" value={e?.id||""}/><label><span className="label">SKU *</span><input className="input" name="sku" required defaultValue={e?.sku}/></label><label><span className="label">ชื่อสินค้า *</span><input className="input" name="name" required defaultValue={e?.name}/></label><label><span className="label">หมวดหมู่</span><select className="input" name="category_id" defaultValue={e?.category_id||""}><option value="">ไม่ระบุ</option>{cats?.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label><label><span className="label">หน่วยนับ</span><select className="input" name="unit_id" defaultValue={e?.unit_id||""}><option value="">ไม่ระบุ</option>{units?.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}</select></label><label><span className="label">ต้นทุน</span><input className="input" type="number" min="0" step="0.01" name="cost_price" defaultValue={e?.cost_price??0}/></label><label><span className="label">ราคาขาย</span><input className="input" type="number" min="0" step="0.01" name="selling_price" defaultValue={e?.selling_price??0}/></label><div className="full action-row"><button className="btn-primary">บันทึกสินค้า</button>{e&&<Link className="btn-secondary" href="/inventory/products">ยกเลิก</Link>}</div></form></FormCard></div></div>}
+import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
+import { FormCard } from "@/components/master-data/form-card";
+import { StatusBadge } from "@/components/master-data/status-badge";
+import { getProductMaster } from "@/lib/services/inventory/product-service";
+import { saveProduct, toggleProduct } from "./actions";
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ q?: string; edit?: string }> }) {
+  const { q = "", edit = "" } = await searchParams;
+  const { products, categories, units } = await getProductMaster(q);
+  const editing = edit ? products.find((product) => product.id === edit) : undefined;
+
+  return (
+    <div>
+      <PageHeader
+        eyebrow="INVENTORY"
+        title="Products"
+        description="Manage product master data, barcode, categories, units, and prices."
+      />
+
+      <div className="two-column-page mt-6">
+        <section className="card table-wrap">
+          <div className="border-b p-4">
+            <form className="search-bar">
+              <input className="input" name="q" defaultValue={q} placeholder="Search SKU, barcode, or product name" />
+              <button className="btn-secondary">Search</button>
+              {q && <Link className="btn-secondary" href="/inventory/products">Clear</Link>}
+            </form>
+          </div>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Barcode</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Unit</th>
+                <th>Cost</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id}>
+                  <td className="font-bold">{product.sku}</td>
+                  <td>{product.barcode ?? "-"}</td>
+                  <td>{product.name}</td>
+                  <td>{product.product_categories?.[0]?.name ?? "-"}</td>
+                  <td>{product.units?.[0]?.name ?? "-"}</td>
+                  <td>THB {Number(product.cost_price).toLocaleString("th-TH")}</td>
+                  <td>THB {Number(product.selling_price).toLocaleString("th-TH")}</td>
+                  <td><StatusBadge active={product.is_active} /></td>
+                  <td>
+                    <div className="action-row">
+                      <Link className="btn-secondary btn-small" href={`/inventory/products?edit=${product.id}`}>Edit</Link>
+                      <form action={toggleProduct}>
+                        <input type="hidden" name="id" value={product.id} />
+                        <input type="hidden" name="next" value={String(!product.is_active)} />
+                        <button className="btn-secondary btn-small">{product.is_active ? "Disable" : "Enable"}</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <FormCard title={editing ? "Edit Product" : "New Product"}>
+          <form action={saveProduct} className="form-grid">
+            <input type="hidden" name="id" value={editing?.id ?? ""} />
+            <label>
+              <span className="label">SKU *</span>
+              <input className="input" name="sku" required defaultValue={editing?.sku} />
+            </label>
+            <label>
+              <span className="label">Barcode</span>
+              <input className="input" name="barcode" defaultValue={editing?.barcode ?? ""} />
+            </label>
+            <label>
+              <span className="label">Product name *</span>
+              <input className="input" name="name" required defaultValue={editing?.name} />
+            </label>
+            <label>
+              <span className="label">Category</span>
+              <select className="input" name="category_id" defaultValue={editing?.category_id ?? ""}>
+                <option value="">None</option>
+                {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+              </select>
+            </label>
+            <label>
+              <span className="label">Unit</span>
+              <select className="input" name="unit_id" defaultValue={editing?.unit_id ?? ""}>
+                <option value="">None</option>
+                {units.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
+              </select>
+            </label>
+            <label>
+              <span className="label">Cost</span>
+              <input className="input" type="number" min="0" step="0.01" name="cost_price" defaultValue={editing?.cost_price ?? 0} />
+            </label>
+            <label>
+              <span className="label">Selling price</span>
+              <input className="input" type="number" min="0" step="0.01" name="selling_price" defaultValue={editing?.selling_price ?? 0} />
+            </label>
+            <div className="full action-row">
+              <button className="btn-primary">Save Product</button>
+              {editing && <Link className="btn-secondary" href="/inventory/products">Cancel</Link>}
+            </div>
+          </form>
+        </FormCard>
+      </div>
+    </div>
+  );
+}
