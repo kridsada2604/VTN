@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AiConversationForm } from "@/components/ai/ai-conversation-form";
 import { PageHeader } from "@/components/page-header";
 import { getAiDashboard } from "@/lib/services/ai/ai-service";
-import { startAiConversation } from "./actions";
+import { generateAiRecommendationQueue, startAiConversation } from "./actions";
 
 const priorityClass: Record<string, string> = {
   URGENT: "text-red-700",
@@ -34,6 +34,9 @@ export default async function Page() {
                 ))}
               </div>
             )}
+            <form action={generateAiRecommendationQueue} className="mt-4">
+              <button className="btn-primary">Generate Suggestions</button>
+            </form>
           </section>
 
           <section className="grid gap-4 md:grid-cols-2">

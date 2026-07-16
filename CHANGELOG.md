@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.7 — AI Recommendation Queue
+- Add AI recommendation generation into suggestion queue.
+- Add Service/Repository action and Supabase RPC for ERP signal recommendations.
+- Add Generate Suggestions action to AI dashboard.
+- Add SQL Migration `supabase/phase-4.7.sql`.
+
 ## v0.18.6 — AI Dashboard Summary
 - Add AI-generated ERP dashboard summary from live ERP signals.
 - Summarize unpaid invoices, low stock, marketplace fulfillment, and open claims.

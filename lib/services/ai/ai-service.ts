@@ -20,3 +20,9 @@ export async function createAiConversation(input: CreateAiConversationInput) {
   const companyId = await getCurrentCompanyId();
   return new AiRepository(supabase).createConversation(companyId, input);
 }
+
+export async function generateAiRecommendations() {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new AiRepository(supabase).generateRecommendations(companyId);
+}

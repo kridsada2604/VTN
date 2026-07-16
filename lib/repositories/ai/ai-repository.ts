@@ -175,4 +175,13 @@ export class AiRepository {
     if (error) throw error;
     return data as string;
   }
+
+  async generateRecommendations(companyId: string) {
+    const { data, error } = await this.supabase.rpc("generate_ai_recommendations", {
+      p_company_id: companyId,
+    });
+
+    if (error) throw error;
+    return Number(data ?? 0);
+  }
 }

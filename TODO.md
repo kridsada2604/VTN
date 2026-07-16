@@ -23,7 +23,7 @@
 - [ ] OpenAI provider integration via Supabase Edge Function
 - [ ] Tool calling/action execution with permission checks
 - [x] AI-generated dashboard summary
-- [ ] AI recommendation to task/action queue
+- [x] AI recommendation to task/action queue
 - [ ] Conversation follow-up message UI
 
 ## Sprint 15 — Marketplace
