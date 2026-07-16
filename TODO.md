@@ -10,7 +10,7 @@
 - [x] Convert Quotation → Sales Order
 - [x] Convert Sales Order → Invoice
 - [ ] Partial delivery
-- [ ] Delivery print/PDF
+- [x] Delivery print/PDF
 - [ ] Backorder flow
 
 ## Sprint 16 — AI

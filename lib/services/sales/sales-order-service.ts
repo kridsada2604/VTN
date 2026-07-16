@@ -22,6 +22,12 @@ export async function getSalesOrderDetail(salesOrderId: string) {
   return new SalesOrderRepository(supabase).getById(companyId, salesOrderId);
 }
 
+export async function getSalesDeliveryPrint(deliveryId: string) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new SalesOrderRepository(supabase).getDeliveryPrint(companyId, deliveryId);
+}
+
 export async function createSalesOrder(input: CreateSalesOrderInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();

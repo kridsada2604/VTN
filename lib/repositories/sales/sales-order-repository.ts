@@ -36,6 +36,34 @@ export type SalesOrderItemRow = {
   products: { sku: string; name: string }[] | null;
 };
 
+export type SalesDeliveryPrintItemRow = {
+  id: string;
+  quantity: number | string;
+  sort_order: number;
+  products: { sku: string; name: string }[] | null;
+  sales_order_items: { description: string; unit_price: number | string; line_total: number | string }[] | null;
+};
+
+export type SalesDeliveryPrintData = {
+  company: { name_th: string; name_en: string | null; tax_id: string | null; phone: string | null; email: string | null; address: string | null } | null;
+  delivery: {
+    id: string;
+    document_no: string;
+    delivery_date: string;
+    status: string;
+    notes: string | null;
+    sales_order_id: string;
+    sales_orders: {
+      document_no: string;
+      order_date: string;
+      requested_delivery_date: string | null;
+      customers: { code: string; name: string; tax_id: string | null; phone: string | null; email: string | null; address: string | null }[] | null;
+      warehouses: { code: string; name: string }[] | null;
+    }[] | null;
+  } | null;
+  items: SalesDeliveryPrintItemRow[];
+};
+
 export class SalesOrderRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -106,6 +134,37 @@ export class SalesOrderRepository {
       deliveries: deliveries.data ?? [],
       events: events.data ?? [],
       warehouses: warehouses.data ?? [],
+    };
+  }
+
+  async getDeliveryPrint(companyId: string, deliveryId: string): Promise<SalesDeliveryPrintData> {
+    const [company, delivery, items] = await Promise.all([
+      this.supabase
+        .from("companies")
+        .select("name_th,name_en,tax_id,phone,email,address")
+        .eq("id", companyId)
+        .maybeSingle(),
+      this.supabase
+        .from("sales_deliveries")
+        .select("id,document_no,delivery_date,status,notes,sales_order_id,sales_orders(document_no,order_date,requested_delivery_date,customers(code,name,tax_id,phone,email,address),warehouses(code,name))")
+        .eq("id", deliveryId)
+        .eq("company_id", companyId)
+        .maybeSingle(),
+      this.supabase
+        .from("sales_delivery_items")
+        .select("id,quantity,sort_order,products(sku,name),sales_order_items(description,unit_price,line_total)")
+        .eq("delivery_id", deliveryId)
+        .order("sort_order"),
+    ]);
+
+    if (company.error) throw company.error;
+    if (delivery.error) throw delivery.error;
+    if (items.error) throw items.error;
+
+    return {
+      company: company.data,
+      delivery: delivery.data as SalesDeliveryPrintData["delivery"],
+      items: (items.data ?? []) as SalesDeliveryPrintItemRow[],
     };
   }
 

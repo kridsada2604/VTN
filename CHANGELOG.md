@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.0 — Delivery Print
+- Add printable Delivery Note page for Sales Delivery.
+- Add delivery print data access through Sales Service/Repository.
+- Add print action link from Sales Order delivery history.
+- No database migration required.
+
 ## v0.17.9 — Marketplace Fee Reconciliation
 - Add marketplace fee reconciliation table with RLS and audit log.
 - Add fee recording workflow through Service/Repository and Supabase RPC.
