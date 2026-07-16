@@ -84,11 +84,11 @@
 - [x] Lot field foundation
 - [x] Serial field foundation
 - [x] Barcode field foundation
-- [ ] เชื่อม Reserve Stock จาก Sales Order
-- [ ] เชื่อม Delivery เพื่อตัดสต๊อกจากเอกสารขาย
+- [x] เชื่อม Reserve Stock จาก Sales Order
+- [x] เชื่อม Delivery เพื่อตัดสต๊อกจากเอกสารขาย
 - [x] เพิ่ม Transfer ระหว่างคลังแบบ 2 ฝั่ง
 - [x] เพิ่มหน้าจอปรับปรุง Barcode ใน Product master ผ่าน Service/Repository
-- [ ] เพิ่ม FIFO issue consumption แบบเต็มรูปแบบ
+- [x] เพิ่ม FIFO issue consumption แบบเต็มรูปแบบ
 
 ## Sprint 9 — Accounting
 - [x] Journal

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.4 — FIFO Issue Consumption
+- Add stock layer consumption tracking table.
+- Consume FIFO layers for ISSUE, ADJUSTMENT_OUT, and TRANSFER_OUT when product costing method is FIFO.
+- Keep Average Cost behavior for AVERAGE products.
+- Add SQL Migration `supabase/phase-4.5.sql`.
+
 ## v0.18.3 — Warehouse Transfer
 - Add warehouse transfer workflow with paired transfer-out and transfer-in movements.
 - Add transfer validation, service, repository, and server action.
