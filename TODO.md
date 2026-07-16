@@ -36,7 +36,7 @@
 - [ ] API connector ต่อ Shopee/Lazada/TikTok จริง
 - [ ] Auto sync orders ผ่าน Edge Function
 - [ ] Convert Marketplace Order → Sales Order / Delivery
-- [ ] Marketplace fee reconciliation
+- [x] Marketplace fee reconciliation
 - [x] Unmapped SKU management page
 
 ## Sprint 14 — POS

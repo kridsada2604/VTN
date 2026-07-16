@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateMarketplaceChannelInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
+import type { CreateMarketplaceChannelInput, CreateMarketplaceFeeInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -45,6 +45,14 @@ export type MarketplaceOrderItemRow = {
   line_total: number | string;
   mapping_status: string;
   products: { sku: string; name: string }[] | null;
+};
+
+export type MarketplaceFeeRow = {
+  id: string;
+  fee_type: string;
+  amount: number | string;
+  notes: string | null;
+  created_at: string;
 };
 
 export type UnmappedMarketplaceSkuRow = {
@@ -125,7 +133,7 @@ export class MarketplaceRepository {
   }
 
   async getOrderById(companyId: string, orderId: string) {
-    const [order, items, events] = await Promise.all([
+    const [order, items, fees, events] = await Promise.all([
       this.supabase
         .from("marketplace_orders")
         .select("*,marketplace_channels(name,platform)")
@@ -138,6 +146,12 @@ export class MarketplaceRepository {
         .eq("order_id", orderId)
         .order("sort_order"),
       this.supabase
+        .from("marketplace_fee_reconciliations")
+        .select("id,fee_type,amount,notes,created_at")
+        .eq("company_id", companyId)
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false }),
+      this.supabase
         .from("marketplace_order_events")
         .select("id,event_type,message,created_at")
         .eq("order_id", orderId)
@@ -146,11 +160,13 @@ export class MarketplaceRepository {
 
     if (order.error) throw order.error;
     if (items.error) throw items.error;
+    if (fees.error) throw fees.error;
     if (events.error) throw events.error;
 
     return {
       order: order.data as MarketplaceOrderDetail | null,
       items: (items.data ?? []) as MarketplaceOrderItemRow[],
+      fees: (fees.data ?? []) as MarketplaceFeeRow[],
       events: events.data ?? [],
     };
   }
@@ -245,5 +261,18 @@ export class MarketplaceRepository {
 
     if (error) throw error;
     return Number(data ?? 0);
+  }
+
+  async createFee(companyId: string, input: CreateMarketplaceFeeInput) {
+    const { data, error } = await this.supabase.rpc("create_marketplace_fee_reconciliation", {
+      p_company_id: companyId,
+      p_order_id: input.order_id,
+      p_fee_type: input.fee_type,
+      p_amount: input.amount,
+      p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
   }
 }

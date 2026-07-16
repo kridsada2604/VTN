@@ -33,6 +33,13 @@ export type MapMarketplaceSkuInput = {
   product_id: string;
 };
 
+export type CreateMarketplaceFeeInput = {
+  order_id: string;
+  fee_type: string;
+  amount: number;
+  notes: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -107,6 +114,21 @@ export function parseMarketplaceSkuMappingForm(fd: FormData): MapMarketplaceSkuI
   if (!input.channel_id) throw new Error("Marketplace channel is required");
   if (!input.marketplace_sku) throw new Error("Marketplace SKU is required");
   if (!input.product_id) throw new Error("Product is required");
+
+  return input;
+}
+
+export function parseMarketplaceFeeForm(fd: FormData): CreateMarketplaceFeeInput {
+  const input: CreateMarketplaceFeeInput = {
+    order_id: text(fd, "order_id"),
+    fee_type: text(fd, "fee_type") || "COMMISSION",
+    amount: numberOrZero(fd.get("amount")),
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.order_id) throw new Error("Marketplace order is required");
+  if (!["COMMISSION", "PAYMENT", "SHIPPING", "VOUCHER", "SERVICE", "OTHER"].includes(input.fee_type)) throw new Error("Invalid marketplace fee type");
+  if (input.amount <= 0) throw new Error("Marketplace fee amount must be greater than zero");
 
   return input;
 }

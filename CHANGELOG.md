@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.9 — Marketplace Fee Reconciliation
+- Add marketplace fee reconciliation table with RLS and audit log.
+- Add fee recording workflow through Service/Repository and Supabase RPC.
+- Add marketplace order fee history and net-after-fees summary.
+- Add SQL Migration `supabase/phase-4.1.sql`.
+
 ## v0.17.8 — Marketplace Unmapped SKU
 - Add unmapped marketplace SKU management page.
 - Add SKU mapping workflow through Service/Repository and Supabase RPC.
