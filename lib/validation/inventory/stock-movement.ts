@@ -15,6 +15,14 @@ export type CreateStockMovementInput = {
   items: StockMovementItemInput[];
 };
 
+export type CreateStockTransferInput = {
+  from_warehouse_id: string;
+  to_warehouse_id: string;
+  transfer_date: string;
+  notes: string | null;
+  items: StockMovementItemInput[];
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -53,6 +61,43 @@ export function parseStockMovementForm(fd: FormData): CreateStockMovementInput {
   if (!input.items.length) throw new Error("กรุณาเพิ่มสินค้าอย่างน้อย 1 รายการ");
   if (input.items.some((item) => !item.product_id || item.quantity <= 0 || item.unit_cost < 0)) {
     throw new Error("กรุณาตรวจสอบสินค้า จำนวน และต้นทุน");
+  }
+
+  return input;
+}
+
+export function parseStockTransferForm(fd: FormData): CreateStockTransferInput {
+  let items: StockMovementItemInput[] = [];
+
+  try {
+    const parsed = JSON.parse(text(fd, "items") || "[]") as Array<Partial<StockMovementItemInput>>;
+    items = parsed.map((item) => ({
+      product_id: String(item.product_id ?? "").trim(),
+      quantity: numberOrZero(item.quantity),
+      unit_cost: numberOrZero(item.unit_cost),
+      lot_no: item.lot_no ? String(item.lot_no).trim() : null,
+      serial_no: item.serial_no ? String(item.serial_no).trim() : null,
+      barcode: item.barcode ? String(item.barcode).trim() : null,
+    }));
+  } catch {
+    throw new Error("Transfer items are invalid");
+  }
+
+  const input: CreateStockTransferInput = {
+    from_warehouse_id: text(fd, "from_warehouse_id"),
+    to_warehouse_id: text(fd, "to_warehouse_id"),
+    transfer_date: text(fd, "transfer_date"),
+    notes: text(fd, "notes") || null,
+    items,
+  };
+
+  if (!input.from_warehouse_id) throw new Error("Source warehouse is required");
+  if (!input.to_warehouse_id) throw new Error("Destination warehouse is required");
+  if (input.from_warehouse_id === input.to_warehouse_id) throw new Error("Source and destination warehouses must be different");
+  if (!input.transfer_date) throw new Error("Transfer date is required");
+  if (!input.items.length) throw new Error("Transfer items are required");
+  if (input.items.some((item) => !item.product_id || item.quantity <= 0 || item.unit_cost < 0)) {
+    throw new Error("Please check product, quantity, and unit cost");
   }
 
   return input;

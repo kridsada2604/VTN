@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.3 — Warehouse Transfer
+- Add warehouse transfer workflow with paired transfer-out and transfer-in movements.
+- Add transfer validation, service, repository, and server action.
+- Add Warehouse Transfer page and Inventory dashboard entry.
+- Add SQL Migration `supabase/phase-4.4.sql`.
+
 ## v0.18.2 — Partial Delivery and Backorder
 - Add partial delivery quantity input per Sales Order item.
 - Update Sales Delivery posting to support partial quantities.

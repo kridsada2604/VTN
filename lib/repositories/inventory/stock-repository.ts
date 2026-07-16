@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateStockMovementInput } from "@/lib/validation/inventory/stock-movement";
+import type { CreateStockMovementInput, CreateStockTransferInput } from "@/lib/validation/inventory/stock-movement";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -118,6 +118,20 @@ export class StockRepository {
 
     if (error) throw error;
     return String(data);
+  }
+
+  async createTransfer(companyId: string, input: CreateStockTransferInput) {
+    const { data, error } = await this.supabase.rpc("post_stock_transfer", {
+      p_company_id: companyId,
+      p_from_warehouse_id: input.from_warehouse_id,
+      p_to_warehouse_id: input.to_warehouse_id,
+      p_transfer_date: input.transfer_date,
+      p_notes: input.notes,
+      p_items: input.items.map((item, index) => ({ ...item, sort_order: index })),
+    });
+
+    if (error) throw error;
+    return data;
   }
 
   async getStockCard(companyId: string, productId?: string) {
