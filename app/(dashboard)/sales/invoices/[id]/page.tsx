@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/sales/print-button";
 import { createInvoiceEmailDraft, formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getInvoiceDetail } from "@/lib/services/sales/invoice-service";
-import { postInvoiceAccountingAction, postPaymentAccountingAction, receivePayment } from "../actions";
+import { postInvoiceAccountingAction, postPaymentAccountingAction, receivePayment, sendInvoiceEmailAction } from "../actions";
 
 const statusLabel: Record<string, string> = {
   ISSUED: "ออกเอกสารแล้ว",
@@ -23,7 +23,7 @@ const paymentMethodLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { invoice, items, payments, events } = await getInvoiceDetail(id);
+  const { invoice, items, payments, events, emailLogs } = await getInvoiceDetail(id);
   if (!invoice) notFound();
 
   const customer = invoice.customers?.[0];
@@ -48,6 +48,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           ← กลับรายการ
         </Link>
         <PrintButton />
+        <form action={sendInvoiceEmailAction}>
+          <input type="hidden" name="invoice_id" value={invoice.id} />
+          <button className="btn-secondary">Send via Provider</button>
+        </form>
         <a className="btn-secondary" href={emailLink}>
           ส่งอีเมล
         </a>
@@ -203,6 +207,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 </div>
               ))}
               {!payments.length && <p className="text-sm text-gray-500">ยังไม่มีการรับชำระ</p>}
+            </div>
+          </section>
+
+          <section className="card p-5">
+            <h2 className="font-black">Email Log</h2>
+            <div className="mt-4 space-y-3">
+              {emailLogs.map((log) => (
+                <div key={log.id} className="rounded-xl border border-gray-200 p-3">
+                  <p className="font-bold">{log.status}</p>
+                  <p className="text-sm text-gray-500">{log.recipient_email}</p>
+                  <p className="mt-1 text-xs text-gray-500">{log.error_message ?? log.provider_message_id ?? log.created_at}</p>
+                </div>
+              ))}
+              {!emailLogs.length && <p className="text-sm text-gray-500">No email sent yet.</p>}
             </div>
           </section>
 

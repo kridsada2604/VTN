@@ -46,3 +46,8 @@ export async function postInvoicePaymentToAccounting(paymentId: string) {
   const companyId = await getCurrentCompanyId();
   return new InvoiceRepository(supabase).postPaymentToAccounting(companyId, paymentId);
 }
+
+export async function sendInvoiceEmail(invoiceId: string) {
+  const supabase = await createClient();
+  return new InvoiceRepository(supabase).sendEmail(invoiceId);
+}

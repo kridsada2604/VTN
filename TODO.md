@@ -71,7 +71,7 @@
 - [x] เพิ่ม Validation สำหรับ Invoice และ Receive Payment
 - [x] เพิ่ม Migration, RLS, Audit Log และ Permission
 - [ ] เชื่อม Sales Order → Invoice หลังจาก Sales Order schema พร้อมใน repo
-- [ ] เพิ่ม email provider จริง เช่น Resend หรือ Supabase Edge Function
+- [x] เพิ่ม email provider จริง เช่น Resend หรือ Supabase Edge Function
 - [ ] เพิ่ม PDF renderer server-side สำหรับเอกสารแนบอีเมล
 - [x] เพิ่ม error boundary foundation สำหรับ route/render errors
 - [ ] เพิ่ม toast สำหรับ server action errors

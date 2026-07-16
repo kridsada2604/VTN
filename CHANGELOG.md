@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.3 — Invoice Email Provider
+- Add document email logs with RLS for sales invoices.
+- Add Supabase Edge Function `invoice-email` with Resend-compatible provider support.
+- Add invoice provider-send action and email log panel on invoice detail.
+
 ## v0.19.2 — Application Error Boundaries
 - Add dashboard route error boundary with retry and dashboard recovery path.
 - Add global application error boundary for root-level rendering failures.

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createInvoice, postInvoicePaymentToAccounting, postInvoiceToAccounting, receiveInvoicePayment } from "@/lib/services/sales/invoice-service";
+import { createInvoice, postInvoicePaymentToAccounting, postInvoiceToAccounting, receiveInvoicePayment, sendInvoiceEmail } from "@/lib/services/sales/invoice-service";
 import { parseInvoiceForm, parseReceivePaymentForm } from "@/lib/validation/sales/invoice";
 
 export async function saveInvoice(fd: FormData) {
@@ -38,5 +38,13 @@ export async function postPaymentAccountingAction(fd: FormData) {
   revalidatePath(`/sales/invoices/${invoiceId}`);
   revalidatePath("/accounting");
   revalidatePath("/accounting/journal");
+  redirect(`/sales/invoices/${invoiceId}`);
+}
+
+export async function sendInvoiceEmailAction(fd: FormData) {
+  const invoiceId = String(fd.get("invoice_id") ?? "");
+  if (!invoiceId) throw new Error("ไม่พบ Invoice");
+  await sendInvoiceEmail(invoiceId);
+  revalidatePath(`/sales/invoices/${invoiceId}`);
   redirect(`/sales/invoices/${invoiceId}`);
 }

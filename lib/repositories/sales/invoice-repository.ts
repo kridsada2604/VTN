@@ -72,6 +72,18 @@ export type InvoiceEventRow = {
   created_at: string;
 };
 
+export type DocumentEmailLogRow = {
+  id: string;
+  recipient_email: string;
+  subject: string;
+  provider: string;
+  status: string;
+  provider_message_id: string | null;
+  error_message: string | null;
+  sent_at: string | null;
+  created_at: string;
+};
+
 export class InvoiceRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -115,7 +127,7 @@ export class InvoiceRepository {
   }
 
   async getById(companyId: string, invoiceId: string) {
-    const [invoice, items, payments, events] = await Promise.all([
+    const [invoice, items, payments, events, emailLogs] = await Promise.all([
       this.supabase
         .from("sales_invoices")
         .select("*,customers(code,name,tax_id,email,phone,address)")
@@ -137,18 +149,27 @@ export class InvoiceRepository {
         .select("id,event_type,message,created_at")
         .eq("invoice_id", invoiceId)
         .order("created_at", { ascending: false }),
+      this.supabase
+        .from("document_email_logs")
+        .select("id,recipient_email,subject,provider,status,provider_message_id,error_message,sent_at,created_at")
+        .eq("company_id", companyId)
+        .eq("document_type", "SALES_INVOICE")
+        .eq("document_id", invoiceId)
+        .order("created_at", { ascending: false }),
     ]);
 
     if (invoice.error) throw invoice.error;
     if (items.error) throw items.error;
     if (payments.error) throw payments.error;
     if (events.error) throw events.error;
+    if (emailLogs.error) throw emailLogs.error;
 
     return {
       invoice: invoice.data as InvoiceDetail | null,
       items: (items.data ?? []) as InvoiceItemRow[],
       payments: (payments.data ?? []) as InvoicePaymentRow[],
       events: (events.data ?? []) as InvoiceEventRow[],
+      emailLogs: (emailLogs.data ?? []) as DocumentEmailLogRow[],
     };
   }
 
@@ -210,5 +231,14 @@ export class InvoiceRepository {
 
     if (error) throw error;
     return String(data);
+  }
+
+  async sendEmail(invoiceId: string) {
+    const { error } = await this.supabase.functions.invoke("invoice-email", {
+      body: { invoice_id: invoiceId },
+    });
+
+    if (error) throw error;
+    return invoiceId;
   }
 }
