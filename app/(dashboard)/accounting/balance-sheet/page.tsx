@@ -10,10 +10,11 @@ export default async function Page() {
     <div>
       <PageHeader eyebrow="ACCOUNTING" title="Balance Sheet" description="รายงานฐานะการเงินจากยอดบัญชี Asset, Liability และ Equity" />
       <div className="my-6"><Link className="btn-secondary" href="/accounting">← กลับบัญชี</Link></div>
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-4">
         <div className="card p-5"><p className="text-sm text-gray-500">Assets</p><p className="mt-2 text-3xl font-black">฿{formatDocumentMoney(totals.assets)}</p></div>
         <div className="card p-5"><p className="text-sm text-gray-500">Liabilities</p><p className="mt-2 text-3xl font-black">฿{formatDocumentMoney(totals.liabilities)}</p></div>
         <div className="card p-5"><p className="text-sm text-gray-500">Equity</p><p className="mt-2 text-3xl font-black">฿{formatDocumentMoney(totals.equity)}</p></div>
+        <div className="card p-5"><p className="text-sm text-gray-500">Balance Check</p><p className="mt-2 text-3xl font-black text-orange-700">฿{formatDocumentMoney(totals.balanceCheck)}</p></div>
       </section>
       <section className="card table-wrap mt-6">
         <table className="data-table">

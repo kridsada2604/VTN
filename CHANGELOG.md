@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.19.4 — Account Type Financial Statement Check
+- Add Balance Sheet balance check from account-type grouped financial reports.
+- Confirm Sprint 9 financial statements are generated from accounting account types.
+
 ## v0.19.3 — Invoice Email Provider
 - Add document email logs with RLS for sales invoices.
 - Add Supabase Edge Function `invoice-email` with Resend-compatible provider support.

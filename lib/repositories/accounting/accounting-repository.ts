@@ -167,6 +167,7 @@ export class AccountingRepository {
         liabilities,
         equity,
         liabilitiesAndEquity: liabilities + equity,
+        balanceCheck: assets - (liabilities + equity),
         cashMovement,
       },
     };

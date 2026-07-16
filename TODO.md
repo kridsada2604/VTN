@@ -101,7 +101,7 @@
 - [x] เชื่อม Invoice posting อัตโนมัติ
 - [x] เชื่อม Receive Payment posting อัตโนมัติ
 - [x] เพิ่ม Journal Entry manual form
-- [ ] เพิ่มงบการเงินจาก account type
+- [x] เพิ่มงบการเงินจาก account type
 
 ## Sprint 10 — Purchase
 - [x] Supplier
