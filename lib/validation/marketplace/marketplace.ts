@@ -47,6 +47,11 @@ export type ConvertMarketplaceOrderInput = {
   notes: string | null;
 };
 
+export type TriggerMarketplaceSyncInput = {
+  channel_id: string;
+  trigger_source: "MANUAL" | "SCHEDULED" | "WEBHOOK" | "SYSTEM";
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -150,5 +155,19 @@ export function parseMarketplaceConvertForm(fd: FormData): ConvertMarketplaceOrd
 
   if (!input.order_id) throw new Error("Marketplace order is required");
   if (input.auto_deliver && !input.warehouse_id) throw new Error("Warehouse is required for auto delivery");
+  return input;
+}
+
+export function parseMarketplaceSyncForm(fd: FormData): TriggerMarketplaceSyncInput {
+  const triggerSource = text(fd, "trigger_source").toUpperCase() || "MANUAL";
+  if (!["MANUAL", "SCHEDULED", "WEBHOOK", "SYSTEM"].includes(triggerSource)) throw new Error("Invalid marketplace sync trigger source");
+
+  const input = {
+    channel_id: text(fd, "channel_id"),
+    trigger_source: triggerSource as TriggerMarketplaceSyncInput["trigger_source"],
+  };
+
+  if (!input.channel_id) throw new Error("Marketplace channel is required");
+
   return input;
 }

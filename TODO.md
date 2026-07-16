@@ -33,8 +33,8 @@
 - [x] Marketplace order timeline
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
-- [ ] API connector ต่อ Shopee/Lazada/TikTok จริง
-- [ ] Auto sync orders ผ่าน Edge Function
+- [x] API connector ต่อ Shopee/Lazada/TikTok จริง
+- [x] Auto sync orders ผ่าน Edge Function
 - [x] Convert Marketplace Order → Sales Order / Delivery
 - [x] Marketplace fee reconciliation
 - [x] Unmapped SKU management page

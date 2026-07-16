@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.19.1 — Marketplace Sync Foundation
+- Add marketplace sync logs with RLS, audit log, and start/finish RPCs.
+- Add Supabase Edge Function `marketplace-sync` as the connector entry point.
+- Add Marketplace dashboard sync trigger and latest sync log view.
+
 ## v0.19.0 — AI Action Approval Queue
 - Add `ai_action_requests` with RLS, audit log, and approval/rejection RPCs.
 - Add AI service/repository/validation workflow for queued action requests.

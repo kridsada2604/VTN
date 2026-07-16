@@ -2,8 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { convertMarketplaceOrder, createMarketplaceChannel, createMarketplaceFee, importMarketplaceOrder, mapMarketplaceSku } from "@/lib/services/marketplace/marketplace-service";
-import { parseMarketplaceChannelForm, parseMarketplaceConvertForm, parseMarketplaceFeeForm, parseMarketplaceOrderForm, parseMarketplaceSkuMappingForm } from "@/lib/validation/marketplace/marketplace";
+import {
+  convertMarketplaceOrder,
+  createMarketplaceChannel,
+  createMarketplaceFee,
+  importMarketplaceOrder,
+  mapMarketplaceSku,
+  triggerMarketplaceSync,
+} from "@/lib/services/marketplace/marketplace-service";
+import {
+  parseMarketplaceChannelForm,
+  parseMarketplaceConvertForm,
+  parseMarketplaceFeeForm,
+  parseMarketplaceOrderForm,
+  parseMarketplaceSkuMappingForm,
+  parseMarketplaceSyncForm,
+} from "@/lib/validation/marketplace/marketplace";
 
 export async function saveMarketplaceChannel(fd: FormData) {
   await createMarketplaceChannel(parseMarketplaceChannelForm(fd));
@@ -42,4 +56,10 @@ export async function convertMarketplaceOrderAction(fd: FormData) {
 
   if (result.sales_order_id) redirect(`/sales/orders/${result.sales_order_id}`);
   redirect(`/marketplace/orders/${input.order_id}`);
+}
+
+export async function syncMarketplaceChannelAction(fd: FormData) {
+  await triggerMarketplaceSync(parseMarketplaceSyncForm(fd));
+  revalidatePath("/marketplace");
+  redirect("/marketplace");
 }

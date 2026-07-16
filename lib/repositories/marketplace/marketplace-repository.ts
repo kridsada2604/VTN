@@ -1,5 +1,12 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { ConvertMarketplaceOrderInput, CreateMarketplaceChannelInput, CreateMarketplaceFeeInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
+import type {
+  ConvertMarketplaceOrderInput,
+  CreateMarketplaceChannelInput,
+  CreateMarketplaceFeeInput,
+  ImportMarketplaceOrderInput,
+  MapMarketplaceSkuInput,
+  TriggerMarketplaceSyncInput,
+} from "@/lib/validation/marketplace/marketplace";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -68,6 +75,18 @@ export type UnmappedMarketplaceSkuRow = {
   latest_order_no: string;
 };
 
+export type MarketplaceSyncLogRow = {
+  id: string;
+  channel_id: string;
+  trigger_source: string;
+  status: string;
+  orders_imported: number | string;
+  error_message: string | null;
+  started_at: string;
+  finished_at: string | null;
+  marketplace_channels: { name: string; platform: string }[] | null;
+};
+
 type RawUnmappedMarketplaceItem = {
   id: string;
   marketplace_sku: string;
@@ -87,7 +106,7 @@ export class MarketplaceRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
   async dashboard(companyId: string) {
-    const [channels, orders] = await Promise.all([
+    const [channels, orders, syncLogs] = await Promise.all([
       this.supabase
         .from("marketplace_channels")
         .select("id,name,platform,shop_code,status,sync_status,last_synced_at")
@@ -98,14 +117,22 @@ export class MarketplaceRepository {
         .select("id,order_no,external_order_no,order_date,status,payment_status,fulfillment_status,buyer_name,total_amount,marketplace_channels(name,platform)")
         .eq("company_id", companyId)
         .order("order_date", { ascending: false }),
+      this.supabase
+        .from("marketplace_sync_logs")
+        .select("id,channel_id,trigger_source,status,orders_imported,error_message,started_at,finished_at,marketplace_channels(name,platform)")
+        .eq("company_id", companyId)
+        .order("started_at", { ascending: false })
+        .limit(10),
     ]);
 
     if (channels.error) throw channels.error;
     if (orders.error) throw orders.error;
+    if (syncLogs.error) throw syncLogs.error;
 
     return {
       channels: (channels.data ?? []) as MarketplaceChannelRow[],
       orders: (orders.data ?? []) as MarketplaceOrderRow[],
+      syncLogs: (syncLogs.data ?? []) as MarketplaceSyncLogRow[],
     };
   }
 
@@ -297,5 +324,35 @@ export class MarketplaceRepository {
 
     if (error) throw error;
     return data as { sales_order_id?: string; sales_delivery_id?: string | null };
+  }
+
+  async triggerSync(companyId: string, input: TriggerMarketplaceSyncInput) {
+    const { error } = await this.supabase.functions.invoke("marketplace-sync", {
+      body: {
+        channel_id: input.channel_id,
+        trigger_source: input.trigger_source,
+      },
+    });
+
+    if (!error) return input.channel_id;
+
+    const { data: syncLogId, error: startError } = await this.supabase.rpc("start_marketplace_sync", {
+      p_company_id: companyId,
+      p_channel_id: input.channel_id,
+      p_trigger_source: input.trigger_source,
+    });
+
+    if (startError) throw startError;
+
+    const { error: finishError } = await this.supabase.rpc("finish_marketplace_sync", {
+      p_company_id: companyId,
+      p_sync_log_id: syncLogId,
+      p_status: "FAILED",
+      p_orders_imported: 0,
+      p_error_message: error.message,
+    });
+
+    if (finishError) throw finishError;
+    return input.channel_id;
   }
 }

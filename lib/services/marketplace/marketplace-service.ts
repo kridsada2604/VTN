@@ -1,7 +1,14 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
 import { MarketplaceRepository } from "@/lib/repositories/marketplace/marketplace-repository";
 import { createClient } from "@/lib/supabase/server";
-import type { ConvertMarketplaceOrderInput, CreateMarketplaceChannelInput, CreateMarketplaceFeeInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
+import type {
+  ConvertMarketplaceOrderInput,
+  CreateMarketplaceChannelInput,
+  CreateMarketplaceFeeInput,
+  ImportMarketplaceOrderInput,
+  MapMarketplaceSkuInput,
+  TriggerMarketplaceSyncInput,
+} from "@/lib/validation/marketplace/marketplace";
 
 export async function getMarketplaceDashboard() {
   const supabase = await createClient();
@@ -55,4 +62,10 @@ export async function convertMarketplaceOrder(input: ConvertMarketplaceOrderInpu
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
   return new MarketplaceRepository(supabase).convertOrder(companyId, input);
+}
+
+export async function triggerMarketplaceSync(input: TriggerMarketplaceSyncInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new MarketplaceRepository(supabase).triggerSync(companyId, input);
 }

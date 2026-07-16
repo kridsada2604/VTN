@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { getMarketplaceDashboard } from "@/lib/services/marketplace/marketplace-service";
+import { syncMarketplaceChannelAction } from "./actions";
 
 const money = (value: number | string) => Number(value).toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
 export default async function Page() {
-  const { channels, orders } = await getMarketplaceDashboard();
+  const { channels, orders, syncLogs } = await getMarketplaceDashboard();
   const importedTotal = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
   const pendingOrders = orders.filter((order) => order.fulfillment_status === "PENDING").length;
 
@@ -58,9 +59,20 @@ export default async function Page() {
                   <td>
                     <b>{channel.name}</b>
                     <p className="text-xs text-gray-500">{channel.shop_code}</p>
+                    <p className="mt-1 text-xs text-gray-400">Last sync {channel.last_synced_at ?? "-"}</p>
                   </td>
                   <td>{channel.platform}</td>
-                  <td>{channel.status}</td>
+                  <td>
+                    <p>{channel.status}</p>
+                    <p className="text-xs text-gray-500">{channel.sync_status}</p>
+                    {channel.status === "ACTIVE" && (
+                      <form action={syncMarketplaceChannelAction} className="mt-2">
+                        <input type="hidden" name="channel_id" value={channel.id} />
+                        <input type="hidden" name="trigger_source" value="MANUAL" />
+                        <button className="btn-secondary btn-small">Sync</button>
+                      </form>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -103,6 +115,40 @@ export default async function Page() {
           </table>
           {!orders.length && <p className="p-6 text-gray-500">No marketplace orders yet.</p>}
         </div>
+      </section>
+
+      <section className="card table-wrap mt-6">
+        <div className="border-b p-4">
+          <h2 className="font-black">Sync Logs</h2>
+        </div>
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Trigger</th>
+              <th>Status</th>
+              <th>Imported</th>
+              <th>Started</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            {syncLogs.map((log) => (
+              <tr key={log.id}>
+                <td>
+                  <b>{log.marketplace_channels?.[0]?.name ?? "-"}</b>
+                  <p className="text-xs text-gray-500">{log.marketplace_channels?.[0]?.platform ?? "-"}</p>
+                </td>
+                <td>{log.trigger_source}</td>
+                <td>{log.status}</td>
+                <td>{log.orders_imported}</td>
+                <td>{log.started_at}</td>
+                <td className="text-xs text-gray-500">{log.error_message ?? log.finished_at ?? "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!syncLogs.length && <p className="p-6 text-gray-500">No marketplace sync logs yet.</p>}
       </section>
     </div>
   );
