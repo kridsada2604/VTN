@@ -22,7 +22,7 @@
 - [x] Migration, RLS, Permission และ Audit Log
 - [ ] OpenAI provider integration via Supabase Edge Function
 - [ ] Tool calling/action execution with permission checks
-- [ ] AI-generated dashboard summary
+- [x] AI-generated dashboard summary
 - [ ] AI recommendation to task/action queue
 - [ ] Conversation follow-up message UI
 

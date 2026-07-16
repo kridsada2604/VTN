@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.6 — AI Dashboard Summary
+- Add AI-generated ERP dashboard summary from live ERP signals.
+- Summarize unpaid invoices, low stock, marketplace fulfillment, and open claims.
+- Add focus area chips to AI Assistant dashboard.
+- No database migration required.
+
 ## v0.18.5 — Marketplace Sales Conversion
 - Add Marketplace Order conversion to Sales Order.
 - Add optional reserve and delivery creation during conversion.

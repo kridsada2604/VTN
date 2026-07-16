@@ -35,6 +35,12 @@ export type AiInsight = {
   priority: "LOW" | "NORMAL" | "HIGH" | "URGENT";
 };
 
+export type AiDashboardSummary = {
+  headline: string;
+  summary: string;
+  focusAreas: string[];
+};
+
 export class AiRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -107,10 +113,30 @@ export class AiRepository {
       },
     ];
 
+    const openInvoiceCount = invoices.count ?? 0;
+    const lowStockCount = stockBalances.count ?? 0;
+    const pendingMarketplaceCount = marketplaceOrders.count ?? 0;
+    const openClaimCount = claims.count ?? 0;
+    const focusAreas = [
+      openInvoiceCount > 0 ? `Follow up ${openInvoiceCount} unpaid invoice(s)` : null,
+      lowStockCount > 0 ? `Review ${lowStockCount} low or empty stock balance(s)` : null,
+      pendingMarketplaceCount > 0 ? `Fulfill ${pendingMarketplaceCount} marketplace order(s)` : null,
+      openClaimCount > 0 ? `Resolve ${openClaimCount} open claim(s)` : null,
+    ].filter(Boolean) as string[];
+
+    const summary: AiDashboardSummary = {
+      headline: focusAreas.length ? "ERP needs operational attention" : "ERP operations look stable",
+      summary: focusAreas.length
+        ? `AI reviewed finance, inventory, marketplace, and claims signals. The strongest attention points are: ${focusAreas.join("; ")}.`
+        : "AI reviewed the core ERP signals and did not find urgent finance, inventory, marketplace, or claim exceptions.",
+      focusAreas,
+    };
+
     return {
       conversations: (conversations.data ?? []) as AiConversationRow[],
       suggestions: (suggestions.data ?? []) as AiSuggestionRow[],
       insights,
+      summary,
     };
   }
 
