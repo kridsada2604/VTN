@@ -24,6 +24,13 @@ export type CreateClaimResolutionInput = {
   notes: string | null;
 };
 
+export type CreateWarrantyPolicyInput = {
+  product_id: string | null;
+  policy_name: string;
+  duration_days: number;
+  coverage: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -78,5 +85,18 @@ export function parseClaimResolutionForm(fd: FormData): CreateClaimResolutionInp
   if ((input.action_type === "REFUND" || input.action_type === "CREDIT_NOTE") && input.amount <= 0) {
     throw new Error("Refund or credit note amount must be greater than zero");
   }
+  return input;
+}
+
+export function parseWarrantyPolicyForm(fd: FormData): CreateWarrantyPolicyInput {
+  const input: CreateWarrantyPolicyInput = {
+    product_id: text(fd, "product_id") || null,
+    policy_name: text(fd, "policy_name"),
+    duration_days: numberOrZero(fd.get("duration_days")),
+    coverage: text(fd, "coverage") || null,
+  };
+
+  if (!input.policy_name) throw new Error("Warranty policy name is required");
+  if (input.duration_days < 0) throw new Error("Warranty duration must not be negative");
   return input;
 }

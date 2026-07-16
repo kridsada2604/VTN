@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.7 — Warranty Policy
+- Add warranty policy setup page.
+- Add warranty policy table with RLS and audit log.
+- Add warranty policy create workflow through Service/Repository.
+- Add SQL Migration `supabase/phase-3.9.sql`.
+
 ## v0.17.6 — Claim Resolution Actions
 - Add claim replacement, refund, and credit note resolution workflow.
 - Add claim resolution history and resolution action form.

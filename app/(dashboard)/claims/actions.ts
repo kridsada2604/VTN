@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClaim, createClaimResolution, updateClaimStatus } from "@/lib/services/claims/claim-service";
-import { parseClaimForm, parseClaimResolutionForm, parseClaimStatusForm } from "@/lib/validation/claims/claim";
+import { createClaim, createClaimResolution, createWarrantyPolicy, updateClaimStatus } from "@/lib/services/claims/claim-service";
+import { parseClaimForm, parseClaimResolutionForm, parseClaimStatusForm, parseWarrantyPolicyForm } from "@/lib/validation/claims/claim";
 
 export async function saveClaim(fd: FormData) {
   const id = await createClaim(parseClaimForm(fd));
@@ -27,4 +27,11 @@ export async function createClaimResolutionAction(fd: FormData) {
   revalidatePath("/inventory");
   revalidatePath("/inventory/stock-card");
   redirect(`/claims/${input.claim_id}`);
+}
+
+export async function saveWarrantyPolicy(fd: FormData) {
+  await createWarrantyPolicy(parseWarrantyPolicyForm(fd));
+  revalidatePath("/claims");
+  revalidatePath("/claims/warranty");
+  redirect("/claims/warranty");
 }

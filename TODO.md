@@ -58,7 +58,7 @@
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Claim status workflow actions
 - [x] Replacement / Refund / Credit Note flow
-- [ ] Warranty policy
+- [x] Warranty policy
 
 ## Sprint 7 — Invoice / Receive Payment / PDF / Email / Document Engine
 - [x] เพิ่ม Invoice list/create/detail

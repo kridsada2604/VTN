@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateClaimInput, CreateClaimResolutionInput, UpdateClaimStatusInput } from "@/lib/validation/claims/claim";
+import type { CreateClaimInput, CreateClaimResolutionInput, CreateWarrantyPolicyInput, UpdateClaimStatusInput } from "@/lib/validation/claims/claim";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -34,6 +34,16 @@ export type ClaimResolutionRow = {
   warehouses: { name: string }[] | null;
 };
 
+export type WarrantyPolicyRow = {
+  id: string;
+  policy_name: string;
+  duration_days: number;
+  coverage: string | null;
+  is_active: boolean;
+  created_at: string;
+  products: { sku: string; name: string }[] | null;
+};
+
 export class ClaimRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -58,6 +68,25 @@ export class ClaimRepository {
     if (products.error) throw products.error;
 
     return { customers: customers.data ?? [], products: products.data ?? [] };
+  }
+
+  async getWarrantyPolicies(companyId: string) {
+    const [policies, products] = await Promise.all([
+      this.supabase
+        .from("warranty_policies")
+        .select("id,policy_name,duration_days,coverage,is_active,created_at,products(sku,name)")
+        .eq("company_id", companyId)
+        .order("created_at", { ascending: false }),
+      this.supabase.from("products").select("id,sku,name").eq("company_id", companyId).eq("is_active", true).order("name"),
+    ]);
+
+    if (policies.error) throw policies.error;
+    if (products.error) throw products.error;
+
+    return {
+      policies: (policies.data ?? []) as WarrantyPolicyRow[],
+      products: products.data ?? [],
+    };
   }
 
   async getById(companyId: string, claimId: string) {
@@ -127,6 +156,19 @@ export class ClaimRepository {
       p_quantity: input.quantity,
       p_amount: input.amount,
       p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async createWarrantyPolicy(companyId: string, input: CreateWarrantyPolicyInput) {
+    const { data, error } = await this.supabase.rpc("create_warranty_policy", {
+      p_company_id: companyId,
+      p_product_id: input.product_id,
+      p_policy_name: input.policy_name,
+      p_duration_days: input.duration_days,
+      p_coverage: input.coverage,
     });
 
     if (error) throw error;
