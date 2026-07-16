@@ -30,5 +30,15 @@ export async function generateAiRecommendations() {
 export async function addAiConversationMessage(input: AddAiConversationMessageInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
+
+  const { error } = await supabase.functions.invoke("ai-provider", {
+    body: {
+      conversation_id: input.conversation_id,
+      message: input.message,
+    },
+  });
+
+  if (!error) return input.conversation_id;
+
   return new AiRepository(supabase).addMessage(companyId, input);
 }

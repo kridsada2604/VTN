@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.9 — OpenAI Edge Provider
+- Add Supabase Edge Function `ai-provider` for OpenAI Responses API.
+- Wire AI conversation follow-up to call the provider with fallback placeholder behavior.
+- Add OpenAI provider environment variables to `.env.example`.
+- No database migration required.
+
 ## v0.18.8 — AI Conversation Follow-up
 - Add follow-up message form to AI conversation detail.
 - Add Service/Repository action and Supabase RPC to append messages.

@@ -20,7 +20,7 @@
 - [x] Suggestion queue foundation
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
-- [ ] OpenAI provider integration via Supabase Edge Function
+- [x] OpenAI provider integration via Supabase Edge Function
 - [ ] Tool calling/action execution with permission checks
 - [x] AI-generated dashboard summary
 - [x] AI recommendation to task/action queue
