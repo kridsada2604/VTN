@@ -40,6 +40,13 @@ export type CreateMarketplaceFeeInput = {
   notes: string | null;
 };
 
+export type ConvertMarketplaceOrderInput = {
+  order_id: string;
+  warehouse_id: string | null;
+  auto_deliver: boolean;
+  notes: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -130,5 +137,18 @@ export function parseMarketplaceFeeForm(fd: FormData): CreateMarketplaceFeeInput
   if (!["COMMISSION", "PAYMENT", "SHIPPING", "VOUCHER", "SERVICE", "OTHER"].includes(input.fee_type)) throw new Error("Invalid marketplace fee type");
   if (input.amount <= 0) throw new Error("Marketplace fee amount must be greater than zero");
 
+  return input;
+}
+
+export function parseMarketplaceConvertForm(fd: FormData): ConvertMarketplaceOrderInput {
+  const input: ConvertMarketplaceOrderInput = {
+    order_id: text(fd, "order_id"),
+    warehouse_id: text(fd, "warehouse_id") || null,
+    auto_deliver: text(fd, "auto_deliver") === "on",
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!input.order_id) throw new Error("Marketplace order is required");
+  if (input.auto_deliver && !input.warehouse_id) throw new Error("Warehouse is required for auto delivery");
   return input;
 }

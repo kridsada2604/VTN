@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.5 — Marketplace Sales Conversion
+- Add Marketplace Order conversion to Sales Order.
+- Add optional reserve and delivery creation during conversion.
+- Link converted Marketplace Orders to Sales Orders and Delivery records.
+- Add SQL Migration `supabase/phase-4.6.sql`.
+
 ## v0.18.4 — FIFO Issue Consumption
 - Add stock layer consumption tracking table.
 - Consume FIFO layers for ISSUE, ADJUSTMENT_OUT, and TRANSFER_OUT when product costing method is FIFO.

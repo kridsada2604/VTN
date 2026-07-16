@@ -2,17 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { getMarketplaceOrderDetail } from "@/lib/services/marketplace/marketplace-service";
-import { createMarketplaceFeeAction } from "../../actions";
+import { convertMarketplaceOrderAction, createMarketplaceFeeAction } from "../../actions";
 
 const money = (value: number | string) => Number(value).toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { order, items, fees, events } = await getMarketplaceOrderDetail(id);
+  const { order, items, fees, events, warehouses } = await getMarketplaceOrderDetail(id);
   if (!order) notFound();
 
   const feeTotal = fees.reduce((sum, fee) => sum + Number(fee.amount), 0);
   const netAfterFees = Number(order.total_amount) - feeTotal;
+  const hasUnmappedItems = items.some((item) => item.mapping_status !== "MAPPED");
 
   return (
     <div>
@@ -111,6 +112,43 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </div>
 
         <aside className="space-y-6">
+          <div className="card p-5">
+            <h2 className="font-black">Convert to Sales</h2>
+            {order.sales_order_id ? (
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-gray-500">This marketplace order has already been converted.</p>
+                <Link className="btn-primary w-full" href={`/sales/orders/${order.sales_order_id}`}>Open Sales Order</Link>
+              </div>
+            ) : hasUnmappedItems ? (
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-gray-500">Map all marketplace SKUs before converting to Sales Order.</p>
+                <Link className="btn-secondary w-full" href="/marketplace/unmapped">Open Unmapped SKU</Link>
+              </div>
+            ) : (
+              <form action={convertMarketplaceOrderAction} className="mt-4 space-y-3">
+                <input type="hidden" name="order_id" value={order.id} />
+                <label>
+                  <span className="label">Warehouse</span>
+                  <select className="input" name="warehouse_id" defaultValue="">
+                    <option value="">Create Sales Order only</option>
+                    {warehouses.map((warehouse) => (
+                      <option key={warehouse.id} value={warehouse.id}>{warehouse.code} - {warehouse.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="flex items-center gap-2 text-sm font-bold">
+                  <input type="checkbox" name="auto_deliver" />
+                  Reserve and create delivery immediately
+                </label>
+                <label>
+                  <span className="label">Notes</span>
+                  <textarea className="input textarea" name="notes" placeholder="Conversion note or fulfillment instruction" />
+                </label>
+                <button className="btn-primary w-full">Convert</button>
+              </form>
+            )}
+          </div>
+
           <div className="card space-y-2 p-5">
             <div className="flex justify-between"><span>Subtotal</span><b>THB {money(order.subtotal)}</b></div>
             <div className="flex justify-between"><span>Discount</span><b>THB {money(order.discount_amount)}</b></div>

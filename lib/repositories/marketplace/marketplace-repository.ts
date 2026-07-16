@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateMarketplaceChannelInput, CreateMarketplaceFeeInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
+import type { ConvertMarketplaceOrderInput, CreateMarketplaceChannelInput, CreateMarketplaceFeeInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -33,6 +33,8 @@ export type MarketplaceOrderDetail = MarketplaceOrderRow & {
   discount_amount: number | string;
   shipping_fee: number | string;
   tax_amount: number | string;
+  sales_order_id: string | null;
+  sales_delivery_id: string | null;
 };
 
 export type MarketplaceOrderItemRow = {
@@ -133,7 +135,7 @@ export class MarketplaceRepository {
   }
 
   async getOrderById(companyId: string, orderId: string) {
-    const [order, items, fees, events] = await Promise.all([
+    const [order, items, fees, events, warehouses] = await Promise.all([
       this.supabase
         .from("marketplace_orders")
         .select("*,marketplace_channels(name,platform)")
@@ -156,18 +158,26 @@ export class MarketplaceRepository {
         .select("id,event_type,message,created_at")
         .eq("order_id", orderId)
         .order("created_at", { ascending: false }),
+      this.supabase
+        .from("warehouses")
+        .select("id,code,name")
+        .eq("company_id", companyId)
+        .eq("is_active", true)
+        .order("code"),
     ]);
 
     if (order.error) throw order.error;
     if (items.error) throw items.error;
     if (fees.error) throw fees.error;
     if (events.error) throw events.error;
+    if (warehouses.error) throw warehouses.error;
 
     return {
       order: order.data as MarketplaceOrderDetail | null,
       items: (items.data ?? []) as MarketplaceOrderItemRow[],
       fees: (fees.data ?? []) as MarketplaceFeeRow[],
       events: events.data ?? [],
+      warehouses: warehouses.data ?? [],
     };
   }
 
@@ -274,5 +284,18 @@ export class MarketplaceRepository {
 
     if (error) throw error;
     return String(data);
+  }
+
+  async convertOrder(companyId: string, input: ConvertMarketplaceOrderInput) {
+    const { data, error } = await this.supabase.rpc("convert_marketplace_order_to_sales", {
+      p_company_id: companyId,
+      p_marketplace_order_id: input.order_id,
+      p_warehouse_id: input.warehouse_id,
+      p_auto_deliver: input.auto_deliver,
+      p_notes: input.notes,
+    });
+
+    if (error) throw error;
+    return data as { sales_order_id?: string; sales_delivery_id?: string | null };
   }
 }

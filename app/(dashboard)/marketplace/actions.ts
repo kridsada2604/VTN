@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createMarketplaceChannel, createMarketplaceFee, importMarketplaceOrder, mapMarketplaceSku } from "@/lib/services/marketplace/marketplace-service";
-import { parseMarketplaceChannelForm, parseMarketplaceFeeForm, parseMarketplaceOrderForm, parseMarketplaceSkuMappingForm } from "@/lib/validation/marketplace/marketplace";
+import { convertMarketplaceOrder, createMarketplaceChannel, createMarketplaceFee, importMarketplaceOrder, mapMarketplaceSku } from "@/lib/services/marketplace/marketplace-service";
+import { parseMarketplaceChannelForm, parseMarketplaceConvertForm, parseMarketplaceFeeForm, parseMarketplaceOrderForm, parseMarketplaceSkuMappingForm } from "@/lib/validation/marketplace/marketplace";
 
 export async function saveMarketplaceChannel(fd: FormData) {
   await createMarketplaceChannel(parseMarketplaceChannelForm(fd));
@@ -29,5 +29,17 @@ export async function createMarketplaceFeeAction(fd: FormData) {
   await createMarketplaceFee(input);
   revalidatePath("/marketplace");
   revalidatePath(`/marketplace/orders/${input.order_id}`);
+  redirect(`/marketplace/orders/${input.order_id}`);
+}
+
+export async function convertMarketplaceOrderAction(fd: FormData) {
+  const input = parseMarketplaceConvertForm(fd);
+  const result = await convertMarketplaceOrder(input);
+  revalidatePath("/marketplace");
+  revalidatePath(`/marketplace/orders/${input.order_id}`);
+  revalidatePath("/sales/orders");
+  revalidatePath("/inventory");
+
+  if (result.sales_order_id) redirect(`/sales/orders/${result.sales_order_id}`);
   redirect(`/marketplace/orders/${input.order_id}`);
 }
