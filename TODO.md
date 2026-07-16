@@ -37,7 +37,7 @@
 - [ ] Auto sync orders ผ่าน Edge Function
 - [ ] Convert Marketplace Order → Sales Order / Delivery
 - [ ] Marketplace fee reconciliation
-- [ ] Unmapped SKU management page
+- [x] Unmapped SKU management page
 
 ## Sprint 14 — POS
 - [x] POS sale

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.8 — Marketplace Unmapped SKU
+- Add unmapped marketplace SKU management page.
+- Add SKU mapping workflow through Service/Repository and Supabase RPC.
+- Update marketplace order items to mapped products after mapping.
+- Add SQL Migration `supabase/phase-4.0.sql`.
+
 ## v0.17.7 — Warranty Policy
 - Add warranty policy setup page.
 - Add warranty policy table with RLS and audit log.

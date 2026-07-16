@@ -26,6 +26,13 @@ export type ImportMarketplaceOrderInput = {
   items: MarketplaceOrderItemInput[];
 };
 
+export type MapMarketplaceSkuInput = {
+  channel_id: string;
+  marketplace_sku: string;
+  marketplace_product_name: string | null;
+  product_id: string;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -85,6 +92,21 @@ export function parseMarketplaceOrderForm(fd: FormData): ImportMarketplaceOrderI
   if (input.items.some((item) => !item.marketplace_sku || !item.description || item.quantity <= 0 || item.unit_price < 0 || item.line_discount < 0)) {
     throw new Error("กรุณาตรวจสอบ SKU รายละเอียด จำนวน ราคา และส่วนลด");
   }
+
+  return input;
+}
+
+export function parseMarketplaceSkuMappingForm(fd: FormData): MapMarketplaceSkuInput {
+  const input: MapMarketplaceSkuInput = {
+    channel_id: text(fd, "channel_id"),
+    marketplace_sku: text(fd, "marketplace_sku"),
+    marketplace_product_name: text(fd, "marketplace_product_name") || null,
+    product_id: text(fd, "product_id"),
+  };
+
+  if (!input.channel_id) throw new Error("Marketplace channel is required");
+  if (!input.marketplace_sku) throw new Error("Marketplace SKU is required");
+  if (!input.product_id) throw new Error("Product is required");
 
   return input;
 }

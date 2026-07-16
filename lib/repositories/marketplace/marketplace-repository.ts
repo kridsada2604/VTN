@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import type { CreateMarketplaceChannelInput, ImportMarketplaceOrderInput } from "@/lib/validation/marketplace/marketplace";
+import type { CreateMarketplaceChannelInput, ImportMarketplaceOrderInput, MapMarketplaceSkuInput } from "@/lib/validation/marketplace/marketplace";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -45,6 +45,32 @@ export type MarketplaceOrderItemRow = {
   line_total: number | string;
   mapping_status: string;
   products: { sku: string; name: string }[] | null;
+};
+
+export type UnmappedMarketplaceSkuRow = {
+  channel_id: string;
+  channel_name: string;
+  platform: string;
+  marketplace_sku: string;
+  marketplace_product_name: string;
+  order_count: number;
+  quantity: number;
+  latest_order_no: string;
+};
+
+type RawUnmappedMarketplaceItem = {
+  id: string;
+  marketplace_sku: string;
+  description: string;
+  quantity: number | string;
+  marketplace_orders:
+    | {
+        channel_id: string;
+        order_no: string;
+        external_order_no: string;
+        marketplace_channels: { name: string; platform: string }[] | null;
+      }[]
+    | null;
 };
 
 export class MarketplaceRepository {
@@ -129,6 +155,52 @@ export class MarketplaceRepository {
     };
   }
 
+  async getUnmappedSkuManagement(companyId: string) {
+    const [items, products] = await Promise.all([
+      this.supabase
+        .from("marketplace_order_items")
+        .select("id,marketplace_sku,description,quantity,marketplace_orders!inner(channel_id,order_no,external_order_no,company_id,marketplace_channels(name,platform))")
+        .eq("mapping_status", "UNMAPPED")
+        .eq("marketplace_orders.company_id", companyId)
+        .order("marketplace_sku"),
+      this.supabase.from("products").select("id,sku,name").eq("company_id", companyId).eq("is_active", true).order("name"),
+    ]);
+
+    if (items.error) throw items.error;
+    if (products.error) throw products.error;
+
+    const grouped = new Map<string, UnmappedMarketplaceSkuRow>();
+    for (const item of (items.data ?? []) as RawUnmappedMarketplaceItem[]) {
+      const order = item.marketplace_orders?.[0];
+      if (!order) continue;
+      const channel = order.marketplace_channels?.[0];
+      const key = `${order.channel_id}:${item.marketplace_sku}`;
+      const existing = grouped.get(key);
+
+      if (existing) {
+        existing.order_count += 1;
+        existing.quantity += Number(item.quantity);
+        continue;
+      }
+
+      grouped.set(key, {
+        channel_id: order.channel_id,
+        channel_name: channel?.name ?? "-",
+        platform: channel?.platform ?? "-",
+        marketplace_sku: item.marketplace_sku,
+        marketplace_product_name: item.description,
+        order_count: 1,
+        quantity: Number(item.quantity),
+        latest_order_no: order.order_no,
+      });
+    }
+
+    return {
+      unmapped: Array.from(grouped.values()).sort((a, b) => a.marketplace_sku.localeCompare(b.marketplace_sku)),
+      products: products.data ?? [],
+    };
+  }
+
   async createChannel(companyId: string, input: CreateMarketplaceChannelInput) {
     const { data, error } = await this.supabase.rpc("create_marketplace_channel", {
       p_company_id: companyId,
@@ -160,5 +232,18 @@ export class MarketplaceRepository {
 
     if (error) throw error;
     return data as string;
+  }
+
+  async mapSku(companyId: string, input: MapMarketplaceSkuInput) {
+    const { data, error } = await this.supabase.rpc("map_marketplace_sku", {
+      p_company_id: companyId,
+      p_channel_id: input.channel_id,
+      p_marketplace_sku: input.marketplace_sku,
+      p_marketplace_product_name: input.marketplace_product_name,
+      p_product_id: input.product_id,
+    });
+
+    if (error) throw error;
+    return Number(data ?? 0);
   }
 }
