@@ -10,6 +10,12 @@ export async function getPurchaseOrders() {
   return new PurchaseOrderRepository(supabase).list(companyId);
 }
 
+export async function getPurchaseDashboard() {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new PurchaseOrderRepository(supabase).dashboard(companyId);
+}
+
 export async function getPurchaseOrderFormOptions() {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();

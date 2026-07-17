@@ -10,6 +10,12 @@
 - [ ] Sales commission rule engine from Sale Out
 - [ ] Dealer target vs actual analysis
 
+## Purchase Planning
+- [x] Purchase dashboard KPI from Service/Repository
+- [x] Pending receipt and overdue expected receipt visibility
+- [ ] Purchase suggestion from Sale Out / inventory demand
+- [ ] Supplier lead time and fill-rate analytics
+
 ## Sales Fulfillment
 - [x] Sales Order
 - [x] Reserve Stock

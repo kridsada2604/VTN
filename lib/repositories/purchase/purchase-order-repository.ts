@@ -55,6 +55,14 @@ export type PurchaseOrderEventRow = {
   created_at: string;
 };
 
+export type PurchaseDashboardSummary = {
+  totalOrders: number;
+  totalAmount: number;
+  outstandingAmount: number;
+  pendingReceiptCount: number;
+  overdueExpectedCount: number;
+};
+
 export class PurchaseOrderRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -67,6 +75,22 @@ export class PurchaseOrderRepository {
 
     if (error) throw error;
     return (data ?? []) as PurchaseOrderListRow[];
+  }
+
+  async dashboard(companyId: string) {
+    const orders = await this.list(companyId);
+    const today = new Date().toISOString().slice(0, 10);
+
+    return {
+      orders,
+      summary: {
+        totalOrders: orders.length,
+        totalAmount: orders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0),
+        outstandingAmount: orders.reduce((sum, order) => sum + Number(order.balance_amount || 0), 0),
+        pendingReceiptCount: orders.filter((order) => ["ORDERED", "PARTIALLY_RECEIVED"].includes(order.status)).length,
+        overdueExpectedCount: orders.filter((order) => !!order.expected_date && order.expected_date < today && ["ORDERED", "PARTIALLY_RECEIVED"].includes(order.status)).length,
+      } satisfies PurchaseDashboardSummary,
+    };
   }
 
   async getFormOptions(companyId: string) {

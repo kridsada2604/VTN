@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20.1 — Purchase Dashboard KPIs
+- Add Purchase dashboard summary from Purchase Order Service/Repository.
+- Show total PO amount, outstanding supplier balance, pending receipt count, and overdue expected receipts.
+- Add recent Purchase Orders table to the Purchase dashboard.
+
 ## v0.20.0 — Sale Out Dealer Sales Foundation
 - Add Sale Out report and item tables with RLS, audit log, and create RPC.
 - Add Sale Out Service, Repository, Validation, Calculator, and responsive form.
