@@ -1,5 +1,16 @@
 # TODO
 
+## Report Center
+- [x] Report Center foundation
+- [x] Sale In / Sale Out / Inventory / MOI / Runrate category model
+- [x] Upload registry with Service / Repository / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [ ] Supabase Storage direct file upload UI
+- [ ] File parser/import pipeline per report type
+- [ ] Sale In report schema and analytics
+- [ ] Inventory external report schema and analytics
+- [ ] MOI and Runrate analytics
+
 ## Sale Out / Dealer Sales
 - [x] Sale Out report foundation
 - [x] Dealer, salesperson, period, source channel, and SKU line capture

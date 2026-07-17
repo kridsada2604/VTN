@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20.2 — Report Center Foundation
+- Add Report Center for Sale In, Sale Out, Inventory, MOI, and Runrate categories.
+- Add report upload registry table with RLS, audit log, and create RPC.
+- Add Report Center Service, Repository, Validation, upload registration form, and dashboard.
+- Add Report Center navigation entry.
+
 ## v0.20.1 — Purchase Dashboard KPIs
 - Add Purchase dashboard summary from Purchase Order Service/Repository.
 - Show total PO amount, outstanding supplier balance, pending receipt count, and overdue expected receipts.
