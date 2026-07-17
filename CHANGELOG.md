@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20.4 — Report Center Storage Upload
+- Add private Supabase Storage bucket `report-imports` with company-scoped policies.
+- Upload report files directly from Report Center into Storage.
+- Automatically register uploaded files with storage path, bucket, original file name, and size.
+
 ## v0.20.3 — Report Center Category Status
 - Add clickable Report Center category cards.
 - Add category detail pages for Sale In, Sale Out, Inventory, MOI, and Runrate.

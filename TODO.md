@@ -6,7 +6,7 @@
 - [x] Clickable report category pages with module status
 - [x] Upload registry with Service / Repository / Validation
 - [x] Migration, RLS, Permission และ Audit Log
-- [ ] Supabase Storage direct file upload UI
+- [x] Supabase Storage direct file upload UI
 - [ ] File parser/import pipeline per report type
 - [ ] Sale In report schema and analytics
 - [ ] Inventory external report schema and analytics

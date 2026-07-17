@@ -10,6 +10,11 @@ export type CreateReportUploadInput = {
   notes: string | null;
 };
 
+export type CreateReportUploadWithFileInput = {
+  metadata: Omit<CreateReportUploadInput, "file_name" | "file_size_bytes" | "storage_bucket" | "storage_path">;
+  file: File;
+};
+
 const reportTypes = ["SALE_IN", "SALE_OUT", "INVENTORY", "MOI", "RUNRATE", "OTHER"] as const;
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
@@ -39,4 +44,25 @@ export function parseReportUploadForm(fd: FormData): CreateReportUploadInput {
   if (input.period_start && input.period_end && input.period_start > input.period_end) throw new Error("Period start must be before period end");
 
   return input;
+}
+
+export function parseReportUploadFileForm(fd: FormData): CreateReportUploadWithFileInput {
+  const reportType = text(fd, "report_type").toUpperCase();
+  if (!reportTypes.includes(reportType as CreateReportUploadInput["report_type"])) throw new Error("Invalid report type");
+
+  const file = fd.get("file");
+  if (!(file instanceof File) || file.size <= 0) throw new Error("Report file is required");
+
+  const metadata = {
+    report_type: reportType as CreateReportUploadInput["report_type"],
+    source_name: text(fd, "source_name"),
+    period_start: text(fd, "period_start") || null,
+    period_end: text(fd, "period_end") || null,
+    notes: text(fd, "notes") || null,
+  };
+
+  if (!metadata.source_name) throw new Error("Source name is required");
+  if (metadata.period_start && metadata.period_end && metadata.period_start > metadata.period_end) throw new Error("Period start must be before period end");
+
+  return { metadata, file };
 }
