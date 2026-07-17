@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { FileSpreadsheet } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { getReportCenterCategory } from "@/lib/services/reports/report-center-service";
+import { importSaleOutUploadAction } from "../actions";
 
 const statusClass: Record<string, string> = {
   READY: "bg-green-100 text-green-800",
@@ -11,11 +12,10 @@ const statusClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  READY: "ใช้งานได้",
-  FOUNDATION: "วางโครงแล้ว",
-  IN_PROGRESS: "กำลังพัฒนา",
+  READY: "Ready",
+  FOUNDATION: "Foundation",
+  IN_PROGRESS: "In progress",
 };
-
 export default async function Page({ params }: { params: Promise<{ type: string }> }) {
   const { type } = await params;
   const result = await getReportCenterCategory(type);
@@ -58,7 +58,7 @@ export default async function Page({ params }: { params: Promise<{ type: string 
       <section className="card table-wrap mt-6">
         <div className="border-b p-4"><h2 className="font-black">Upload Registry</h2></div>
         <table className="data-table">
-          <thead><tr><th>Source</th><th>Period</th><th>File</th><th>Status</th><th>Rows</th><th>Created</th></tr></thead>
+          <thead><tr><th>Source</th><th>Period</th><th>File</th><th>Status</th><th>Rows</th><th>Created</th><th /></tr></thead>
           <tbody>
             {uploads.map((upload) => (
               <tr key={upload.id}>
@@ -71,6 +71,14 @@ export default async function Page({ params }: { params: Promise<{ type: string 
                 <td>{upload.status}</td>
                 <td>{upload.imported_count}/{upload.row_count}</td>
                 <td>{upload.created_at}</td>
+                <td>
+                  {category.type === "SALE_OUT" && ["UPLOADED", "FAILED"].includes(upload.status) && (
+                    <form action={importSaleOutUploadAction}>
+                      <input type="hidden" name="batch_id" value={upload.id} />
+                      <button className="btn-secondary btn-small">Import</button>
+                    </form>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

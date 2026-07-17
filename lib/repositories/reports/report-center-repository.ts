@@ -20,6 +20,17 @@ export type ReportUploadBatchRow = {
   created_at: string;
 };
 
+export type ReportUploadBatchDetail = ReportUploadBatchRow & {
+  company_id: string;
+  notes: string | null;
+};
+
+export type ReportImportLookup = {
+  dealers: Array<{ id: string; code: string; name: string }>;
+  products: Array<{ id: string; sku: string; name: string }>;
+  salespeople: Array<{ user_id: string; profiles: { full_name: string | null; email: string | null }[] | null }>;
+};
+
 export type ReportCenterSummary = {
   uploadCount: number;
   registeredCount: number;
@@ -150,6 +161,56 @@ export class ReportCenterRepository {
 
     if (error) throw error;
     return String(data);
+  }
+
+  async getUploadBatch(companyId: string, batchId: string) {
+    const { data, error } = await this.supabase
+      .from("report_upload_batches")
+      .select("id,company_id,report_type,source_name,period_start,period_end,file_name,file_size_bytes,storage_bucket,storage_path,status,row_count,imported_count,error_count,notes,created_at")
+      .eq("company_id", companyId)
+      .eq("id", batchId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data as ReportUploadBatchDetail | null;
+  }
+
+  async updateUploadBatchStatus(
+    companyId: string,
+    batchId: string,
+    input: { status: "PROCESSING" | "IMPORTED" | "FAILED"; row_count?: number; imported_count?: number; error_count?: number; notes?: string | null },
+  ) {
+    const { error } = await this.supabase
+      .from("report_upload_batches")
+      .update({
+        status: input.status,
+        row_count: input.row_count,
+        imported_count: input.imported_count,
+        error_count: input.error_count,
+        notes: input.notes,
+      })
+      .eq("company_id", companyId)
+      .eq("id", batchId);
+
+    if (error) throw error;
+  }
+
+  async getSaleOutImportLookups(companyId: string): Promise<ReportImportLookup> {
+    const [dealers, products, salespeople] = await Promise.all([
+      this.supabase.from("customers").select("id,code,name").eq("company_id", companyId).eq("is_active", true),
+      this.supabase.from("products").select("id,sku,name").eq("company_id", companyId).eq("is_active", true),
+      this.supabase.from("company_memberships").select("user_id,profiles(full_name,email)").eq("company_id", companyId),
+    ]);
+
+    if (dealers.error) throw dealers.error;
+    if (products.error) throw products.error;
+    if (salespeople.error) throw salespeople.error;
+
+    return {
+      dealers: dealers.data ?? [],
+      products: products.data ?? [],
+      salespeople: salespeople.data ?? [],
+    };
   }
 
   private toSummary(uploads: ReportUploadBatchRow[], saleOutReports: Array<{ report_date: string; net_amount: number | string }>): ReportCenterSummary {

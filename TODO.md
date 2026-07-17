@@ -7,6 +7,7 @@
 - [x] Upload registry with Service / Repository / Validation
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Supabase Storage direct file upload UI
+- [x] Sale Out CSV parser/import pipeline
 - [ ] File parser/import pipeline per report type
 - [ ] Sale In report schema and analytics
 - [ ] Inventory external report schema and analytics

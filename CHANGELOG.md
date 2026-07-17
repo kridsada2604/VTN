@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20.5 — Sale Out CSV Import Pipeline
+- Add Sale Out CSV importer for Report Center uploads.
+- Parse uploaded CSV files from Supabase Storage and create Sale Out reports.
+- Add import action on the Sale Out report category page.
+- Update upload batch status to processing, imported, or failed with row counts.
+
 ## v0.20.4 — Report Center Storage Upload
 - Add private Supabase Storage bucket `report-imports` with company-scoped policies.
 - Upload report files directly from Report Center into Storage.
