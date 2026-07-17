@@ -31,6 +31,58 @@ export type ReportCenterSummary = {
   runrateUploadCount: number;
 };
 
+export type ReportCenterCategory = {
+  type: "SALE_IN" | "SALE_OUT" | "INVENTORY" | "MOI" | "RUNRATE";
+  title: string;
+  description: string;
+  status: "READY" | "FOUNDATION" | "IN_PROGRESS";
+  href: string;
+  nextStep: string;
+};
+
+export const reportCenterCategories: ReportCenterCategory[] = [
+  {
+    type: "SALE_IN",
+    title: "Sale In",
+    description: "Sales from company to dealer or sales channel.",
+    status: "IN_PROGRESS",
+    href: "/reports/SALE_IN",
+    nextStep: "Add Sale In schema, import parser, and dealer purchase analysis.",
+  },
+  {
+    type: "SALE_OUT",
+    title: "Sale Out",
+    description: "Dealer sell-out to end customers for growth and commission analysis.",
+    status: "READY",
+    href: "/reports/SALE_OUT",
+    nextStep: "Add approval workflow and commission rule engine.",
+  },
+  {
+    type: "INVENTORY",
+    title: "Inventory",
+    description: "Dealer stock on hand, movement, lot/serial, and external warehouse reports.",
+    status: "FOUNDATION",
+    href: "/reports/INVENTORY",
+    nextStep: "Add storage upload and inventory file parser.",
+  },
+  {
+    type: "MOI",
+    title: "MOI",
+    description: "Market or industry data for external trend comparison.",
+    status: "FOUNDATION",
+    href: "/reports/MOI",
+    nextStep: "Define MOI dataset template and trend analytics.",
+  },
+  {
+    type: "RUNRATE",
+    title: "Runrate",
+    description: "Daily, weekly, and monthly average sales for demand forecasting.",
+    status: "FOUNDATION",
+    href: "/reports/RUNRATE",
+    nextStep: "Build runrate import template and forecast calculations.",
+  },
+];
+
 export class ReportCenterRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
@@ -58,13 +110,27 @@ export class ReportCenterRepository {
     return {
       uploads: rows,
       summary: this.toSummary(rows, saleOutRows),
-      categories: [
-        { type: "SALE_IN", title: "Sale In", description: "ยอดขายเข้าจากบริษัทไป Dealer หรือช่องทางขาย" },
-        { type: "SALE_OUT", title: "Sale Out", description: "ยอดขายจริงจาก Dealer ไปปลายทาง สำหรับ growth และ commission" },
-        { type: "INVENTORY", title: "Inventory", description: "ไฟล์ stock on hand, movement, lot/serial หรือคลัง Dealer" },
-        { type: "MOI", title: "MOI", description: "ข้อมูลตลาด/อุตสาหกรรมสำหรับเทียบ trend ภายนอก" },
-        { type: "RUNRATE", title: "Runrate", description: "ยอดเฉลี่ยต่อวัน/สัปดาห์/เดือน เพื่อ forecast demand" },
-      ],
+      categories: reportCenterCategories,
+    };
+  }
+
+  async getCategory(companyId: string, reportType: string) {
+    const normalizedType = reportType.toUpperCase();
+    const category = reportCenterCategories.find((entry) => entry.type === normalizedType);
+    if (!category) return null;
+
+    const { data, error } = await this.supabase
+      .from("report_upload_batches")
+      .select("id,report_type,source_name,period_start,period_end,file_name,file_size_bytes,storage_bucket,storage_path,status,row_count,imported_count,error_count,created_at")
+      .eq("company_id", companyId)
+      .eq("report_type", normalizedType)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return {
+      category,
+      uploads: (data ?? []) as ReportUploadBatchRow[],
     };
   }
 

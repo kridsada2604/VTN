@@ -14,3 +14,9 @@ export async function createReportUpload(input: CreateReportUploadInput) {
   const companyId = await getCurrentCompanyId();
   return new ReportCenterRepository(supabase).createUpload(companyId, input);
 }
+
+export async function getReportCenterCategory(reportType: string) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new ReportCenterRepository(supabase).getCategory(companyId, reportType);
+}

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20.3 — Report Center Category Status
+- Add clickable Report Center category cards.
+- Add category detail pages for Sale In, Sale Out, Inventory, MOI, and Runrate.
+- Add per-category status labels for ready, foundation, and in-progress modules.
+
 ## v0.20.2 — Report Center Foundation
 - Add Report Center for Sale In, Sale Out, Inventory, MOI, and Runrate categories.
 - Add report upload registry table with RLS, audit log, and create RPC.

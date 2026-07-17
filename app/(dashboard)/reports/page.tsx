@@ -1,9 +1,22 @@
+import Link from "next/link";
 import { BarChart3, FileSpreadsheet, PackageSearch, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { ReportUploadForm } from "@/components/reports/report-upload-form";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getReportCenterDashboard } from "@/lib/services/reports/report-center-service";
 import { registerReportUpload } from "./actions";
+
+const statusClass: Record<string, string> = {
+  READY: "bg-green-100 text-green-800",
+  FOUNDATION: "bg-amber-100 text-amber-800",
+  IN_PROGRESS: "bg-slate-100 text-slate-700",
+};
+
+const statusLabel: Record<string, string> = {
+  READY: "ใช้งานได้",
+  FOUNDATION: "วางโครงแล้ว",
+  IN_PROGRESS: "กำลังพัฒนา",
+};
 
 export default async function Page() {
   const { categories, summary, uploads } = await getReportCenterDashboard();
@@ -25,11 +38,14 @@ export default async function Page() {
 
       <section className="mt-6 grid gap-4 md:grid-cols-5">
         {categories.map((category) => (
-          <div key={category.type} className="card p-5">
+          <Link key={category.type} href={category.href} className="card module-link p-5">
             <FileSpreadsheet className="text-orange-600" />
             <h2 className="mt-4 font-black">{category.title}</h2>
             <p className="mt-2 text-sm text-gray-500">{category.description}</p>
-          </div>
+            <span className={`mt-4 inline-block rounded-full px-3 py-1 text-xs font-bold ${statusClass[category.status]}`}>
+              {statusLabel[category.status]}
+            </span>
+          </Link>
         ))}
       </section>
 

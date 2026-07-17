@@ -3,6 +3,7 @@
 ## Report Center
 - [x] Report Center foundation
 - [x] Sale In / Sale Out / Inventory / MOI / Runrate category model
+- [x] Clickable report category pages with module status
 - [x] Upload registry with Service / Repository / Validation
 - [x] Migration, RLS, Permission และ Audit Log
 - [ ] Supabase Storage direct file upload UI
