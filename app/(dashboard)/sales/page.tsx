@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CircleDollarSign, CreditCard, FileText, Receipt, ShoppingBag, TrendingUp } from "lucide-react";
+import { BarChart3, CircleDollarSign, CreditCard, FileText, Receipt, ShoppingBag, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { getInvoiceList } from "@/lib/services/sales/invoice-service";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
@@ -9,6 +9,7 @@ const modules = [
   ["/sales/orders", "ใบสั่งขาย", "รับคำสั่งซื้อ จองสต๊อก และส่งของ", ShoppingBag, true],
   ["/sales/invoices", "ใบแจ้งหนี้", "ออกเอกสาร PDF และติดตามยอดค้าง", Receipt, true],
   ["/sales/invoices", "รับชำระเงิน", "บันทึกเงินสด โอน เช็ค และบัตรเครดิต", CreditCard, true],
+  ["/sales/sale-out", "Sale Out", "Dealer reported sales for real demand, growth, and future commission", BarChart3, true],
 ] as const;
 
 export default async function Page() {

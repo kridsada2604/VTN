@@ -1,5 +1,15 @@
 # TODO
 
+## Sale Out / Dealer Sales
+- [x] Sale Out report foundation
+- [x] Dealer, salesperson, period, source channel, and SKU line capture
+- [x] Service Layer / Repository Layer / Validation
+- [x] Migration, RLS, Permission และ Audit Log
+- [x] Sale Out growth summary and top dealer/salesperson analysis
+- [ ] Sale Out approval workflow
+- [ ] Sales commission rule engine from Sale Out
+- [ ] Dealer target vs actual analysis
+
 ## Sales Fulfillment
 - [x] Sales Order
 - [x] Reserve Stock

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20.0 — Sale Out Dealer Sales Foundation
+- Add Sale Out report and item tables with RLS, audit log, and create RPC.
+- Add Sale Out Service, Repository, Validation, Calculator, and responsive form.
+- Add Sale Out dashboard with dealer, salesperson, monthly growth, and top performer summaries.
+- Add Sale Out list, create, and detail pages under Sales.
+
 ## v0.19.4 — Account Type Financial Statement Check
 - Add Balance Sheet balance check from account-type grouped financial reports.
 - Confirm Sprint 9 financial statements are generated from accounting account types.
