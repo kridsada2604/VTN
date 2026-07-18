@@ -23,7 +23,7 @@ const paymentMethodLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { invoice, items, payments, events, emailLogs } = await getInvoiceDetail(id);
+  const { invoice, items, installments, payments, events, emailLogs } = await getInvoiceDetail(id);
   if (!invoice) notFound();
 
   const customer = invoice.customers?.[0];

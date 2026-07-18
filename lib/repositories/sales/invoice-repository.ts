@@ -54,6 +54,17 @@ export type InvoiceItemRow = {
   line_total: number | string;
 };
 
+export type InvoiceInstallmentRow = {
+  id: string;
+  installment_no: number;
+  due_date: string | null;
+  description: string | null;
+  percent: number | string;
+  amount: number | string;
+  paid_amount: number | string;
+  status: string;
+};
+
 export type InvoicePaymentRow = {
   id: string;
   payment_no: string;
@@ -127,7 +138,7 @@ export class InvoiceRepository {
   }
 
   async getById(companyId: string, invoiceId: string) {
-    const [invoice, items, payments, events, emailLogs] = await Promise.all([
+    const [invoice, items, installments, payments, events, emailLogs] = await Promise.all([
       this.supabase
         .from("sales_invoices")
         .select("*,customers(code,name,tax_id,email,phone,address)")
@@ -139,6 +150,11 @@ export class InvoiceRepository {
         .select("id,description,quantity,unit_price,line_discount,line_tax,line_total")
         .eq("invoice_id", invoiceId)
         .order("sort_order"),
+      this.supabase
+        .from("sales_invoice_installments")
+        .select("id,installment_no,due_date,description,percent,amount,paid_amount,status")
+        .eq("invoice_id", invoiceId)
+        .order("installment_no"),
       this.supabase
         .from("sales_invoice_payments")
         .select("id,payment_no,payment_date,method,amount,reference_no,notes,journal_entry_id")
@@ -160,6 +176,7 @@ export class InvoiceRepository {
 
     if (invoice.error) throw invoice.error;
     if (items.error) throw items.error;
+    if (installments.error) throw installments.error;
     if (payments.error) throw payments.error;
     if (events.error) throw events.error;
     if (emailLogs.error) throw emailLogs.error;
@@ -167,6 +184,7 @@ export class InvoiceRepository {
     return {
       invoice: invoice.data as InvoiceDetail | null,
       items: (items.data ?? []) as InvoiceItemRow[],
+      installments: (installments.data ?? []) as InvoiceInstallmentRow[],
       payments: (payments.data ?? []) as InvoicePaymentRow[],
       events: (events.data ?? []) as InvoiceEventRow[],
       emailLogs: (emailLogs.data ?? []) as DocumentEmailLogRow[],
@@ -198,6 +216,50 @@ export class InvoiceRepository {
     return String(data);
   }
 
+
+  private async applyTaxAndInstallments(companyId: string, invoiceId: string, input: CreateInvoiceInput, totals: InvoiceTotals) {
+    const { error: updateError } = await this.supabase
+      .from("sales_invoices")
+      .update({
+        is_vat_registered: input.is_vat_registered,
+        withholding_tax_rate: input.withholding_tax_rate,
+        withholding_tax_amount: totals.withholding_tax_amount,
+        grand_total_amount: totals.grand_total_amount,
+        net_payable_amount: totals.total_amount,
+        total_amount: totals.total_amount,
+        balance_amount: totals.total_amount,
+      })
+      .eq("company_id", companyId)
+      .eq("id", invoiceId);
+
+    if (updateError) throw updateError;
+
+    const installments = this.buildInstallments(invoiceId, totals.total_amount, input.installment_count, input.due_date ?? input.invoice_date);
+    const { error: installmentError } = await this.supabase.from("sales_invoice_installments").insert(installments);
+    if (installmentError) throw installmentError;
+  }
+
+  private buildInstallments(invoiceId: string, totalAmount: number, count: number, startDate: string) {
+    const safeCount = Math.min(Math.max(Math.trunc(count || 1), 1), 24);
+    const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
+    const baseAmount = roundMoney(totalAmount / safeCount);
+    let assigned = 0;
+    return Array.from({ length: safeCount }, (_, index) => {
+      const installmentNo = index + 1;
+      const dueDate = new Date(`${startDate}T00:00:00`);
+      dueDate.setMonth(dueDate.getMonth() + index);
+      const amount = installmentNo === safeCount ? roundMoney(totalAmount - assigned) : baseAmount;
+      assigned = roundMoney(assigned + amount);
+      return {
+        invoice_id: invoiceId,
+        installment_no: installmentNo,
+        due_date: dueDate.toISOString().slice(0, 10),
+        description: `Installment ${installmentNo}/${safeCount}`,
+        percent: roundMoney(100 / safeCount),
+        amount,
+      };
+    });
+  }
   async receivePayment(companyId: string, input: ReceivePaymentInput) {
     const { data, error } = await this.supabase.rpc("receive_invoice_payment", {
       p_company_id: companyId,

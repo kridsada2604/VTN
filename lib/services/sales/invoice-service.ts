@@ -25,7 +25,7 @@ export async function getInvoiceDetail(invoiceId: string) {
 export async function createInvoice(input: CreateInvoiceInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
-  const { computedItems, totals } = computeInvoiceItems(input.items);
+  const { computedItems, totals } = computeInvoiceItems(input);
   return new InvoiceRepository(supabase).create(companyId, input, computedItems, totals);
 }
 

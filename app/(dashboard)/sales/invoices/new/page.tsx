@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { InvoiceForm } from "@/components/sales/invoice-form";
+import { getCompanyTaxDefaults } from "@/lib/services/core/company-service";
 import { getInvoiceFormOptions } from "@/lib/services/sales/invoice-service";
 import { saveInvoice } from "../actions";
 
 export default async function Page() {
-  const { customers, products } = await getInvoiceFormOptions();
+  const [{ customers, products }, taxDefaults] = await Promise.all([getInvoiceFormOptions(), getCompanyTaxDefaults()]);
 
   return (
     <div>
@@ -15,7 +16,7 @@ export default async function Page() {
           ← กลับรายการ
         </Link>
       </div>
-      <InvoiceForm customers={customers} products={products} action={saveInvoice} />
+      <InvoiceForm customers={customers} products={products} taxDefaults={taxDefaults} action={saveInvoice} />
     </div>
   );
 }

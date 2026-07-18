@@ -17,6 +17,14 @@
 - [ ] Inventory external report schema and analytics
 - [ ] Month of Inventory and Runrate analytics
 
+## Sales Tax / Installments
+- [x] Company VAT registration and default tax profile
+- [x] Quotation withholding tax foundation
+- [x] Quotation and invoice payment installment tables
+- [ ] Custom installment schedule editor per document
+- [ ] Withholding tax certificate workflow
+- [ ] Accounting posting for withholding tax clearing account
+
 ## Sale Out / Dealer Sales
 - [x] Sale Out report foundation
 - [x] Dealer, salesperson, period, source channel, and SKU line capture

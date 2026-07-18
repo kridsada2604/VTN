@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20.9 - Sales Tax and Installments Foundation
+- Add company tax profile for VAT registration, default VAT rate, and default withholding tax rate.
+- Add quotation and invoice withholding tax fields with grand total and net payable tracking.
+- Add payment installment tables for quotations and invoices with RLS and company-scoped permissions.
+- Wire quotation and invoice forms to company tax defaults and installment count.
 ## v0.20.8 - Move Sale Out to Report Center
 - Move Sale Out create and detail routes under Report Center context.
 - Redirect legacy Sales Sale Out routes to Report Center routes to preserve old links.
