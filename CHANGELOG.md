@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.4 - Sales Document VAT Detail Visibility
+- Hide VAT columns and tax totals on Quotation detail when the company is not VAT registered.
+- Hide VAT columns and tax totals on Invoice detail when the company is not VAT registered.
+- Keep document detail visibility aligned with company VAT profile used by create forms.
+
 ## v0.21.3 - Project Invoice VAT Visibility
 - Apply company VAT visibility to Project invoice creation.
 - Hide Project invoice VAT controls when the company is not VAT registered.

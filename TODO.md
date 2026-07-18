@@ -21,6 +21,7 @@
 - [x] Company VAT registration and default tax profile
 - [x] Accounting tax code master for Sales VAT / No VAT
 - [x] Hide VAT UI in quotation and invoice when company is not VAT registered
+- [x] Apply company VAT visibility to Quotation and Invoice detail screens
 - [x] Quotation withholding tax foundation
 - [x] Quotation and invoice payment installment tables
 - [ ] Custom installment schedule editor per document

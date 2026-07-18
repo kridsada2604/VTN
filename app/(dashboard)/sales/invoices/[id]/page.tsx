@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/sales/print-button";
+import { getCompanyTaxDefaults } from "@/lib/services/core/company-service";
 import { createInvoiceEmailDraft, formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getInvoiceDetail } from "@/lib/services/sales/invoice-service";
 import { postInvoiceAccountingAction, postPaymentAccountingAction, receivePayment, sendInvoiceEmailAction } from "../actions";
@@ -23,8 +24,12 @@ const paymentMethodLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { invoice, items, installments, payments, events, emailLogs } = await getInvoiceDetail(id);
+  const [{ invoice, items, installments, payments, events, emailLogs }, taxDefaults] = await Promise.all([
+    getInvoiceDetail(id),
+    getCompanyTaxDefaults(),
+  ]);
   if (!invoice) notFound();
+  const showVat = taxDefaults.is_vat_registered;
 
   const customer = invoice.customers?.[0];
   const balanceAmount = Number(invoice.balance_amount);
@@ -124,7 +129,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                     <td>{item.quantity}</td>
                     <td>{formatDocumentMoney(item.unit_price)}</td>
                     <td>{formatDocumentMoney(item.line_discount)}</td>
-                    <td>{formatDocumentMoney(item.line_tax)}</td>
+                    {showVat && <td>{formatDocumentMoney(item.line_tax)}</td>}
                     <td className="font-bold">{formatDocumentMoney(item.line_total)}</td>
                   </tr>
                 ))}
