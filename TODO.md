@@ -27,7 +27,9 @@
 - [ ] Withholding tax certificate workflow
 - [ ] Accounting posting for withholding tax clearing account
 - [x] Apply company VAT visibility to Sales Order screen
-- [ ] Apply company VAT visibility to POS, Purchase, and Project invoice screens
+- [x] Apply company VAT visibility to Purchase Order screen
+- [x] Apply company VAT visibility to POS sale and terminal screens
+- [ ] Apply company VAT visibility to Project invoice screen
 
 ## Sale Out / Dealer Sales
 - [x] Sale Out report foundation

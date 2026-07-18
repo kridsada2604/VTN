@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/print-button";
+import { getCompanyTaxDefaults } from "@/lib/services/core/company-service";
 import { getPosSaleDetail } from "@/lib/services/pos/pos-sale-service";
 import { refundPosSaleAction, voidPosSaleAction } from "../../actions";
 
@@ -9,8 +10,12 @@ const money = (value: number | string) => Number(value).toLocaleString("th-TH", 
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { sale, items } = await getPosSaleDetail(id);
+  const [{ sale, items }, taxDefaults] = await Promise.all([
+    getPosSaleDetail(id),
+    getCompanyTaxDefaults(),
+  ]);
   if (!sale) notFound();
+  const showVat = taxDefaults.is_vat_registered;
 
   const customerName = sale.customers?.[0]?.name ?? "Walk-in";
   const canAdjust = sale.status === "PAID";
@@ -34,7 +39,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
       <section className="card table-wrap mt-6">
         <table className="data-table">
-          <thead><tr><th>SKU</th><th>Description</th><th>Qty</th><th>Price</th><th>Discount</th><th>VAT</th><th>Total</th></tr></thead>
+          <thead><tr><th>SKU</th><th>Description</th><th>Qty</th><th>Price</th><th>Discount</th>{showVat && <th>VAT</th>}<th>Total</th></tr></thead>
           <tbody>
             {items.map((item) => (
               <tr key={item.id}>
@@ -43,7 +48,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <td>{Number(item.quantity).toLocaleString("th-TH")}</td>
                 <td>{money(item.unit_price)}</td>
                 <td>{money(item.line_discount)}</td>
-                <td>{money(item.line_tax)}</td>
+                {showVat && <td>{money(item.line_tax)}</td>}
                 <td className="font-bold">{money(item.line_total)}</td>
               </tr>
             ))}
@@ -56,7 +61,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <div className="card space-y-2 p-5">
           <div className="flex justify-between"><span>Subtotal</span><b>{money(sale.subtotal)}</b></div>
           <div className="flex justify-between"><span>Discount</span><b>{money(sale.discount_amount)}</b></div>
-          <div className="flex justify-between"><span>VAT</span><b>{money(sale.tax_amount)}</b></div>
+          {showVat && <div className="flex justify-between"><span>VAT</span><b>{money(sale.tax_amount)}</b></div>}
           <div className="mt-3 flex justify-between border-t pt-3 text-xl"><span className="font-black">Total</span><b>{money(sale.total_amount)}</b></div>
           <div className="flex justify-between"><span>Paid</span><b>{money(sale.paid_amount)}</b></div>
         </div>

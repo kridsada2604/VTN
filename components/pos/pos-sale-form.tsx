@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 type Customer = { id: string; code: string; name: string };
 type Product = { id: string; sku: string; name: string; barcode: string | null; selling_price: number };
 type Warehouse = { id: string; code: string; name: string };
+type TaxDefaults = { is_vat_registered: boolean; default_vat_rate: number; default_withholding_tax_rate: number };
 type Item = { product_id: string; description: string; quantity: number; unit_price: number; line_discount: number; line_tax: number; barcode: string | null };
 
 const emptyItem: Item = { product_id: "", description: "", quantity: 1, unit_price: 0, line_discount: 0, line_tax: 0, barcode: null };
@@ -13,14 +14,17 @@ export function PosSaleForm({
   customers,
   products,
   warehouses,
+  taxDefaults,
   action,
 }: {
   customers: Customer[];
   products: Product[];
   warehouses: Warehouse[];
+  taxDefaults: TaxDefaults;
   action: (fd: FormData) => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
+  const isVatRegistered = taxDefaults.is_vat_registered;
   const [items, setItems] = useState<Item[]>([{ ...emptyItem }]);
 
   const totals = useMemo(
@@ -28,12 +32,12 @@ export function PosSaleForm({
       items.reduce(
         (acc, item) => {
           const subtotal = item.quantity * item.unit_price;
-          const total = subtotal - item.line_discount + item.line_tax;
-          return { subtotal: acc.subtotal + subtotal, discount: acc.discount + item.line_discount, tax: acc.tax + item.line_tax, total: acc.total + total };
+          const lineTax = isVatRegistered ? item.line_tax : 0;
+          return { subtotal: acc.subtotal + subtotal, discount: acc.discount + item.line_discount, tax: acc.tax + lineTax, total: acc.total + subtotal - item.line_discount + lineTax };
         },
         { subtotal: 0, discount: 0, tax: 0, total: 0 },
       ),
-    [items],
+    [items, isVatRegistered],
   );
 
   const patchItem = (index: number, patch: Partial<Item>) => {
@@ -42,7 +46,7 @@ export function PosSaleForm({
 
   return (
     <form action={action} className="card space-y-5 p-5">
-      <input type="hidden" name="items" value={JSON.stringify(items)} />
+      <input type="hidden" name="items" value={JSON.stringify(items.map((item) => (isVatRegistered ? item : { ...item, line_tax: 0 })))} />
       <div className="form-grid">
         <label>
           <span className="label">คลังสินค้า *</span>
@@ -85,11 +89,12 @@ export function PosSaleForm({
       <div className="table-wrap">
         <table className="data-table">
           <thead>
-            <tr><th>สินค้า</th><th>Barcode</th><th>จำนวน</th><th>ราคา</th><th>ส่วนลด</th><th>VAT</th><th>รวม</th><th /></tr>
+            <tr><th>สินค้า</th><th>Barcode</th><th>จำนวน</th><th>ราคา</th><th>ส่วนลด</th>{isVatRegistered && <th>VAT</th>}<th>รวม</th><th /></tr>
           </thead>
           <tbody>
             {items.map((item, index) => {
-              const lineTotal = item.quantity * item.unit_price - item.line_discount + item.line_tax;
+              const lineTax = isVatRegistered ? item.line_tax : 0;
+              const lineTotal = item.quantity * item.unit_price - item.line_discount + lineTax;
               return (
                 <tr key={index}>
                   <td>
@@ -118,7 +123,7 @@ export function PosSaleForm({
                   <td><input className="input" type="number" min="0.0001" step="0.0001" value={item.quantity} onChange={(event) => patchItem(index, { quantity: Number(event.target.value) })} /></td>
                   <td><input className="input" type="number" min="0" step="0.01" value={item.unit_price} onChange={(event) => patchItem(index, { unit_price: Number(event.target.value) })} /></td>
                   <td><input className="input" type="number" min="0" step="0.01" value={item.line_discount} onChange={(event) => patchItem(index, { line_discount: Number(event.target.value) })} /></td>
-                  <td><input className="input" type="number" min="0" step="0.01" value={item.line_tax} onChange={(event) => patchItem(index, { line_tax: Number(event.target.value) })} /></td>
+                  {isVatRegistered && <td><input className="input" type="number" min="0" step="0.01" value={item.line_tax} onChange={(event) => patchItem(index, { line_tax: Number(event.target.value) })} /></td>}
                   <td className="font-bold">฿{lineTotal.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</td>
                   <td><button type="button" className="btn-secondary btn-small" disabled={items.length === 1} onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}>ลบ</button></td>
                 </tr>
@@ -135,7 +140,7 @@ export function PosSaleForm({
         <div className="space-y-3 rounded-2xl bg-slate-50 p-5">
           <div className="flex justify-between"><span>ยอดก่อนส่วนลด</span><b>฿{totals.subtotal.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
           <div className="flex justify-between"><span>ส่วนลด</span><b>฿{totals.discount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
-          <div className="flex justify-between"><span>VAT</span><b>฿{totals.tax.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
+          {isVatRegistered && <div className="flex justify-between"><span>VAT</span><b>฿{totals.tax.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>}
           <div className="flex justify-between border-t pt-3 text-xl"><span className="font-black">ยอดสุทธิ</span><b>฿{totals.total.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
           <label>
             <span className="label">รับเงิน *</span>

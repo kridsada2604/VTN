@@ -7,6 +7,7 @@ import { useMemo, useRef, useState } from "react";
 type Customer = { id: string; code: string; name: string };
 type Product = { id: string; sku: string; name: string; barcode: string | null; selling_price: number };
 type Warehouse = { id: string; code: string; name: string };
+type TaxDefaults = { is_vat_registered: boolean; default_vat_rate: number; default_withholding_tax_rate: number };
 type CartItem = { product_id: string; sku: string; description: string; quantity: number; unit_price: number; line_discount: number; line_tax: number; barcode: string | null };
 
 const money = (value: number) => value.toLocaleString("th-TH", { minimumFractionDigits: 2 });
@@ -15,14 +16,17 @@ export function PosTerminal({
   customers,
   products,
   warehouses,
+  taxDefaults,
   action,
 }: {
   customers: Customer[];
   products: Product[];
   warehouses: Warehouse[];
+  taxDefaults: TaxDefaults;
   action: (fd: FormData) => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
+  const isVatRegistered = taxDefaults.is_vat_registered;
   const barcodeRef = useRef<HTMLInputElement>(null);
   const [warehouseId, setWarehouseId] = useState(warehouses[0]?.id ?? "");
   const [customerId, setCustomerId] = useState("");
@@ -42,12 +46,13 @@ export function PosTerminal({
       cart.reduce(
         (acc, item) => {
           const subtotal = item.quantity * item.unit_price;
-          const total = subtotal - item.line_discount + item.line_tax;
-          return { subtotal: acc.subtotal + subtotal, discount: acc.discount + item.line_discount, tax: acc.tax + item.line_tax, total: acc.total + total };
+          const lineTax = isVatRegistered ? item.line_tax : 0;
+          const total = subtotal - item.line_discount + lineTax;
+          return { subtotal: acc.subtotal + subtotal, discount: acc.discount + item.line_discount, tax: acc.tax + lineTax, total: acc.total + total };
         },
         { subtotal: 0, discount: 0, tax: 0, total: 0 },
       ),
-    [cart],
+    [cart, isVatRegistered],
   );
 
   const paid = paidAmount || totals.total;
@@ -100,7 +105,7 @@ export function PosTerminal({
       <input type="hidden" name="sale_date" value={today} />
       <input type="hidden" name="payment_method" value={paymentMethod} />
       <input type="hidden" name="paid_amount" value={paid.toFixed(2)} />
-      <input type="hidden" name="items" value={JSON.stringify(cart)} />
+      <input type="hidden" name="items" value={JSON.stringify(cart.map((item) => (isVatRegistered ? item : { ...item, line_tax: 0 })))} />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -180,7 +185,7 @@ export function PosTerminal({
           <div className="mt-4 space-y-3 border-t pt-4">
             <div className="flex justify-between"><span>Subtotal</span><b>{money(totals.subtotal)}</b></div>
             <div className="flex justify-between"><span>Discount</span><b>{money(totals.discount)}</b></div>
-            <div className="flex justify-between"><span>Tax</span><b>{money(totals.tax)}</b></div>
+            {isVatRegistered && <div className="flex justify-between"><span>Tax</span><b>{money(totals.tax)}</b></div>}
             <div className="flex justify-between text-3xl"><span className="font-black">Total</span><b>{money(totals.total)}</b></div>
             <div className="grid gap-2 sm:grid-cols-2">
               {["CASH", "QR", "CARD", "TRANSFER"].map((method) => (

@@ -1,4 +1,5 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
+import { CompanyRepository } from "@/lib/repositories/core/company-repository";
 import { PurchaseOrderRepository } from "@/lib/repositories/purchase/purchase-order-repository";
 import { createClient } from "@/lib/supabase/server";
 import type { CreatePurchaseOrderInput, PayPurchaseOrderInput, ReceivePurchaseOrderInput } from "@/lib/validation/purchase/purchase-order";
@@ -31,7 +32,8 @@ export async function getPurchaseOrderDetail(purchaseOrderId: string) {
 export async function createPurchaseOrder(input: CreatePurchaseOrderInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
-  const { computedItems, totals } = computePurchaseOrderItems(input.items);
+  const taxDefaults = await new CompanyRepository(supabase).getTaxDefaults(companyId);
+  const { computedItems, totals } = computePurchaseOrderItems(input.items, taxDefaults.is_vat_registered);
   return new PurchaseOrderRepository(supabase).create(companyId, input, computedItems, totals);
 }
 

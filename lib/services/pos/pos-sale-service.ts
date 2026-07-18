@@ -1,4 +1,5 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
+import { CompanyRepository } from "@/lib/repositories/core/company-repository";
 import { PosSaleRepository } from "@/lib/repositories/pos/pos-sale-repository";
 import { createClient } from "@/lib/supabase/server";
 import type { ClosePosSessionInput, CreatePosSaleInput, OpenPosSessionInput, PosSaleAdjustmentInput } from "@/lib/validation/pos/pos-sale";
@@ -24,7 +25,11 @@ export async function getPosSaleDetail(saleId: string) {
 export async function createPosSale(input: CreatePosSaleInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
-  return new PosSaleRepository(supabase).create(companyId, input);
+  const taxDefaults = await new CompanyRepository(supabase).getTaxDefaults(companyId);
+  const normalizedInput = taxDefaults.is_vat_registered
+    ? input
+    : { ...input, items: input.items.map((item) => ({ ...item, line_tax: 0 })) };
+  return new PosSaleRepository(supabase).create(companyId, normalizedInput);
 }
 
 export async function openPosSession(input: OpenPosSessionInput) {

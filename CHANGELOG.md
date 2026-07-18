@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.2 - Purchase and POS VAT Visibility
+- Apply company VAT visibility to Purchase Order creation and detail pages.
+- Apply company VAT visibility to POS sale form, terminal, and receipt pages.
+- Enforce non-VAT Purchase Order and POS tax calculations in the Service Layer.
+
 ## v0.21.1 - Sales Order VAT Visibility
 - Apply company VAT visibility to Sales Order creation and detail pages.
 - Hide Sales Order VAT controls and tax summary rows when the company is not VAT registered.

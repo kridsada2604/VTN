@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/sales/print-button";
+import { getCompanyTaxDefaults } from "@/lib/services/core/company-service";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getPurchaseOrderDetail } from "@/lib/services/purchase/purchase-order-service";
 import { payPurchaseOrderAction, postPurchaseOrderAccountingAction } from "../actions";
@@ -24,8 +25,12 @@ const statusLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { order, items, payments, events } = await getPurchaseOrderDetail(id);
+  const [{ order, items, payments, events }, taxDefaults] = await Promise.all([
+    getPurchaseOrderDetail(id),
+    getCompanyTaxDefaults(),
+  ]);
   if (!order) notFound();
+  const showVat = taxDefaults.is_vat_registered;
 
   const supplier = order.suppliers?.[0];
   const balanceAmount = Number(order.balance_amount);
@@ -105,7 +110,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   <th>Qty</th>
                   <th>Cost</th>
                   <th>Discount</th>
-                  <th>Tax</th>
+                  {showVat && <th>Tax</th>}
                   <th>Total</th>
                 </tr>
               </thead>
@@ -116,7 +121,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                     <td>{item.quantity}</td>
                     <td>{formatDocumentMoney(item.unit_cost)}</td>
                     <td>{formatDocumentMoney(item.line_discount)}</td>
-                    <td>{formatDocumentMoney(item.line_tax)}</td>
+                    {showVat && <td>{formatDocumentMoney(item.line_tax)}</td>}
                     <td className="font-bold">{formatDocumentMoney(item.line_total)}</td>
                   </tr>
                 ))}
@@ -127,7 +132,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <div className="ml-auto mt-6 max-w-sm space-y-2 text-right">
             <p>Subtotal: {formatDocumentMoney(order.subtotal)}</p>
             <p>Discount: {formatDocumentMoney(order.discount_amount)}</p>
-            <p>Tax: {formatDocumentMoney(order.tax_amount)}</p>
+            {showVat && <p>Tax: {formatDocumentMoney(order.tax_amount)}</p>}
             <p className="text-2xl font-black">Total {formatDocumentMoney(order.total_amount)}</p>
             <p className="font-bold text-green-700">Paid {formatDocumentMoney(order.paid_amount)}</p>
             <p className="font-bold text-orange-700">Balance {formatDocumentMoney(order.balance_amount)}</p>

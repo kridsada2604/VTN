@@ -17,7 +17,7 @@ export type PurchaseOrderTotals = {
 
 const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
-export function computePurchaseOrderItems(items: PurchaseOrderItemInput[]) {
+export function computePurchaseOrderItems(items: PurchaseOrderItemInput[], isVatRegistered = true) {
   const totals: PurchaseOrderTotals = {
     subtotal: 0,
     discount_amount: 0,
@@ -29,7 +29,7 @@ export function computePurchaseOrderItems(items: PurchaseOrderItemInput[]) {
     const lineSubtotal = roundMoney(item.quantity * item.unit_cost);
     const lineDiscount = roundMoney((lineSubtotal * item.discount_percent) / 100);
     const taxableAmount = lineSubtotal - lineDiscount;
-    const lineTax = roundMoney((taxableAmount * item.tax_rate) / 100);
+    const lineTax = isVatRegistered ? roundMoney((taxableAmount * item.tax_rate) / 100) : 0;
     const lineTotal = roundMoney(taxableAmount + lineTax);
 
     totals.subtotal = roundMoney(totals.subtotal + lineSubtotal);
@@ -37,7 +37,7 @@ export function computePurchaseOrderItems(items: PurchaseOrderItemInput[]) {
     totals.tax_amount = roundMoney(totals.tax_amount + lineTax);
     totals.total_amount = roundMoney(totals.total_amount + lineTotal);
 
-    return { ...item, line_subtotal: lineSubtotal, line_discount: lineDiscount, line_tax: lineTax, line_total: lineTotal, sort_order: index };
+    return { ...item, tax_rate: isVatRegistered ? item.tax_rate : 0, line_subtotal: lineSubtotal, line_discount: lineDiscount, line_tax: lineTax, line_total: lineTotal, sort_order: index };
   });
 
   return { computedItems, totals };
