@@ -1,2 +1,44 @@
-import { createClient } from "@/lib/supabase/server";
-export default async function UsersPage(){const supabase=await createClient();const {data}=await supabase.from('profiles').select('id,full_name,email,is_active,created_at').order('created_at');const rows=data??[];return <div><h1 className="text-3xl font-black">ผู้ใช้งาน</h1><div className="card mt-6 overflow-hidden"><table className="w-full text-left text-sm"><thead className="bg-gray-50"><tr><th className="p-4">ชื่อ</th><th className="p-4">อีเมล</th><th className="p-4">สถานะ</th></tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-t"><td className="p-4 font-bold">{x.full_name||'-'}</td><td className="p-4">{x.email}</td><td className="p-4">{x.is_active?'ใช้งาน':'ปิดใช้งาน'}</td></tr>)}</tbody></table></div></div>}
+import { PageHeader } from "@/components/page-header";
+import { getCompanyUsers } from "@/lib/services/system/user-service";
+
+export default async function UsersPage() {
+  const rows = await getCompanyUsers();
+
+  return (
+    <div>
+      <PageHeader eyebrow="SYSTEM" title="ผู้ใช้งานและสิทธิ์" description="ผู้ใช้งานในบริษัท บทบาท สาขา และสถานะบัญชี" />
+      <section className="card table-wrap mt-6">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>ชื่อ</th>
+              <th>อีเมล</th>
+              <th>บทบาท</th>
+              <th>สาขา</th>
+              <th>สถานะ</th>
+              <th>เข้าร่วมเมื่อ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => {
+              const profile = row.profiles?.[0];
+              const role = row.roles?.[0];
+              const branch = row.branches?.[0];
+              return (
+                <tr key={row.id}>
+                  <td className="font-bold">{profile?.full_name || "-"}</td>
+                  <td>{profile?.email ?? "-"}</td>
+                  <td><span className="status-badge status-active">{role?.name ?? role?.code ?? "-"}</span></td>
+                  <td>{branch ? `${branch.code} - ${branch.name}` : "ทุกสาขา"}</td>
+                  <td>{profile?.is_active ? "ใช้งาน" : "ปิดใช้งาน"}</td>
+                  <td>{new Date(row.created_at).toLocaleDateString("th-TH")}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {!rows.length && <p className="p-6 text-gray-500">ยังไม่มีผู้ใช้งานในบริษัทนี้</p>}
+      </section>
+    </div>
+  );
+}

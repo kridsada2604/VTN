@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.6 - Users Permission Service Layer
+- Move the Users page to System User Service and Repository layers.
+- Show company-scoped user memberships with role, branch, and active status.
+- Remove direct Supabase querying from the Users route component.
+
 ## v0.21.5 - Quotation Service Repository Refactor
 - Move Quotation list, detail, form options, create, and status updates into Service/Repository layers.
 - Add Quotation validation and calculator modules for item totals, WHT, and installments.

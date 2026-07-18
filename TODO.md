@@ -17,6 +17,11 @@
 - [ ] Inventory external report schema and analytics
 - [ ] Month of Inventory and Runrate analytics
 
+## System / Permissions
+- [x] Move Users page to Service and Repository layers
+- [ ] User role assignment and permission management UI
+- [ ] Permission matrix by module/action
+
 ## Sales Tax / Installments
 - [x] Move Quotation routes/actions to Service and Repository layers
 - [x] Company VAT registration and default tax profile
