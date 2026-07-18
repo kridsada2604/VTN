@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.21.1 - Sales Order VAT Visibility
+- Apply company VAT visibility to Sales Order creation and detail pages.
+- Hide Sales Order VAT controls and tax summary rows when the company is not VAT registered.
+- Enforce non-VAT Sales Order tax calculations in the Service Layer.
 ## v0.21.0 - Accounting VAT Tax Codes
 - Add company-scoped accounting tax codes for Sales VAT and No VAT.
 - Link company default sales tax code to the company tax profile.

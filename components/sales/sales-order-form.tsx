@@ -5,22 +5,32 @@ import { useMemo, useState } from "react";
 type Customer = { id: string; code: string; name: string };
 type Product = { id: string; sku: string; name: string; selling_price: number };
 type Warehouse = { id: string; code: string; name: string };
+type TaxDefaults = { is_vat_registered: boolean; default_vat_rate: number; default_withholding_tax_rate: number };
 type Item = { product_id: string | null; description: string; quantity: number; unit_price: number; discount_percent: number; tax_rate: number };
-
-const emptyItem: Item = { product_id: null, description: "", quantity: 1, unit_price: 0, discount_percent: 0, tax_rate: 7 };
 
 export function SalesOrderForm({
   customers,
   products,
   warehouses,
+  taxDefaults,
   action,
 }: {
   customers: Customer[];
   products: Product[];
   warehouses: Warehouse[];
+  taxDefaults: TaxDefaults;
   action: (fd: FormData) => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
+  const isVatRegistered = taxDefaults.is_vat_registered;
+  const emptyItem: Item = {
+    product_id: null,
+    description: "",
+    quantity: 1,
+    unit_price: 0,
+    discount_percent: 0,
+    tax_rate: isVatRegistered ? taxDefaults.default_vat_rate : 0,
+  };
   const [items, setItems] = useState<Item[]>([{ ...emptyItem }]);
 
   const totals = useMemo(
@@ -29,12 +39,17 @@ export function SalesOrderForm({
         (acc, item) => {
           const subtotal = item.quantity * item.unit_price;
           const discount = (subtotal * item.discount_percent) / 100;
-          const tax = ((subtotal - discount) * item.tax_rate) / 100;
-          return { subtotal: acc.subtotal + subtotal, discount: acc.discount + discount, tax: acc.tax + tax, total: acc.total + subtotal - discount + tax };
+          const tax = isVatRegistered ? ((subtotal - discount) * item.tax_rate) / 100 : 0;
+          return {
+            subtotal: acc.subtotal + subtotal,
+            discount: acc.discount + discount,
+            tax: acc.tax + tax,
+            total: acc.total + subtotal - discount + tax,
+          };
         },
         { subtotal: 0, discount: 0, tax: 0, total: 0 },
       ),
-    [items],
+    [items, isVatRegistered],
   );
 
   const patchItem = (index: number, patch: Partial<Item>) => {
@@ -83,16 +98,33 @@ export function SalesOrderForm({
             <option>EUR</option>
           </select>
         </label>
+        {isVatRegistered && (
+          <label>
+            <span className="label">ภาษีขาย</span>
+            <input className="input" readOnly value={`${taxDefaults.default_vat_rate}%`} />
+          </label>
+        )}
       </div>
 
       <div className="table-wrap">
         <table className="data-table">
-          <thead><tr><th>สินค้า</th><th>รายละเอียด</th><th>จำนวน</th><th>ราคา</th><th>ส่วนลด %</th><th>VAT %</th><th>รวม</th><th /></tr></thead>
+          <thead>
+            <tr>
+              <th>สินค้า</th>
+              <th>รายละเอียด</th>
+              <th>จำนวน</th>
+              <th>ราคา</th>
+              <th>ส่วนลด %</th>
+              {isVatRegistered && <th>VAT %</th>}
+              <th>รวม</th>
+              <th />
+            </tr>
+          </thead>
           <tbody>
             {items.map((item, index) => {
               const subtotal = item.quantity * item.unit_price;
               const discount = (subtotal * item.discount_percent) / 100;
-              const tax = ((subtotal - discount) * item.tax_rate) / 100;
+              const tax = isVatRegistered ? ((subtotal - discount) * item.tax_rate) / 100 : 0;
               const total = subtotal - discount + tax;
               return (
                 <tr key={index}>
@@ -102,7 +134,12 @@ export function SalesOrderForm({
                       value={item.product_id ?? ""}
                       onChange={(event) => {
                         const product = products.find((entry) => entry.id === event.target.value);
-                        patchItem(index, { product_id: event.target.value || null, description: product?.name ?? "", unit_price: Number(product?.selling_price ?? 0) });
+                        patchItem(index, {
+                          product_id: event.target.value || null,
+                          description: product?.name ?? "",
+                          unit_price: Number(product?.selling_price ?? 0),
+                          tax_rate: isVatRegistered ? taxDefaults.default_vat_rate : 0,
+                        });
                       }}
                     >
                       <option value="">ไม่ผูกสินค้า</option>
@@ -115,7 +152,7 @@ export function SalesOrderForm({
                   <td><input className="input" type="number" min="0.0001" step="0.0001" value={item.quantity} onChange={(event) => patchItem(index, { quantity: Number(event.target.value) })} /></td>
                   <td><input className="input" type="number" min="0" step="0.01" value={item.unit_price} onChange={(event) => patchItem(index, { unit_price: Number(event.target.value) })} /></td>
                   <td><input className="input" type="number" min="0" step="0.01" value={item.discount_percent} onChange={(event) => patchItem(index, { discount_percent: Number(event.target.value) })} /></td>
-                  <td><input className="input" type="number" min="0" step="0.01" value={item.tax_rate} onChange={(event) => patchItem(index, { tax_rate: Number(event.target.value) })} /></td>
+                  {isVatRegistered && <td><input className="input" type="number" min="0" step="0.01" value={item.tax_rate} onChange={(event) => patchItem(index, { tax_rate: Number(event.target.value) })} /></td>}
                   <td className="font-bold">฿{total.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</td>
                   <td><button type="button" className="btn-secondary btn-small" disabled={items.length === 1} onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}>ลบ</button></td>
                 </tr>
@@ -132,7 +169,7 @@ export function SalesOrderForm({
         <div className="space-y-2 rounded-2xl bg-slate-50 p-5">
           <div className="flex justify-between"><span>ยอดก่อนส่วนลด</span><b>฿{totals.subtotal.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
           <div className="flex justify-between"><span>ส่วนลด</span><b>฿{totals.discount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
-          <div className="flex justify-between"><span>ภาษี</span><b>฿{totals.tax.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
+          {isVatRegistered && <div className="flex justify-between"><span>ภาษี</span><b>฿{totals.tax.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>}
           <div className="mt-3 flex justify-between border-t pt-3 text-xl"><span className="font-black">ยอดสุทธิ</span><b>฿{totals.total.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</b></div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
+import { CompanyRepository } from "@/lib/repositories/core/company-repository";
 import { SalesOrderRepository } from "@/lib/repositories/sales/sales-order-repository";
 import { createClient } from "@/lib/supabase/server";
 import type { CreateSalesOrderInput, DeliverSalesOrderInput, InvoiceSalesOrderInput, QuotationToSalesOrderInput, ReserveSalesOrderInput } from "@/lib/validation/sales/sales-order";
@@ -31,7 +32,8 @@ export async function getSalesDeliveryPrint(deliveryId: string) {
 export async function createSalesOrder(input: CreateSalesOrderInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
-  const { computedItems } = computeSalesOrderItems(input.items);
+  const taxDefaults = await new CompanyRepository(supabase).getTaxDefaults(companyId);
+  const { computedItems } = computeSalesOrderItems(input.items, taxDefaults.is_vat_registered);
   return new SalesOrderRepository(supabase).create(companyId, input, computedItems);
 }
 

@@ -10,7 +10,7 @@ export type SalesOrderComputedItem = SalesOrderItemInput & {
 
 const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
-export function computeSalesOrderItems(items: SalesOrderItemInput[]) {
+export function computeSalesOrderItems(items: SalesOrderItemInput[], isVatRegistered = true) {
   const totals = {
     subtotal: 0,
     discount_amount: 0,
@@ -21,7 +21,7 @@ export function computeSalesOrderItems(items: SalesOrderItemInput[]) {
   const computedItems: SalesOrderComputedItem[] = items.map((item, index) => {
     const lineSubtotal = roundMoney(item.quantity * item.unit_price);
     const lineDiscount = roundMoney((lineSubtotal * item.discount_percent) / 100);
-    const lineTax = roundMoney(((lineSubtotal - lineDiscount) * item.tax_rate) / 100);
+    const lineTax = isVatRegistered ? roundMoney(((lineSubtotal - lineDiscount) * item.tax_rate) / 100) : 0;
     const lineTotal = roundMoney(lineSubtotal - lineDiscount + lineTax);
 
     totals.subtotal = roundMoney(totals.subtotal + lineSubtotal);
@@ -31,6 +31,7 @@ export function computeSalesOrderItems(items: SalesOrderItemInput[]) {
 
     return {
       ...item,
+      tax_rate: isVatRegistered ? item.tax_rate : 0,
       line_subtotal: lineSubtotal,
       line_discount: lineDiscount,
       line_tax: lineTax,

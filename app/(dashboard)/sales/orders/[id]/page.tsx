@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
+import { getCompanyTaxDefaults } from "@/lib/services/core/company-service";
 import { getSalesOrderDetail } from "@/lib/services/sales/sales-order-service";
 import { createInvoiceFromSalesOrderAction, deliverSalesOrderAction, reserveSalesOrderAction } from "../actions";
 
@@ -8,8 +9,12 @@ const money = (value: number | string) => Number(value).toLocaleString("th-TH", 
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { order, items, deliveries, events, warehouses } = await getSalesOrderDetail(id);
+  const [{ order, items, deliveries, events, warehouses }, taxDefaults] = await Promise.all([
+    getSalesOrderDetail(id),
+    getCompanyTaxDefaults(),
+  ]);
   if (!order) notFound();
+  const showVat = taxDefaults.is_vat_registered;
   const today = new Date().toISOString().slice(0, 10);
   const canDeliver = order.status === "RESERVED" || order.status === "PARTIALLY_DELIVERED";
   const deliverableItems = items
@@ -163,7 +168,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <div className="card space-y-2 p-5">
             <div className="flex justify-between"><span>Subtotal</span><b>THB {money(order.subtotal)}</b></div>
             <div className="flex justify-between"><span>Discount</span><b>THB {money(order.discount_amount)}</b></div>
-            <div className="flex justify-between"><span>Tax</span><b>THB {money(order.tax_amount)}</b></div>
+            {showVat && <div className="flex justify-between"><span>Tax</span><b>THB {money(order.tax_amount)}</b></div>}
             <div className="mt-3 flex justify-between border-t pt-3 text-xl"><span className="font-black">Total</span><b>THB {money(order.total_amount)}</b></div>
           </div>
         </aside>
