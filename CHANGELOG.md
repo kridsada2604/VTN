@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.20.8 - Move Sale Out to Report Center
+- Move Sale Out create and detail routes under Report Center context.
+- Redirect legacy Sales Sale Out routes to Report Center routes to preserve old links.
+- Remove Sale Out from the Sales module grid and update Report Center actions/detail links.
 ## v0.20.7 - Report Preview Filters
 - Add Sale Out report preview inside Report Center with date, dealer, status, and keyword filters.
 - Add filtered Sale Out KPIs, preview table, top dealer, and top salesperson summaries before export.

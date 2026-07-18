@@ -68,8 +68,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           <p className="text-sm text-gray-500">Registered files</p>
           <p className="mt-2 text-4xl font-black">{uploads.length}</p>
           {category.type === "SALE_OUT" && (
-            <Link className="btn-primary mt-5 inline-block" href="/sales/sale-out">
-              Open Sale Out
+            <Link className="btn-primary mt-5 inline-block" href="/reports/sale-out/new">
+              Add Sale Out Record
             </Link>
           )}
         </div>
@@ -140,7 +140,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                       <td>{report.period_start} - {report.period_end}</td>
                       <td>{report.status}</td>
                       <td className="font-bold">THB {formatDocumentMoney(report.net_amount)}</td>
-                      <td><Link className="btn-secondary btn-small" href={`/sales/sale-out/${report.id}`}>Open</Link></td>
+                      <td><Link className="btn-secondary btn-small" href={`/reports/sale-out/${report.id}`}>Open</Link></td>
                     </tr>
                   ))}
                 </tbody>

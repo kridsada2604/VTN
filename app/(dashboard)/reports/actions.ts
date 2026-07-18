@@ -17,6 +17,6 @@ export async function importSaleOutUploadAction(fd: FormData) {
   await importSaleOutUpload(batchId);
   revalidatePath("/reports");
   revalidatePath("/reports/SALE_OUT");
-  revalidatePath("/sales/sale-out");
+  revalidatePath("/reports/SALE_OUT");
   redirect("/reports/SALE_OUT");
 }
