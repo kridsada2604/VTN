@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.7 - Branch Service Layer
+- Move the Branches page to Core Branch Service and Repository layers.
+- Scope branch listing by current company for multi-company correctness.
+- Remove direct Supabase querying from the Branches route component.
+
 ## v0.21.6 - Users Permission Service Layer
 - Move the Users page to System User Service and Repository layers.
 - Show company-scoped user memberships with role, branch, and active status.

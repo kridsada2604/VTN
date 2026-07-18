@@ -1,2 +1,30 @@
-import { createClient } from "@/lib/supabase/server";
-export default async function BranchesPage(){const supabase=await createClient();const {data}=await supabase.from('branches').select('id,code,name,branch_number,is_active').order('code');const rows=data??[];return <div><h1 className="text-3xl font-black">สาขา</h1><div className="card mt-6 overflow-hidden"><table className="w-full text-left text-sm"><thead className="bg-gray-50"><tr><th className="p-4">รหัส</th><th className="p-4">ชื่อสาขา</th><th className="p-4">เลขสาขา</th><th className="p-4">สถานะ</th></tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-t"><td className="p-4 font-bold">{x.code}</td><td className="p-4">{x.name}</td><td className="p-4">{x.branch_number}</td><td className="p-4">{x.is_active?'ใช้งาน':'ปิดใช้งาน'}</td></tr>)}</tbody></table>{rows.length===0&&<p className="p-6 text-gray-500">ยังไม่มีข้อมูลสาขา</p>}</div></div>}
+import { PageHeader } from "@/components/page-header";
+import { getBranches } from "@/lib/services/core/branch-service";
+
+export default async function BranchesPage() {
+  const rows = await getBranches();
+
+  return (
+    <div>
+      <PageHeader eyebrow="CORE" title="สาขา" description="สาขาของบริษัทปัจจุบันสำหรับเอกสาร คลัง และสิทธิ์ผู้ใช้งาน" />
+      <section className="card table-wrap mt-6">
+        <table className="data-table">
+          <thead>
+            <tr><th>รหัส</th><th>ชื่อสาขา</th><th>เลขสาขา</th><th>สถานะ</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <td className="font-bold">{row.code}</td>
+                <td>{row.name}</td>
+                <td>{row.branch_number ?? "-"}</td>
+                <td>{row.is_active ? "ใช้งาน" : "ปิดใช้งาน"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!rows.length && <p className="p-6 text-gray-500">ยังไม่มีข้อมูลสาขา</p>}
+      </section>
+    </div>
+  );
+}

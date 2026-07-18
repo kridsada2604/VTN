@@ -18,6 +18,7 @@
 - [ ] Month of Inventory and Runrate analytics
 
 ## System / Permissions
+- [x] Move Branches page to Service and Repository layers
 - [x] Move Users page to Service and Repository layers
 - [ ] User role assignment and permission management UI
 - [ ] Permission matrix by module/action
