@@ -1,0 +1,4 @@
+dealer_code,salesperson_email,report_date,product_sku,dealer_sku,description,quantity,unit_price,line_discount
+VTN_TEST_DEALER_BANGKOK,,2026-07-17,VTN-TEST-ROUTER-01,BKK-R01,VTN Test Router 01,12,1900,500
+VTN_TEST_DEALER_BANGKOK,,2026-07-17,VTN-TEST-CAMERA-01,BKK-C01,VTN Test Camera 01,6,2900,0
+VTN_TEST_DEALER_BANGKOK,,2026-07-17,VTN-TEST-SENSOR-01,BKK-S01,VTN Test Sensor 01,20,690,0

@@ -2,16 +2,17 @@
 
 ## Report Center
 - [x] Report Center foundation
-- [x] Sale In / Sale Out / Inventory / MOI / Runrate category model
+- [x] Sale In / Sale Out / Inventory / MOI (Month of Inventory) / Runrate category model
 - [x] Clickable report category pages with module status
 - [x] Upload registry with Service / Repository / Validation
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Supabase Storage direct file upload UI
 - [x] Sale Out CSV parser/import pipeline
+- [x] Reversible Report Center test data and sample CSV files
 - [ ] File parser/import pipeline per report type
 - [ ] Sale In report schema and analytics
 - [ ] Inventory external report schema and analytics
-- [ ] MOI and Runrate analytics
+- [ ] Month of Inventory and Runrate analytics
 
 ## Sale Out / Dealer Sales
 - [x] Sale Out report foundation

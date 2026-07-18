@@ -79,10 +79,10 @@ export const reportCenterCategories: ReportCenterCategory[] = [
   {
     type: "MOI",
     title: "MOI",
-    description: "Market or industry data for external trend comparison.",
+    description: "Month of Inventory by dealer and SKU for stock coverage planning.",
     status: "FOUNDATION",
     href: "/reports/MOI",
-    nextStep: "Define MOI dataset template and trend analytics.",
+    nextStep: "Build Month of Inventory parser, coverage trend, and reorder alerts.",
   },
   {
     type: "RUNRATE",

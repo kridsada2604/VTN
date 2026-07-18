@@ -1,0 +1,4 @@
+dealer_code,period_month,product_sku,sale_out_qty,days_in_period,average_daily_sale,projected_month_qty
+VTN_TEST_DEALER_BANGKOK,2026-07,VTN-TEST-ROUTER-01,110,17,6.47,201
+VTN_TEST_DEALER_BANGKOK,2026-07,VTN-TEST-CAMERA-01,45,17,2.65,82
+VTN_TEST_DEALER_BANGKOK,2026-07,VTN-TEST-SENSOR-01,50,17,2.94,91

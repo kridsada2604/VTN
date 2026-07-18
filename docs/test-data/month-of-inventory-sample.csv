@@ -1,0 +1,4 @@
+dealer_code,period_month,product_sku,stock_on_hand,average_monthly_sale_out,month_of_inventory,reorder_note
+VTN_TEST_DEALER_BANGKOK,2026-07,VTN-TEST-ROUTER-01,220,110,2.00,Healthy
+VTN_TEST_DEALER_BANGKOK,2026-07,VTN-TEST-CAMERA-01,60,45,1.33,Watch
+VTN_TEST_DEALER_BANGKOK,2026-07,VTN-TEST-SENSOR-01,25,50,0.50,Reorder

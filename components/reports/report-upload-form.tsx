@@ -9,7 +9,7 @@ export function ReportUploadForm({ action }: { action: (fd: FormData) => void })
             <option value="SALE_IN">Sale In</option>
             <option value="SALE_OUT">Sale Out</option>
             <option value="INVENTORY">Inventory</option>
-            <option value="MOI">MOI</option>
+            <option value="MOI">MOI - Month of Inventory</option>
             <option value="RUNRATE">Runrate</option>
             <option value="OTHER">Other</option>
           </select>

@@ -13,9 +13,9 @@ const statusClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  READY: "ใช้งานได้",
-  FOUNDATION: "วางโครงแล้ว",
-  IN_PROGRESS: "กำลังพัฒนา",
+  READY: "Ready",
+  FOUNDATION: "Foundation",
+  IN_PROGRESS: "In progress",
 };
 
 export default async function Page() {
@@ -26,12 +26,12 @@ export default async function Page() {
       <PageHeader
         eyebrow="REPORT CENTER"
         title="Report Center"
-        description="Central reporting hub for Sale In, Sale Out, Inventory, MOI, and Runrate uploads."
+        description="Central reporting hub for Sale In, Sale Out, Inventory, Month of Inventory, and Runrate uploads."
       />
 
       <section className="mt-6 grid gap-4 md:grid-cols-4">
         <div className="card p-5"><p className="text-sm text-gray-500">Uploads</p><p className="mt-2 text-3xl font-black">{summary.uploadCount}</p></div>
-        <div className="card p-5"><p className="text-sm text-gray-500">Sale Out Total</p><p className="mt-2 text-3xl font-black">฿{formatDocumentMoney(summary.saleOutAmount)}</p></div>
+        <div className="card p-5"><p className="text-sm text-gray-500">Sale Out Total</p><p className="mt-2 text-3xl font-black">THB {formatDocumentMoney(summary.saleOutAmount)}</p></div>
         <div className="card p-5"><p className="text-sm text-gray-500">Sale Out MoM</p><p className="mt-2 text-3xl font-black text-orange-700">{summary.saleOutGrowthPercent.toFixed(2)}%</p></div>
         <div className="card p-5"><p className="text-sm text-gray-500">Imported / Failed</p><p className="mt-2 text-3xl font-black">{summary.importedCount} / {summary.failedCount}</p></div>
       </section>
