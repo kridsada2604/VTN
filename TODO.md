@@ -19,11 +19,14 @@
 
 ## Sales Tax / Installments
 - [x] Company VAT registration and default tax profile
+- [x] Accounting tax code master for Sales VAT / No VAT
+- [x] Hide VAT UI in quotation and invoice when company is not VAT registered
 - [x] Quotation withholding tax foundation
 - [x] Quotation and invoice payment installment tables
 - [ ] Custom installment schedule editor per document
 - [ ] Withholding tax certificate workflow
 - [ ] Accounting posting for withholding tax clearing account
+- [ ] Apply company VAT visibility to Sales Order, POS, Purchase, and Project invoice screens
 
 ## Sale Out / Dealer Sales
 - [x] Sale Out report foundation

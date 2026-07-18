@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.0 - Accounting VAT Tax Codes
+- Add company-scoped accounting tax codes for Sales VAT and No VAT.
+- Link company default sales tax code to the company tax profile.
+- Hide VAT controls, VAT columns, and VAT summary rows in quotation and invoice forms when the company is not VAT registered.
+- Keep Sales VAT rate driven by company accounting tax settings instead of per-document UI selection.
 ## v0.20.9 - Sales Tax and Installments Foundation
 - Add company tax profile for VAT registration, default VAT rate, and default withholding tax rate.
 - Add quotation and invoice withholding tax fields with grand total and net payable tracking.

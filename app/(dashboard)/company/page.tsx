@@ -18,6 +18,7 @@ export default async function CompanyPage() {
             <Item label="Tax ID" value={company?.tax_id} />
             <Item label="Currency" value={company?.currency_code} />
             <Item label="VAT Status" value={company?.is_vat_registered ? "VAT registered" : "Not VAT registered"} />
+            <Item label="Sales Tax Code" value={company?.accounting_tax_codes?.[0]?.code ? `${company.accounting_tax_codes[0].code} - ${company.accounting_tax_codes[0].name}` : "-"} />
           </dl>
         </div>
 

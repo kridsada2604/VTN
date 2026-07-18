@@ -16,12 +16,16 @@ export type CompanyProfile = {
   default_withholding_tax_rate: number | string;
   tax_invoice_name: string | null;
   tax_invoice_address: string | null;
+  default_sales_tax_code_id: string | null;
+  accounting_tax_codes?: { code: string; name: string; rate: number | string; tax_type: string }[] | null;
 };
 
 export type CompanyTaxDefaults = {
   is_vat_registered: boolean;
   default_vat_rate: number;
   default_withholding_tax_rate: number;
+  default_sales_tax_code_id: string | null;
+  default_sales_tax_code: { code: string; name: string; rate: number; tax_type: string } | null;
 };
 
 export class CompanyRepository {
@@ -30,7 +34,7 @@ export class CompanyRepository {
   async getProfile(companyId: string) {
     const { data, error } = await this.supabase
       .from("companies")
-      .select("id,code,name_th,name_en,tax_id,address,currency_code,is_vat_registered,default_vat_rate,default_withholding_tax_rate,tax_invoice_name,tax_invoice_address")
+      .select("id,code,name_th,name_en,tax_id,address,currency_code,is_vat_registered,default_vat_rate,default_withholding_tax_rate,tax_invoice_name,tax_invoice_address,default_sales_tax_code_id,accounting_tax_codes!companies_default_sales_tax_code_id_fkey(code,name,rate,tax_type)")
       .eq("id", companyId)
       .maybeSingle();
 
@@ -44,6 +48,13 @@ export class CompanyRepository {
       is_vat_registered: profile?.is_vat_registered ?? true,
       default_vat_rate: Number(profile?.default_vat_rate ?? 7),
       default_withholding_tax_rate: Number(profile?.default_withholding_tax_rate ?? 0),
+      default_sales_tax_code_id: profile?.default_sales_tax_code_id ?? null,
+      default_sales_tax_code: profile?.accounting_tax_codes?.[0] ? {
+        code: profile.accounting_tax_codes[0].code,
+        name: profile.accounting_tax_codes[0].name,
+        rate: Number(profile.accounting_tax_codes[0].rate),
+        tax_type: profile.accounting_tax_codes[0].tax_type,
+      } : null,
     };
   }
 
