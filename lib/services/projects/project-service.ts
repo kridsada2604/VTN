@@ -1,4 +1,5 @@
 import { getCurrentCompanyId } from "@/lib/current-company";
+import { CompanyRepository } from "@/lib/repositories/core/company-repository";
 import { ProjectRepository } from "@/lib/repositories/projects/project-repository";
 import { createClient } from "@/lib/supabase/server";
 import type { CreateProjectCostInput, CreateProjectInput, CreateProjectInvoiceInput, CreateProjectTaskInput, UpdateProjectTaskInput } from "@/lib/validation/projects/project";
@@ -48,5 +49,7 @@ export async function createProjectCost(input: CreateProjectCostInput) {
 export async function createProjectInvoice(input: CreateProjectInvoiceInput) {
   const supabase = await createClient();
   const companyId = await getCurrentCompanyId();
-  return new ProjectRepository(supabase).createInvoice(companyId, input);
+  const taxDefaults = await new CompanyRepository(supabase).getTaxDefaults(companyId);
+  const normalizedInput = taxDefaults.is_vat_registered ? input : { ...input, tax_rate: 0 };
+  return new ProjectRepository(supabase).createInvoice(companyId, normalizedInput);
 }

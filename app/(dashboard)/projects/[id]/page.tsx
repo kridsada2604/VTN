@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
+import { getCompanyTaxDefaults } from "@/lib/services/core/company-service";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getProjectDetail } from "@/lib/services/projects/project-service";
 import { saveProjectCost, saveProjectInvoice, saveProjectTask, updateProjectTaskAction } from "../actions";
@@ -21,8 +22,12 @@ const costTypeLabel: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { project, tasks, costs, invoices } = await getProjectDetail(id);
+  const [{ project, tasks, costs, invoices }, taxDefaults] = await Promise.all([
+    getProjectDetail(id),
+    getCompanyTaxDefaults(),
+  ]);
   if (!project) notFound();
+  const isVatRegistered = taxDefaults.is_vat_registered;
 
   const completedTasks = tasks.filter((task) => task.status === "DONE").length;
   const progress = tasks.length ? Math.round((completedTasks / tasks.length) * 100) : 0;
@@ -160,8 +165,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <label><span className="label">Invoice date</span><input className="input" type="date" name="invoice_date" required defaultValue={new Date().toISOString().slice(0, 10)} /></label>
             <label><span className="label">Due date</span><input className="input" type="date" name="due_date" /></label>
             <label><span className="label">Description</span><input className="input" name="description" required defaultValue={`Project billing - ${project.project_no}`} /></label>
-            <label><span className="label">Amount before VAT</span><input className="input" type="number" min="0.01" step="0.01" name="amount" required /></label>
-            <label><span className="label">VAT %</span><input className="input" type="number" min="0" step="0.01" name="tax_rate" defaultValue="7" /></label>
+            <label><span className="label">{isVatRegistered ? "Amount before VAT" : "Amount"}</span><input className="input" type="number" min="0.01" step="0.01" name="amount" required /></label>
+            {isVatRegistered ? (
+              <label><span className="label">VAT %</span><input className="input" type="number" min="0" step="0.01" name="tax_rate" defaultValue={taxDefaults.default_vat_rate} /></label>
+            ) : (
+              <input type="hidden" name="tax_rate" value="0" />
+            )}
             <label><span className="label">Payment terms</span><input className="input" name="payment_terms" defaultValue="ชำระภายใน 30 วัน" /></label>
             <label><span className="label">Notes</span><textarea className="input textarea" name="notes" /></label>
             <button className="btn-primary w-full">Create Project Invoice</button>

@@ -29,7 +29,7 @@
 - [x] Apply company VAT visibility to Sales Order screen
 - [x] Apply company VAT visibility to Purchase Order screen
 - [x] Apply company VAT visibility to POS sale and terminal screens
-- [ ] Apply company VAT visibility to Project invoice screen
+- [x] Apply company VAT visibility to Project invoice screen
 
 ## Sale Out / Dealer Sales
 - [x] Sale Out report foundation

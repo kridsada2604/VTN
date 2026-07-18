@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.3 - Project Invoice VAT Visibility
+- Apply company VAT visibility to Project invoice creation.
+- Hide Project invoice VAT controls when the company is not VAT registered.
+- Enforce non-VAT Project invoice tax rate in the Service Layer.
+
 ## v0.21.2 - Purchase and POS VAT Visibility
 - Apply company VAT visibility to Purchase Order creation and detail pages.
 - Apply company VAT visibility to POS sale form, terminal, and receipt pages.
