@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.5 - Quotation Service Repository Refactor
+- Move Quotation list, detail, form options, create, and status updates into Service/Repository layers.
+- Add Quotation validation and calculator modules for item totals, WHT, and installments.
+- Remove direct Supabase querying and business calculation from Quotation route components/actions.
+
 ## v0.21.4 - Sales Document VAT Detail Visibility
 - Hide VAT columns and tax totals on Quotation detail when the company is not VAT registered.
 - Hide VAT columns and tax totals on Invoice detail when the company is not VAT registered.

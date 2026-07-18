@@ -18,6 +18,7 @@
 - [ ] Month of Inventory and Runrate analytics
 
 ## Sales Tax / Installments
+- [x] Move Quotation routes/actions to Service and Repository layers
 - [x] Company VAT registration and default tax profile
 - [x] Accounting tax code master for Sales VAT / No VAT
 - [x] Hide VAT UI in quotation and invoice when company is not VAT registered
