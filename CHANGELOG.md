@@ -1,9 +1,15 @@
 # Changelog
 
+## v0.20.7 - Report Preview Filters
+- Add Sale Out report preview inside Report Center with date, dealer, status, and keyword filters.
+- Add filtered Sale Out KPIs, preview table, top dealer, and top salesperson summaries before export.
+- Keep report querying in Service and Repository layers instead of UI components.
+
 ## v0.20.6 - MOI Test Data
 - Rename MOI meaning to Month of Inventory in Report Center metadata and upload UI.
 - Add reversible Supabase test data migration for dealers, products, Sale Out reports, and report upload batches.
 - Add sample CSV files for Sale Out, Inventory, Month of Inventory, and Runrate upload testing.
+
 ## v0.20.5 — Sale Out CSV Import Pipeline
 - Add Sale Out CSV importer for Report Center uploads.
 - Parse uploaded CSV files from Supabase Storage and create Sale Out reports.

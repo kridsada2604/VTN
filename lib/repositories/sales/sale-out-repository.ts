@@ -4,8 +4,18 @@ import type { CreateSaleOutInput } from "@/lib/validation/sales/sale-out";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
+export type SaleOutReportFilters = {
+  from?: string;
+  to?: string;
+  dealerId?: string;
+  status?: string;
+  q?: string;
+};
+
 export type SaleOutReportRow = {
   id: string;
+  dealer_id: string;
+  salesperson_id: string | null;
   document_no: string;
   report_date: string;
   period_start: string;
@@ -40,19 +50,66 @@ export type SaleOutSummary = {
   topSalespeople: Array<{ salespersonName: string; amount: number }>;
 };
 
+export type SaleOutReportPreview = {
+  reports: SaleOutReportRow[];
+  summary: SaleOutSummary;
+  filters: Required<Pick<SaleOutReportFilters, "from" | "to" | "dealerId" | "status" | "q">>;
+  options: {
+    dealers: Array<{ id: string; code: string; name: string }>;
+    statuses: string[];
+  };
+};
+
+const reportSelect = "id,dealer_id,salesperson_id,document_no,report_date,period_start,period_end,source_channel,status,gross_amount,discount_amount,net_amount,customers(code,name),profiles(full_name,email)";
+
 export class SaleOutRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
 
   async dashboard(companyId: string) {
     const { data, error } = await this.supabase
       .from("sales_out_reports")
-      .select("id,document_no,report_date,period_start,period_end,source_channel,status,gross_amount,discount_amount,net_amount,customers(code,name),profiles(full_name,email)")
+      .select(reportSelect)
       .eq("company_id", companyId)
       .order("report_date", { ascending: false });
 
     if (error) throw error;
     const reports = (data ?? []) as SaleOutReportRow[];
     return { reports, summary: this.toSummary(reports) };
+  }
+
+  async reportPreview(companyId: string, filters: SaleOutReportFilters): Promise<SaleOutReportPreview> {
+    const normalized = this.normalizeFilters(filters);
+    let query = this.supabase
+      .from("sales_out_reports")
+      .select(reportSelect)
+      .eq("company_id", companyId)
+      .gte("report_date", normalized.from)
+      .lte("report_date", normalized.to)
+      .order("report_date", { ascending: false })
+      .order("document_no", { ascending: false });
+
+    if (normalized.dealerId) query = query.eq("dealer_id", normalized.dealerId);
+    if (normalized.status) query = query.eq("status", normalized.status);
+
+    const [reportsResult, dealersResult] = await Promise.all([
+      query,
+      this.supabase.from("customers").select("id,code,name").eq("company_id", companyId).eq("is_active", true).order("name"),
+    ]);
+
+    if (reportsResult.error) throw reportsResult.error;
+    if (dealersResult.error) throw dealersResult.error;
+
+    const reports = this.applyKeywordFilter((reportsResult.data ?? []) as SaleOutReportRow[], normalized.q);
+
+    return {
+      reports,
+      summary: this.toSummary(reports),
+      filters: normalized,
+      options: {
+        dealers: dealersResult.data ?? [],
+        statuses: ["DRAFT", "SUBMITTED", "APPROVED", "CANCELLED"],
+      },
+    };
   }
 
   async getFormOptions(companyId: string) {
@@ -81,7 +138,7 @@ export class SaleOutRepository {
     const [report, items] = await Promise.all([
       this.supabase
         .from("sales_out_reports")
-        .select("id,document_no,report_date,period_start,period_end,source_channel,status,gross_amount,discount_amount,net_amount,notes,customers(code,name),profiles(full_name,email)")
+        .select("id,dealer_id,salesperson_id,document_no,report_date,period_start,period_end,source_channel,status,gross_amount,discount_amount,net_amount,notes,customers(code,name),profiles(full_name,email)")
         .eq("id", reportId)
         .eq("company_id", companyId)
         .maybeSingle(),
@@ -120,6 +177,47 @@ export class SaleOutRepository {
 
     if (error) throw error;
     return String(data);
+  }
+
+  private normalizeFilters(filters: SaleOutReportFilters) {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const from = this.safeDate(filters.from) ?? firstDay.toISOString().slice(0, 10);
+    const to = this.safeDate(filters.to) ?? today.toISOString().slice(0, 10);
+
+    return {
+      from,
+      to,
+      dealerId: filters.dealerId?.trim() ?? "",
+      status: filters.status?.trim().toUpperCase() ?? "",
+      q: filters.q?.trim() ?? "",
+    };
+  }
+
+  private safeDate(value: string | undefined) {
+    if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    return value;
+  }
+
+  private applyKeywordFilter(reports: SaleOutReportRow[], keyword: string) {
+    const normalized = keyword.trim().toLowerCase();
+    if (!normalized) return reports;
+
+    return reports.filter((report) => {
+      const dealer = report.customers?.[0];
+      const salesperson = report.profiles?.[0];
+      return [
+        report.document_no,
+        report.status,
+        report.source_channel,
+        dealer?.code,
+        dealer?.name,
+        salesperson?.full_name,
+        salesperson?.email,
+      ]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalized));
+    });
   }
 
   private toSummary(reports: SaleOutReportRow[]): SaleOutSummary {

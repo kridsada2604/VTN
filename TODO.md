@@ -9,7 +9,9 @@
 - [x] Supabase Storage direct file upload UI
 - [x] Sale Out CSV parser/import pipeline
 - [x] Reversible Report Center test data and sample CSV files
+- [x] Sale Out report preview with filters before export
 - [ ] File parser/import pipeline per report type
+- [ ] Preview/filter UI for Inventory, Month of Inventory, Runrate, and Sale In
 - [ ] Sale In report schema and analytics
 - [ ] Inventory external report schema and analytics
 - [ ] Month of Inventory and Runrate analytics
