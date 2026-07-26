@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.16 - External Inventory Analytics
+- Add external Inventory report and item schema migration with RLS, upsert RPC, and audit logging.
+- Add Inventory Service, Repository, Validation, calculator, CSV import pipeline, and Report Center action.
+- Add Report Center Inventory preview filters, stock KPIs, and top dealer stock analytics.
+
 ## v0.21.15 - Sale In Report Analytics
 - Add Sale In report and item schema migration with RLS, create RPC, and audit logging.
 - Add Sale In Service, Repository, Validation, calculator, CSV import pipeline, and sample CSV.

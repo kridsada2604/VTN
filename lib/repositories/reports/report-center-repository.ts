@@ -72,9 +72,9 @@ export const reportCenterCategories: ReportCenterCategory[] = [
     type: "INVENTORY",
     title: "Inventory",
     description: "Dealer stock on hand, movement, lot/serial, and external warehouse reports.",
-    status: "FOUNDATION",
+    status: "READY",
     href: "/reports/INVENTORY",
-    nextStep: "Add storage upload and inventory file parser.",
+    nextStep: "Inventory external schema, CSV import, preview filters, and stock analytics are ready.",
   },
   {
     type: "MOI",

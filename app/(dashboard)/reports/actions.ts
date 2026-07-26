@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { importSaleInUpload, importSaleOutUpload, uploadReportFile } from "@/lib/services/reports/report-center-service";
+import { importInventoryUpload, importSaleInUpload, importSaleOutUpload, uploadReportFile } from "@/lib/services/reports/report-center-service";
 import { parseReportUploadFileForm } from "@/lib/validation/reports/report-center";
 
 export async function registerReportUpload(fd: FormData) {
@@ -27,4 +27,13 @@ export async function importSaleInUploadAction(fd: FormData) {
   revalidatePath("/reports");
   revalidatePath("/reports/SALE_IN");
   redirect("/reports/SALE_IN");
+}
+
+export async function importInventoryUploadAction(fd: FormData) {
+  const batchId = String(fd.get("batch_id") ?? "");
+  if (!batchId) throw new Error("Report upload batch is required");
+  await importInventoryUpload(batchId);
+  revalidatePath("/reports");
+  revalidatePath("/reports/INVENTORY");
+  redirect("/reports/INVENTORY");
 }

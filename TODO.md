@@ -14,7 +14,7 @@
 - [ ] File parser/import pipeline per report type
 - [ ] Preview/filter UI for Inventory, Month of Inventory, Runrate, and Sale In
 - [x] Sale In report schema and analytics
-- [ ] Inventory external report schema and analytics
+- [x] Inventory external report schema and analytics
 - [ ] Month of Inventory and Runrate analytics
 
 ## System / Permissions

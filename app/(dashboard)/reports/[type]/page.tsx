@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { BarChart3, FileSpreadsheet, Search } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
+import { getExternalInventoryPreview } from "@/lib/services/reports/external-inventory-service";
 import { getReportCenterCategory } from "@/lib/services/reports/report-center-service";
 import { getSaleInReportPreview } from "@/lib/services/sales/sale-in-service";
 import { getSaleOutReportPreview } from "@/lib/services/sales/sale-out-service";
-import { importSaleInUploadAction, importSaleOutUploadAction } from "../actions";
+import { importInventoryUploadAction, importSaleInUploadAction, importSaleOutUploadAction } from "../actions";
 
 const statusClass: Record<string, string> = {
   READY: "bg-green-100 text-green-800",
@@ -51,6 +52,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         q: searchValue(query, "q"),
       })
     : null;
+  const inventoryPreview = category.type === "INVENTORY"
+    ? await getExternalInventoryPreview({
+        periodMonth: searchValue(query, "period_month"),
+        dealerId: searchValue(query, "dealer_id"),
+        q: searchValue(query, "q"),
+      })
+    : null;
 
   return (
     <div>
@@ -86,6 +94,83 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         </div>
       </section>
 
+
+
+      {inventoryPreview && (
+        <section className="mt-6 space-y-6">
+          <section className="card p-5">
+            <div className="flex items-center gap-3">
+              <Search className="text-orange-600" />
+              <h2 className="font-black">Preview Inventory Data</h2>
+            </div>
+            <form className="mt-5 grid gap-4 md:grid-cols-4">
+              <label>
+                <span className="label">Period Month</span>
+                <input className="input" type="month" name="period_month" defaultValue={inventoryPreview.filters.periodMonth} />
+              </label>
+              <label>
+                <span className="label">Dealer</span>
+                <select className="input" name="dealer_id" defaultValue={inventoryPreview.filters.dealerId}>
+                  <option value="">All dealers</option>
+                  {inventoryPreview.options.dealers.map((dealer) => (
+                    <option key={dealer.id} value={dealer.id}>{dealer.code} - {dealer.name}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span className="label">Keyword</span>
+                <input className="input" name="q" defaultValue={inventoryPreview.filters.q} placeholder="Dealer, status" />
+              </label>
+              <div className="flex items-end gap-2">
+                <button className="btn-primary">Search</button>
+                <Link className="btn-secondary" href="/reports/INVENTORY">Clear</Link>
+              </div>
+            </form>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-4">
+            <div className="card p-5"><p className="text-sm text-gray-500">Matched reports</p><p className="mt-2 text-3xl font-black">{inventoryPreview.summary.totalReports}</p></div>
+            <div className="card p-5"><p className="text-sm text-gray-500">Stock On Hand</p><p className="mt-2 text-3xl font-black text-orange-700">{inventoryPreview.summary.stockOnHand.toLocaleString()}</p></div>
+            <div className="card p-5"><p className="text-sm text-gray-500">Inbound Qty</p><p className="mt-2 text-3xl font-black">{inventoryPreview.summary.inboundQty.toLocaleString()}</p></div>
+            <div className="card p-5"><p className="text-sm text-gray-500">Outbound Qty</p><p className="mt-2 text-3xl font-black">{inventoryPreview.summary.outboundQty.toLocaleString()}</p></div>
+          </section>
+
+          <section className="grid gap-6 xl:grid-cols-[1fr_360px]">
+            <div className="card table-wrap">
+              <div className="border-b p-4"><h2 className="font-black">Inventory Preview</h2></div>
+              <table className="data-table">
+                <thead><tr><th>Dealer</th><th>Month</th><th>Status</th><th>On Hand</th><th>Inbound</th><th>Outbound</th><th>Adjustment</th></tr></thead>
+                <tbody>
+                  {inventoryPreview.reports.map((report) => (
+                    <tr key={report.id}>
+                      <td><b>{report.customers?.[0]?.name ?? "-"}</b><p className="text-xs text-gray-500">{report.customers?.[0]?.code ?? "-"}</p></td>
+                      <td>{report.period_month}</td>
+                      <td>{report.status}</td>
+                      <td className="font-bold">{Number(report.total_stock_on_hand).toLocaleString()}</td>
+                      <td>{Number(report.total_inbound_qty).toLocaleString()}</td>
+                      <td>{Number(report.total_outbound_qty).toLocaleString()}</td>
+                      <td>{Number(report.total_adjustment_qty).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!inventoryPreview.reports.length && <p className="p-6 text-gray-500">No Inventory data matched these filters.</p>}
+            </div>
+            <aside className="card p-5">
+              <div className="flex items-center gap-3"><BarChart3 className="text-orange-600" /><h2 className="font-black">Top Stock Dealers</h2></div>
+              <div className="mt-4 space-y-3">
+                {inventoryPreview.summary.topDealers.map((dealer) => (
+                  <div key={dealer.dealerName} className="flex justify-between gap-3 border-b pb-2 text-sm">
+                    <span className="font-bold">{dealer.dealerName}</span>
+                    <span>{dealer.stockOnHand.toLocaleString()}</span>
+                  </div>
+                ))}
+                {!inventoryPreview.summary.topDealers.length && <p className="text-sm text-gray-500">No dealer stock in this period.</p>}
+              </div>
+            </aside>
+          </section>
+        </section>
+      )}
 
       {saleInPreview && (
         <section className="mt-6 space-y-6">
@@ -301,6 +386,12 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                   )}
                   {category.type === "SALE_IN" && ["UPLOADED", "FAILED"].includes(upload.status) && (
                     <form action={importSaleInUploadAction}>
+                      <input type="hidden" name="batch_id" value={upload.id} />
+                      <button className="btn-secondary btn-small">Import</button>
+                    </form>
+                  )}
+                  {category.type === "INVENTORY" && ["UPLOADED", "FAILED"].includes(upload.status) && (
+                    <form action={importInventoryUploadAction}>
                       <input type="hidden" name="batch_id" value={upload.id} />
                       <button className="btn-secondary btn-small">Import</button>
                     </form>
