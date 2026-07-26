@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.8 - Customer Supplier Service Layers
+- Move Customers and Suppliers pages/actions to Master Service, Repository, and Validation layers.
+- Keep customer and supplier search, edit, and active toggles company-scoped.
+- Remove direct Supabase querying from Customers and Suppliers route components/actions.
+
 ## v0.21.7 - Branch Service Layer
 - Move the Branches page to Core Branch Service and Repository layers.
 - Scope branch listing by current company for multi-company correctness.
