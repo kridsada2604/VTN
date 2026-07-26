@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.9 - Inventory Master Service Layers
+- Move Units, Product Categories, and Warehouses pages/actions to Inventory Service, Repository, and Validation layers.
+- Reuse a shared inventory master repository for simple code/name masters to reduce duplication.
+- Align Product Category actions and edit links with the product_categories table and /inventory/categories route.
+
 ## v0.21.8 - Customer Supplier Service Layers
 - Move Customers and Suppliers pages/actions to Master Service, Repository, and Validation layers.
 - Keep customer and supplier search, edit, and active toggles company-scoped.

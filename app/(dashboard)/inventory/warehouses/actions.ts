@@ -1,4 +1,15 @@
 "use server";
-import{revalidatePath}from"next/cache";import{createClient}from"@/lib/supabase/server";import{getCurrentCompanyId}from"@/lib/current-company";const t=(f:FormData,k:string)=>String(f.get(k)??"").trim();
-export async function saveWarehouse(f:FormData){const s=await createClient(),company_id=await getCurrentCompanyId(),id=t(f,"id"),payload={company_id,branch_id:t(f,"branch_id"),code:t(f,"code"),name:t(f,"name")};if(!payload.branch_id||!payload.code||!payload.name)throw new Error("กรุณากรอกข้อมูลให้ครบ");const{error}=id?await s.from("warehouses").update(payload).eq("id",id).eq("company_id",company_id):await s.from("warehouses").insert(payload);if(error)throw error;revalidatePath("/inventory/warehouses");}
-export async function toggleWarehouse(f:FormData){const s=await createClient(),company_id=await getCurrentCompanyId();const{error}=await s.from("warehouses").update({is_active:t(f,"next")==="true"}).eq("id",t(f,"id")).eq("company_id",company_id);if(error)throw error;revalidatePath("/inventory/warehouses");}
+
+import { revalidatePath } from "next/cache";
+import { saveWarehouseMaster, setWarehouseActive } from "@/lib/services/inventory/warehouse-service";
+import { parseToggleWarehouseForm, parseWarehouseForm } from "@/lib/validation/inventory/warehouse";
+
+export async function saveWarehouse(formData: FormData) {
+  await saveWarehouseMaster(parseWarehouseForm(formData));
+  revalidatePath("/inventory/warehouses");
+}
+
+export async function toggleWarehouse(formData: FormData) {
+  await setWarehouseActive(parseToggleWarehouseForm(formData));
+  revalidatePath("/inventory/warehouses");
+}

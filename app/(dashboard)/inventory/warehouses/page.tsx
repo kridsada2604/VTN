@@ -1,2 +1,79 @@
-import Link from"next/link";import{createClient}from"@/lib/supabase/server";import{getCurrentCompanyId}from"@/lib/current-company";import{PageHeader}from"@/components/page-header";import{FormCard}from"@/components/master-data/form-card";import{StatusBadge}from"@/components/master-data/status-badge";import{saveWarehouse,toggleWarehouse}from"./actions";
-export default async function Page({searchParams}:{searchParams:Promise<{edit?:string}>}){const{edit=""}=await searchParams,s=await createClient(),companyId=await getCurrentCompanyId();const[{data:rows=[]},{data:branches=[]}]=await Promise.all([s.from("warehouses").select("id,code,name,is_active,branch_id,branches(name)").eq("company_id",companyId).order("code"),s.from("branches").select("id,name").eq("company_id",companyId).eq("is_active",true).order("name")]);const e=edit?rows?.find(x=>x.id===edit):undefined;return <div><PageHeader eyebrow="INVENTORY" title="คลังสินค้า" description="สร้างคลังแยกตามสาขา"/><div className="two-column-page mt-6"><section className="card table-wrap"><table className="data-table"><thead><tr><th>รหัส</th><th>ชื่อคลัง</th><th>สาขา</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>{rows?.map((x:{id:string;code:string;name:string;is_active:boolean;branch_id:string;branches:{name:string}[]})=><tr key={x.id}><td className="font-bold">{x.code}</td><td>{x.name}</td><td>{x.branches?.[0]?.name||"-"}</td><td><StatusBadge active={x.is_active}/></td><td><div className="action-row"><Link className="btn-secondary btn-small" href={`/inventory/warehouses?edit=${x.id}`}>แก้ไข</Link><form action={toggleWarehouse}><input type="hidden" name="id" value={x.id}/><input type="hidden" name="next" value={String(!x.is_active)}/><button className="btn-secondary btn-small">{x.is_active?"ปิด":"เปิด"}</button></form></div></td></tr>)}</tbody></table></section><FormCard title={e?"แก้ไขคลัง":"เพิ่มคลังสินค้า"}><form action={saveWarehouse} className="form-grid"><input type="hidden" name="id" value={e?.id||""}/><label><span className="label">รหัสคลัง *</span><input className="input" name="code" required defaultValue={e?.code}/></label><label><span className="label">ชื่อคลัง *</span><input className="input" name="name" required defaultValue={e?.name}/></label><label className="full"><span className="label">สาขา *</span><select className="input" name="branch_id" required defaultValue={e?.branch_id||branches?.[0]?.id||""}>{branches?.map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label><div className="full action-row"><button className="btn-primary">บันทึกคลัง</button>{e&&<Link className="btn-secondary" href="/inventory/warehouses">ยกเลิก</Link>}</div></form></FormCard></div></div>}
+import Link from "next/link";
+import { FormCard } from "@/components/master-data/form-card";
+import { StatusBadge } from "@/components/master-data/status-badge";
+import { PageHeader } from "@/components/page-header";
+import { getWarehouseMaster } from "@/lib/services/inventory/warehouse-service";
+import { saveWarehouse, toggleWarehouse } from "./actions";
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
+  const { edit = "" } = await searchParams;
+  const { warehouses, branches } = await getWarehouseMaster();
+  const editing = edit ? warehouses.find((row) => row.id === edit) : undefined;
+
+  return (
+    <div>
+      <PageHeader eyebrow="INVENTORY" title="??????????" description="???????????????????" />
+      <div className="two-column-page mt-6">
+        <section className="card table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>????</th>
+                <th>????????</th>
+                <th>????</th>
+                <th>?????</th>
+                <th>??????</th>
+              </tr>
+            </thead>
+            <tbody>
+              {warehouses.map((row) => (
+                <tr key={row.id}>
+                  <td className="font-bold">{row.code}</td>
+                  <td>{row.name}</td>
+                  <td>{row.branches?.[0]?.name ?? "-"}</td>
+                  <td><StatusBadge active={row.is_active} /></td>
+                  <td>
+                    <div className="action-row">
+                      <Link className="btn-secondary btn-small" href={"/inventory/warehouses?edit=" + row.id}>?????</Link>
+                      <form action={toggleWarehouse}>
+                        <input type="hidden" name="id" value={row.id} />
+                        <input type="hidden" name="next" value={String(!row.is_active)} />
+                        <button className="btn-secondary btn-small">{row.is_active ? "???" : "????"}</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <FormCard title={editing ? "?????????" : "???????????????"}>
+          <form action={saveWarehouse} className="form-grid">
+            <input type="hidden" name="id" value={editing?.id ?? ""} />
+            <label>
+              <span className="label">???????? *</span>
+              <input className="input" name="code" required defaultValue={editing?.code} />
+            </label>
+            <label>
+              <span className="label">???????? *</span>
+              <input className="input" name="name" required defaultValue={editing?.name} />
+            </label>
+            <label className="full">
+              <span className="label">???? *</span>
+              <select className="input" name="branch_id" required defaultValue={editing?.branch_id ?? branches[0]?.id ?? ""}>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>{branch.name}</option>
+                ))}
+              </select>
+            </label>
+            <div className="full action-row">
+              <button className="btn-primary">??????????</button>
+              {editing && <Link className="btn-secondary" href="/inventory/warehouses">??????</Link>}
+            </div>
+          </form>
+        </FormCard>
+      </div>
+    </div>
+  );
+}
