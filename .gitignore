@@ -8,3 +8,4 @@ supabase/.temp/
 tsconfig.tsbuildinfo
 *.log
 .DS_Store
+.supabase-*.local
