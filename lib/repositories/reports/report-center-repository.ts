@@ -80,9 +80,9 @@ export const reportCenterCategories: ReportCenterCategory[] = [
     type: "MOI",
     title: "MOI",
     description: "Month of Inventory by dealer and SKU for stock coverage planning.",
-    status: "FOUNDATION",
+    status: "READY",
     href: "/reports/MOI",
-    nextStep: "Build Month of Inventory parser, coverage trend, and reorder alerts.",
+    nextStep: "Month of Inventory schema, CSV import, coverage preview, and reorder alerts are ready.",
   },
   {
     type: "RUNRATE",

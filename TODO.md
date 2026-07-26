@@ -15,7 +15,8 @@
 - [ ] Preview/filter UI for Inventory, Month of Inventory, Runrate, and Sale In
 - [x] Sale In report schema and analytics
 - [x] Inventory external report schema and analytics
-- [ ] Month of Inventory and Runrate analytics
+- [x] Month of Inventory analytics
+- [ ] Runrate analytics
 
 ## System / Permissions
 - [x] Replace hardcoded Login version with package version

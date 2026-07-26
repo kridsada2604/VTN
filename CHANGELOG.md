@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.17 - Month of Inventory Analytics
+- Add Month of Inventory report and item schema migration with RLS, upsert RPC, and audit logging.
+- Add MOI Service, Repository, Validation, calculator, CSV import pipeline, and Report Center action.
+- Add Report Center MOI preview filters, coverage KPIs, low coverage dealers, and reorder alerts.
+
 ## v0.21.16 - External Inventory Analytics
 - Add external Inventory report and item schema migration with RLS, upsert RPC, and audit logging.
 - Add Inventory Service, Repository, Validation, calculator, CSV import pipeline, and Report Center action.
