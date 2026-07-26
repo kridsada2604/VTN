@@ -72,14 +72,10 @@ export function LoginForm() {
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          placeholder="1234"
+          placeholder="????????"
           autoComplete="current-password"
         />
       </label>
-
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-        บัญชีทดสอบ: <strong>Admin</strong> / <strong>1234</strong>
-      </div>
 
       {error && (
         <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>

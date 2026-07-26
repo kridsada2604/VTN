@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.21.10 - User Role Assignment
+- Add a Supabase RPC migration for company-scoped user role, branch, and active-status management with audit logging.
+- Extend System User Service and Repository layers with role and branch options plus membership updates.
+- Upgrade the Users page from read-only to inline permission management without direct database queries in the UI.
+- Remove visible test-password hints from the production Login UI.
+
 ## v0.21.9 - Inventory Master Service Layers
 - Move Units, Product Categories, and Warehouses pages/actions to Inventory Service, Repository, and Validation layers.
 - Reuse a shared inventory master repository for simple code/name masters to reduce duplication.

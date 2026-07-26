@@ -18,11 +18,13 @@
 - [ ] Month of Inventory and Runrate analytics
 
 ## System / Permissions
+- [x] Remove visible test-password hints from Login page
 - [x] Move Inventory units/categories/warehouses to Service/Repository/Validation layers
 - [x] Move Customers and Suppliers to Service/Repository/Validation layers
 - [x] Move Branches page to Service and Repository layers
 - [x] Move Users page to Service and Repository layers
-- [ ] User role assignment and permission management UI
+- [x] User role assignment and permission management UI
+- [x] User membership update RPC with audit log
 - [ ] Permission matrix by module/action
 
 ## Sales Tax / Installments
