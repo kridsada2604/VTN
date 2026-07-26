@@ -66,7 +66,7 @@ export const reportCenterCategories: ReportCenterCategory[] = [
     description: "Dealer sell-out to end customers for growth and commission analysis.",
     status: "READY",
     href: "/reports/SALE_OUT",
-    nextStep: "Approval workflow and commission rule engine foundation are ready. Next: dealer target vs actual analysis.",
+    nextStep: "Approval workflow, commission foundation, and dealer target analysis are ready. Next: enrich import coverage.",
   },
   {
     type: "INVENTORY",

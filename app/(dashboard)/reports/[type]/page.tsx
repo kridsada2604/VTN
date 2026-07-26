@@ -71,6 +71,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             <div className="mt-5 flex flex-wrap gap-2">
               <Link className="btn-primary inline-block" href="/reports/sale-out/new">Add Sale Out Record</Link>
               <Link className="btn-secondary inline-block" href="/reports/commission">Commission</Link>
+              <Link className="btn-secondary inline-block" href="/reports/dealer-targets">Targets</Link>
             </div>
           )}
         </div>

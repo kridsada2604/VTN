@@ -53,7 +53,7 @@
 - [x] Sale Out growth summary and top dealer/salesperson analysis
 - [x] Sale Out approval workflow
 - [x] Sales commission rule engine from Sale Out
-- [ ] Dealer target vs actual analysis
+- [x] Dealer target vs actual analysis
 
 ## Purchase Planning
 - [x] Purchase dashboard KPI from Service/Repository

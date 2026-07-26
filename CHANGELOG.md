@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.14 - Dealer Target Analysis
+- Add dealer target table migration with RLS, upsert RPC, and audit logging.
+- Add Report Center Dealer Target Service, Repository, Validation, actions, and target vs approved Sale Out actual page.
+- Add Sale Out category entry point for dealer target analysis.
+
 ## v0.21.13 - Sale Out Commission Foundation
 - Add commission rule and calculation run migration for approved Sale Out reports with RLS, RPCs, and audit logging.
 - Add Report Center Commission Service, Repository, Validation, actions, and dashboard page.
