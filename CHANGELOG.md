@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.15 - Sale In Report Analytics
+- Add Sale In report and item schema migration with RLS, create RPC, and audit logging.
+- Add Sale In Service, Repository, Validation, calculator, CSV import pipeline, and sample CSV.
+- Add Report Center Sale In preview filters, KPIs, and top dealer analytics.
+
 ## v0.21.14 - Dealer Target Analysis
 - Add dealer target table migration with RLS, upsert RPC, and audit logging.
 - Add Report Center Dealer Target Service, Repository, Validation, actions, and target vs approved Sale Out actual page.

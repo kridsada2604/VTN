@@ -4,8 +4,9 @@ import { BarChart3, FileSpreadsheet, Search } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { formatDocumentMoney } from "@/lib/services/documents/document-engine";
 import { getReportCenterCategory } from "@/lib/services/reports/report-center-service";
+import { getSaleInReportPreview } from "@/lib/services/sales/sale-in-service";
 import { getSaleOutReportPreview } from "@/lib/services/sales/sale-out-service";
-import { importSaleOutUploadAction } from "../actions";
+import { importSaleInUploadAction, importSaleOutUploadAction } from "../actions";
 
 const statusClass: Record<string, string> = {
   READY: "bg-green-100 text-green-800",
@@ -39,6 +40,14 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         to: searchValue(query, "to"),
         dealerId: searchValue(query, "dealer_id"),
         status: searchValue(query, "status"),
+        q: searchValue(query, "q"),
+      })
+    : null;
+  const saleInPreview = category.type === "SALE_IN"
+    ? await getSaleInReportPreview({
+        from: searchValue(query, "from"),
+        to: searchValue(query, "to"),
+        dealerId: searchValue(query, "dealer_id"),
         q: searchValue(query, "q"),
       })
     : null;
@@ -76,6 +85,90 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           )}
         </div>
       </section>
+
+
+      {saleInPreview && (
+        <section className="mt-6 space-y-6">
+          <section className="card p-5">
+            <div className="flex items-center gap-3">
+              <Search className="text-orange-600" />
+              <h2 className="font-black">Preview Sale In Data</h2>
+            </div>
+            <form className="mt-5 grid gap-4 md:grid-cols-4">
+              <label>
+                <span className="label">From</span>
+                <input className="input" type="date" name="from" defaultValue={saleInPreview.filters.from} />
+              </label>
+              <label>
+                <span className="label">To</span>
+                <input className="input" type="date" name="to" defaultValue={saleInPreview.filters.to} />
+              </label>
+              <label>
+                <span className="label">Dealer</span>
+                <select className="input" name="dealer_id" defaultValue={saleInPreview.filters.dealerId}>
+                  <option value="">All dealers</option>
+                  {saleInPreview.options.dealers.map((dealer) => (
+                    <option key={dealer.id} value={dealer.id}>{dealer.code} - {dealer.name}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span className="label">Keyword</span>
+                <input className="input" name="q" defaultValue={saleInPreview.filters.q} placeholder="Document, dealer" />
+              </label>
+              <div className="flex items-end gap-2 md:col-span-4">
+                <button className="btn-primary">Search</button>
+                <Link className="btn-secondary" href="/reports/SALE_IN">Clear</Link>
+              </div>
+            </form>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-4">
+            <div className="card p-5"><p className="text-sm text-gray-500">Matched reports</p><p className="mt-2 text-3xl font-black">{saleInPreview.summary.totalReports}</p></div>
+            <div className="card p-5"><p className="text-sm text-gray-500">Net Sale In</p><p className="mt-2 text-3xl font-black">THB {formatDocumentMoney(saleInPreview.summary.netAmount)}</p></div>
+            <div className="card p-5"><p className="text-sm text-gray-500">This Month</p><p className="mt-2 text-3xl font-black text-orange-700">THB {formatDocumentMoney(saleInPreview.summary.currentMonthAmount)}</p></div>
+            <div className="card p-5"><p className="text-sm text-gray-500">MoM Growth</p><p className="mt-2 text-3xl font-black">{saleInPreview.summary.growthPercent.toFixed(2)}%</p></div>
+          </section>
+
+          <section className="grid gap-6 xl:grid-cols-[1fr_360px]">
+            <div className="card table-wrap">
+              <div className="border-b p-4"><h2 className="font-black">Sale In Preview</h2></div>
+              <table className="data-table">
+                <thead><tr><th>No.</th><th>Dealer</th><th>Report Date</th><th>Period</th><th>Status</th><th>Net</th></tr></thead>
+                <tbody>
+                  {saleInPreview.reports.map((report) => (
+                    <tr key={report.id}>
+                      <td className="font-bold">{report.document_no}</td>
+                      <td>{report.customers?.[0]?.name ?? "-"}</td>
+                      <td>{report.report_date}</td>
+                      <td>{report.period_start} - {report.period_end}</td>
+                      <td>{report.status}</td>
+                      <td className="font-bold">THB {formatDocumentMoney(report.net_amount)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!saleInPreview.reports.length && <p className="p-6 text-gray-500">No Sale In data matched these filters.</p>}
+            </div>
+
+            <aside className="card p-5">
+              <div className="flex items-center gap-3">
+                <BarChart3 className="text-orange-600" />
+                <h2 className="font-black">Top Dealers</h2>
+              </div>
+              <div className="mt-4 space-y-3">
+                {saleInPreview.summary.topDealers.map((dealer) => (
+                  <div key={dealer.dealerName} className="flex justify-between gap-3 border-b pb-2 text-sm">
+                    <span className="font-bold">{dealer.dealerName}</span>
+                    <span>THB {formatDocumentMoney(dealer.amount)}</span>
+                  </div>
+                ))}
+                {!saleInPreview.summary.topDealers.length && <p className="text-sm text-gray-500">No dealer Sale In in this range.</p>}
+              </div>
+            </aside>
+          </section>
+        </section>
+      )}
 
       {saleOutPreview && (
         <section className="mt-6 space-y-6">
@@ -202,6 +295,12 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                 <td>
                   {category.type === "SALE_OUT" && ["UPLOADED", "FAILED"].includes(upload.status) && (
                     <form action={importSaleOutUploadAction}>
+                      <input type="hidden" name="batch_id" value={upload.id} />
+                      <button className="btn-secondary btn-small">Import</button>
+                    </form>
+                  )}
+                  {category.type === "SALE_IN" && ["UPLOADED", "FAILED"].includes(upload.status) && (
+                    <form action={importSaleInUploadAction}>
                       <input type="hidden" name="batch_id" value={upload.id} />
                       <button className="btn-secondary btn-small">Import</button>
                     </form>

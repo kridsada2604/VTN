@@ -56,9 +56,9 @@ export const reportCenterCategories: ReportCenterCategory[] = [
     type: "SALE_IN",
     title: "Sale In",
     description: "Sales from company to dealer or sales channel.",
-    status: "IN_PROGRESS",
+    status: "READY",
     href: "/reports/SALE_IN",
-    nextStep: "Add Sale In schema, import parser, and dealer purchase analysis.",
+    nextStep: "Sale In schema, CSV import, preview filters, and dealer purchase analytics are ready.",
   },
   {
     type: "SALE_OUT",
