@@ -26,7 +26,8 @@
 - [x] Move Users page to Service and Repository layers
 - [x] User role assignment and permission management UI
 - [x] User membership update RPC with audit log
-- [ ] Permission matrix by module/action
+- [x] Permission matrix by module/action
+- [x] Permission matrix migration with RLS and audit log
 
 ## Sales Tax / Installments
 - [x] Move Quotation routes/actions to Service and Repository layers

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.11 - Permission Matrix Foundation
+- Add company role permission matrix migration with RLS, default role permissions, RPC updates, and audit logging.
+- Add System Permission Service, Repository, Validation, and module/action permission catalog.
+- Add /users/permissions matrix UI and Settings/User navigation entry points.
+
 ## v0.21.10 - User Role Assignment
 - Add a Supabase RPC migration for company-scoped user role, branch, and active-status management with audit logging.
 - Extend System User Service and Repository layers with role and branch options plus membership updates.
