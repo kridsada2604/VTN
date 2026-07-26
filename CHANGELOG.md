@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.13 - Sale Out Commission Foundation
+- Add commission rule and calculation run migration for approved Sale Out reports with RLS, RPCs, and audit logging.
+- Add Report Center Commission Service, Repository, Validation, actions, and dashboard page.
+- Add Sale Out category entry point for commission preview and calculation runs.
+
 ## v0.21.12 - Sale Out Approval Workflow
 - Add Sale Out approval/cancel workflow migration with review fields, events, RLS, RPC, and audit log.
 - Add Sale Out status validation plus Service and Repository workflow actions.

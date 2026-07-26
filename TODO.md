@@ -52,7 +52,7 @@
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Sale Out growth summary and top dealer/salesperson analysis
 - [x] Sale Out approval workflow
-- [ ] Sales commission rule engine from Sale Out
+- [x] Sales commission rule engine from Sale Out
 - [ ] Dealer target vs actual analysis
 
 ## Purchase Planning

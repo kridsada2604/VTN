@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BarChart3, FileSpreadsheet, Search } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -68,9 +68,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           <p className="text-sm text-gray-500">Registered files</p>
           <p className="mt-2 text-4xl font-black">{uploads.length}</p>
           {category.type === "SALE_OUT" && (
-            <Link className="btn-primary mt-5 inline-block" href="/reports/sale-out/new">
-              Add Sale Out Record
-            </Link>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link className="btn-primary inline-block" href="/reports/sale-out/new">Add Sale Out Record</Link>
+              <Link className="btn-secondary inline-block" href="/reports/commission">Commission</Link>
+            </div>
           )}
         </div>
       </section>
