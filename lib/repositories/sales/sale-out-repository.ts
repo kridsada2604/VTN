@@ -1,6 +1,6 @@
-import type { createClient } from "@/lib/supabase/server";
+﻿import type { createClient } from "@/lib/supabase/server";
 import type { SaleOutComputedItem, SaleOutTotals } from "@/lib/services/sales/sale-out-calculator";
-import type { CreateSaleOutInput } from "@/lib/validation/sales/sale-out";
+import type { CreateSaleOutInput, UpdateSaleOutStatusInput } from "@/lib/validation/sales/sale-out";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -29,6 +29,13 @@ export type SaleOutReportRow = {
   profiles: { full_name: string | null; email: string | null }[] | null;
 };
 
+export type SaleOutDetailRow = SaleOutReportRow & {
+  notes: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_note: string | null;
+};
+
 export type SaleOutItemRow = {
   id: string;
   dealer_sku: string | null;
@@ -38,6 +45,16 @@ export type SaleOutItemRow = {
   line_discount: number | string;
   line_total: number | string;
   products: { sku: string; name: string }[] | null;
+};
+
+export type SaleOutEventRow = {
+  id: string;
+  event_type: string;
+  from_status: string | null;
+  to_status: string | null;
+  message: string | null;
+  created_by: string | null;
+  created_at: string;
 };
 
 export type SaleOutSummary = {
@@ -61,6 +78,7 @@ export type SaleOutReportPreview = {
 };
 
 const reportSelect = "id,dealer_id,salesperson_id,document_no,report_date,period_start,period_end,source_channel,status,gross_amount,discount_amount,net_amount,customers(code,name),profiles(full_name,email)";
+const detailSelect = `${reportSelect},notes,reviewed_by,reviewed_at,review_note`;
 
 export class SaleOutRepository {
   constructor(private readonly supabase: SupabaseServerClient) {}
@@ -135,10 +153,10 @@ export class SaleOutRepository {
   }
 
   async getById(companyId: string, reportId: string) {
-    const [report, items] = await Promise.all([
+    const [report, items, events] = await Promise.all([
       this.supabase
         .from("sales_out_reports")
-        .select("id,dealer_id,salesperson_id,document_no,report_date,period_start,period_end,source_channel,status,gross_amount,discount_amount,net_amount,notes,customers(code,name),profiles(full_name,email)")
+        .select(detailSelect)
         .eq("id", reportId)
         .eq("company_id", companyId)
         .maybeSingle(),
@@ -147,14 +165,21 @@ export class SaleOutRepository {
         .select("id,dealer_sku,description,quantity,unit_price,line_discount,line_total,products(sku,name)")
         .eq("report_id", reportId)
         .order("sort_order"),
+      this.supabase
+        .from("sales_out_report_events")
+        .select("id,event_type,from_status,to_status,message,created_by,created_at")
+        .eq("report_id", reportId)
+        .order("created_at", { ascending: false }),
     ]);
 
     if (report.error) throw report.error;
     if (items.error) throw items.error;
+    if (events.error) throw events.error;
 
     return {
-      report: report.data as (SaleOutReportRow & { notes: string | null }) | null,
+      report: report.data as SaleOutDetailRow | null,
       items: (items.data ?? []) as SaleOutItemRow[],
+      events: (events.data ?? []) as SaleOutEventRow[],
     };
   }
 
@@ -173,6 +198,18 @@ export class SaleOutRepository {
       p_gross_amount: totals.gross_amount,
       p_discount_amount: totals.discount_amount,
       p_net_amount: totals.net_amount,
+    });
+
+    if (error) throw error;
+    return String(data);
+  }
+
+  async updateStatus(companyId: string, input: UpdateSaleOutStatusInput) {
+    const { data, error } = await this.supabase.rpc("update_sales_out_report_status", {
+      p_company_id: companyId,
+      p_report_id: input.report_id,
+      p_status: input.status,
+      p_note: input.note,
     });
 
     if (error) throw error;

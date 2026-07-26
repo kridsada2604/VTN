@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.21.12 - Sale Out Approval Workflow
+- Add Sale Out approval/cancel workflow migration with review fields, events, RLS, RPC, and audit log.
+- Add Sale Out status validation plus Service and Repository workflow actions.
+- Add approve/reject controls and workflow timeline to Report Center Sale Out detail.
+
 ## v0.21.11 - Permission Matrix Foundation
 - Add company role permission matrix migration with RLS, default role permissions, RPC updates, and audit logging.
 - Add System Permission Service, Repository, Validation, and module/action permission catalog.

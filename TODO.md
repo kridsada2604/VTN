@@ -51,7 +51,7 @@
 - [x] Service Layer / Repository Layer / Validation
 - [x] Migration, RLS, Permission และ Audit Log
 - [x] Sale Out growth summary and top dealer/salesperson analysis
-- [ ] Sale Out approval workflow
+- [x] Sale Out approval workflow
 - [ ] Sales commission rule engine from Sale Out
 - [ ] Dealer target vs actual analysis
 

@@ -19,6 +19,12 @@ export type CreateSaleOutInput = {
   items: SaleOutItemInput[];
 };
 
+export type UpdateSaleOutStatusInput = {
+  report_id: string;
+  status: "SUBMITTED" | "APPROVED" | "CANCELLED";
+  note: string | null;
+};
+
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
 const numberOrZero = (value: unknown) => {
@@ -64,5 +70,16 @@ export function parseSaleOutForm(fd: FormData): CreateSaleOutInput {
     throw new Error("Sale Out item description, quantity, price, and discount are invalid");
   }
 
+  return input;
+}
+
+export function parseSaleOutStatusForm(fd: FormData, status: UpdateSaleOutStatusInput["status"]): UpdateSaleOutStatusInput {
+  const input = {
+    report_id: text(fd, "report_id"),
+    status,
+    note: text(fd, "note") || null,
+  };
+
+  if (!input.report_id) throw new Error("Sale Out report is required");
   return input;
 }

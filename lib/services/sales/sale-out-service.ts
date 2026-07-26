@@ -1,8 +1,8 @@
-import { getCurrentCompanyId } from "@/lib/current-company";
+﻿import { getCurrentCompanyId } from "@/lib/current-company";
 import { SaleOutRepository } from "@/lib/repositories/sales/sale-out-repository";
 import { createClient } from "@/lib/supabase/server";
 import { computeSaleOutItems } from "./sale-out-calculator";
-import type { CreateSaleOutInput } from "@/lib/validation/sales/sale-out";
+import type { CreateSaleOutInput, UpdateSaleOutStatusInput } from "@/lib/validation/sales/sale-out";
 import type { SaleOutReportFilters } from "@/lib/repositories/sales/sale-out-repository";
 
 export async function getSaleOutDashboard() {
@@ -34,4 +34,10 @@ export async function createSaleOutReport(input: CreateSaleOutInput) {
   const companyId = await getCurrentCompanyId();
   const { computedItems, totals } = computeSaleOutItems(input.items);
   return new SaleOutRepository(supabase).create(companyId, input, computedItems, totals);
+}
+
+export async function updateSaleOutStatus(input: UpdateSaleOutStatusInput) {
+  const supabase = await createClient();
+  const companyId = await getCurrentCompanyId();
+  return new SaleOutRepository(supabase).updateStatus(companyId, input);
 }
