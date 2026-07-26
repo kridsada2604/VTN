@@ -5,6 +5,7 @@
 - Extend System User Service and Repository layers with role and branch options plus membership updates.
 - Upgrade the Users page from read-only to inline permission management without direct database queries in the UI.
 - Remove visible test-password hints from the production Login UI.
+- Display the current package version on the Login screen instead of the old hardcoded alpha version.
 
 ## v0.21.9 - Inventory Master Service Layers
 - Move Units, Product Categories, and Warehouses pages/actions to Inventory Service, Repository, and Validation layers.

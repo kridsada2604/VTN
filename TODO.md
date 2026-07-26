@@ -18,6 +18,7 @@
 - [ ] Month of Inventory and Runrate analytics
 
 ## System / Permissions
+- [x] Replace hardcoded Login version with package version
 - [x] Remove visible test-password hints from Login page
 - [x] Move Inventory units/categories/warehouses to Service/Repository/Validation layers
 - [x] Move Customers and Suppliers to Service/Repository/Validation layers

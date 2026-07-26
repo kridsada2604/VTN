@@ -1,4 +1,7 @@
 import { LoginForm } from "@/components/login-form";
+import packageJson from "@/package.json";
+
+const appVersion = packageJson.version;
 
 export default function LoginPage() {
   return (
@@ -18,7 +21,7 @@ export default function LoginPage() {
             ศูนย์กลางสำหรับยอดขาย สต๊อก การเงิน โครงการ POS และ Marketplace
           </p>
         </div>
-        <p className="text-sm opacity-75">VTN Business v0.3.1-alpha</p>
+        <p className="text-sm opacity-75">VTN Business v{appVersion}</p>
       </section>
 
       <section className="flex items-center justify-center p-6 sm:p-10">
